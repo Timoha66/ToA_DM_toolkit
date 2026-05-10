@@ -45,7 +45,20 @@
       align-items: center;
       justify-content: space-between;
     }
+    .header-left { display: flex; align-items: center; gap: 1rem; }
     header h1 { font-size: 1.4rem; color: var(--accent); letter-spacing: 0.05em; }
+    .header-btn {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.3rem 0.8rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      transition: 0.2s;
+    }
+    .header-btn:hover { border-color: var(--accent); color: var(--accent); }
     .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.2s; border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 4px; }
     .back-link:hover { color: var(--accent); border-color: var(--accent); }
 
@@ -229,119 +242,69 @@
     .ctrl-end { background: var(--danger); color: #fff; }
     .ctrl-deselect { background: var(--border); color: var(--text-main); }
 
-.hp-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
-}
-.hp-label {
-  font-size: 0.9rem;
-  color: var(--text-muted);
-}
-.hp-controls input {
-  width: 80px;
-  padding: 0.3rem;
-  background: var(--bg-dark);
-  border: 1px solid var(--border);
-  color: var(--text-main);
-  border-radius: 4px;
-  text-align: center;
-  font-family: 'Cinzel', serif;
-}
-.hp-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-.hp-multipliers {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-}
-.hp-mult {
-  padding: 0.35rem 0.7rem;
-  font-size: 0.7rem;
-  background: var(--danger);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: 0.2s;
-  font-family: 'Cinzel', serif;
-}
-.hp-mult:hover {
-  opacity: 0.8;
-}
-.hp-main-damage {
-  padding: 0.7rem 1.5rem;
-  font-size: 0.9rem;
-  flex: 1;
-  background: var(--danger);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
-}
-.hp-main-heal {
-  padding: 0.7rem 1.5rem;
-  font-size: 0.9rem;
-  background: var(--success);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: 0.2s;
-}
-.hp-main-damage:hover,
-.hp-main-heal:hover {
-  opacity: 0.85;
-}
-
-    /* === ПАНЕЛЬ ПРАВИЛ (УКРЫТИЯ И СОСТОЯНИЯ) === */
-    #rules-panel {
-      display: none;
-      position: fixed;
-      top: 5rem;
-      right: 1rem;
-      width: 260px;
-      background: rgba(20, 10, 0, 0.92);
-      border: 1px solid var(--accent);
-      border-radius: 8px;
-      padding: 0.8rem;
-      color: var(--text-main);
-      font-size: 0.7rem;
-      line-height: 1.5;
-      z-index: 50;
-      max-height: 80vh;
-      overflow-y: auto;
-    }
-    #rules-panel h4 {
-      font-size: 0.8rem;
-      color: var(--accent);
-      margin-bottom: 0.3rem;
-      border-bottom: 1px solid var(--accent);
-      padding-bottom: 0.2rem;
-    }
-    #rules-panel span.highlight { color: var(--accent); font-weight: bold; }
-    .condition-rule {
+    .hp-controls {
       display: flex;
-      align-items: flex-start;
-      gap: 0.3rem;
-      margin-bottom: 0.4rem;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
     }
-    .condition-rule .cond-icon {
-      font-size: 1rem;
-      width: 20px;
+    .hp-label { font-size: 0.9rem; color: var(--text-muted); }
+    .hp-controls input {
+      width: 80px;
+      padding: 0.3rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 4px;
       text-align: center;
-      flex-shrink: 0;
+      font-family: 'Cinzel', serif;
     }
-    .condition-rule .cond-desc {
-      color: var(--text-muted);
+    .hp-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
     }
+    .hp-multipliers {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .hp-mult {
+      padding: 0.35rem 0.7rem;
+      font-size: 0.7rem;
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-family: 'Cinzel', serif;
+    }
+    .hp-mult:hover { opacity: 0.8; }
+    .hp-main-damage {
+      padding: 0.7rem 1.5rem;
+      font-size: 0.9rem;
+      flex: 1;
+      background: var(--danger);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    .hp-main-heal {
+      padding: 0.7rem 1.5rem;
+      font-size: 0.9rem;
+      background: var(--success);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+    .hp-main-damage:hover, .hp-main-heal:hover { opacity: 0.85; }
 
     /* === СОСТОЯНИЯ (conditions) === */
     .conditions-container {
@@ -409,7 +372,8 @@
     .condition-select div:hover { background: var(--accent); color: #111; }
 
     /* MODALS */
-    #stat-modal, #priority-modal, #add-monster-modal, #exhaustion-modal {
+    #stat-modal, #priority-modal, #add-monster-modal, #exhaustion-modal,
+    #cover-modal, #conditions-modal {
       display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center;
     }
@@ -460,7 +424,11 @@
 <body>
 
 <header>
-  <h1>🗡️ Трекер Инициативы</h1>
+  <div class="header-left">
+    <h1>🗡️ Трекер Инициативы</h1>
+    <button class="header-btn" onclick="app.openCoverModal()">🛡️ Укрытия</button>
+    <button class="header-btn" onclick="app.openConditionsModal()">📜 Состояния</button>
+  </div>
   <a href="index.html" class="back-link">← На главную</a>
 </header>
 
@@ -487,33 +455,44 @@
         <button class="ctrl-btn ctrl-deselect" onclick="app.deselectAll()">☐ Снять выделение</button>
         <button class="ctrl-btn ctrl-end" onclick="app.endCombat()">Закончить бой</button>
       </div>
-<div class="hp-controls">
-  <span class="hp-label">💔 Введите урон:</span>
-  <input type="number" id="hp-amount" placeholder="Число" min="0">
-  <div class="hp-actions">
-    <!-- Множители урона слева -->
-    <div class="hp-multipliers">
-      <button class="btn ctrl-btn hp-mult" onclick="app.applyDamage(0.25)">×¼</button>
-      <button class="btn ctrl-btn hp-mult" onclick="app.applyDamage(0.5)">½</button>
-      <button class="btn ctrl-btn hp-mult" onclick="app.applyDamage(2)">×2</button>
+      <div class="hp-controls">
+        <span class="hp-label">💔 Групповой:</span>
+        <input type="number" id="hp-amount" placeholder="Число" min="0">
+        <div class="hp-actions">
+          <div class="hp-multipliers">
+            <button class="btn ctrl-btn hp-mult" onclick="app.applyDamage(0.25)">×¼</button>
+            <button class="btn ctrl-btn hp-mult" onclick="app.applyDamage(0.5)">½</button>
+            <button class="btn ctrl-btn hp-mult" onclick="app.applyDamage(2)">×2</button>
+          </div>
+          <button class="btn ctrl-btn hp-main-damage" onclick="app.applyDamage(1)">🗡️ Урон</button>
+          <button class="btn ctrl-btn hp-main-heal" onclick="app.applyHeal()">💚 Лечение</button>
+        </div>
+      </div>
     </div>
-    <!-- Основные кнопки: Урон и Лечение -->
-    <button class="btn ctrl-btn btn-damage hp-main-damage" onclick="app.applyDamage(1)">🗡️ Урон</button>
-    <button class="btn ctrl-btn btn-heal hp-main-heal" onclick="app.applyHeal()">💚 Лечение</button>
+  </main>
+</div>
+
+<!-- Модальное окно: Укрытия -->
+<div id="cover-modal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="app.closeModal()">✖</button>
+    <h2>🛡️ Укрытия</h2>
+    <div><span class="highlight" style="color:var(--accent); font-weight:bold;">1/2:</span> +2 КД и спасброскам Ловкости</div>
+    <div><span class="highlight" style="color:var(--accent); font-weight:bold;">3/4:</span> +5 КД и спасброскам Ловкости</div>
+    <div><span class="highlight" style="color:var(--accent); font-weight:bold;">Полное:</span> нельзя выбрать целью атаки или заклинания с броском атаки</div>
   </div>
 </div>
 
-<!-- Панель правил (укрытия + состояния) -->
-<div id="rules-panel">
-  <h4>🛡️ Укрытия</h4>
-  <div><span class="highlight">1/2:</span> +2 КД и спасброскам Ловкости</div>
-  <div><span class="highlight">3/4:</span> +5 КД и спасброскам Ловкости</div>
-  <div><span class="highlight">Полное:</span> нельзя выбрать целью атаки или заклинания с броском атаки</div>
-  <h4 style="margin-top:0.8rem;">📜 Состояния</h4>
-  <div id="conditions-list"></div>
+<!-- Модальное окно: Состояния -->
+<div id="conditions-modal">
+  <div class="modal-content">
+    <button class="close-modal" onclick="app.closeModal()">✖</button>
+    <h2>📜 Состояния</h2>
+    <div id="conditions-list"></div>
+  </div>
 </div>
 
-<!-- Модальные окна -->
+<!-- Остальные модальные окна -->
 <div id="stat-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><div id="modal-body"></div></div></div>
 <div id="priority-modal"><div class="modal-content"><h2>⚡ Одинаковая инициатива</h2><p style="margin-bottom:1rem; color:var(--text-muted)">Задайте порядок внутри каждой группы (1 — первый).</p><div id="priority-content"></div><button id="apply-priority-btn" onclick="app.applyPriority()">✅ Подтвердить порядок</button></div></div>
 <div id="add-monster-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><h2>➕ Добавить монстров в бой</h2><p style="font-size:0.8rem; color:var(--text-muted)">Заполните инициативу только для нужных монстров. Пустые строки будут пропущены.</p><div id="add-monster-content" class="add-monster-list"></div><button id="add-monster-batch-btn" onclick="app.spawnBatch()">✅ Добавить выбранных</button></div></div>
@@ -541,7 +520,7 @@ const app = {
       this.data = await monsterRes.json();
       this.conditionsData = await condRes.json();
       this.renderSidebar();
-      this.renderRulesPanel();
+      this.renderConditionsList();
     } catch (e) {
       console.error(e);
       document.getElementById('sidebar-list').innerHTML = '<div style="color:red;padding:1rem">Ошибка загрузки данных.</div>';
@@ -566,12 +545,12 @@ const app = {
     });
   },
 
-  renderRulesPanel() {
+  renderConditionsList() {
     const container = document.getElementById('conditions-list');
     container.innerHTML = this.conditionsData.map(c => `
-      <div class="condition-rule">
-        <span class="cond-icon">${c.icon || (c.name ? c.name[0] : '?')}</span>
-        <span class="cond-desc"><strong>${c.name}:</strong> ${c.effect}</span>
+      <div class="condition-rule" style="display:flex; align-items:flex-start; gap:0.3rem; margin-bottom:0.4rem;">
+        <span style="font-size:1rem; width:20px; text-align:center;">${c.icon || (c.name ? c.name[0] : '?')}</span>
+        <span style="color:var(--text-muted);"><strong>${c.name}:</strong> ${c.effect}</span>
       </div>
     `).join('');
   },
@@ -630,7 +609,6 @@ const app = {
           tempBar = `<div class="hp-bar-container" style="margin-top:2px;"><div class="hp-bar-fill temp-hp-bar-fill" style="width:${tempPct}%;"></div></div>
                      <div class="hp-text" style="color:var(--temp-hp-color);">Врем: ${tempHp} / ${maxTempHp}</div>`;
         }
-        // Состояния + чекбокс (если не мёртв)
         let conditionsHtml = '';
         let checkboxHtml = '';
         if (!c.dead) {
@@ -694,16 +672,13 @@ const app = {
     return { color: 'hp-red', status: 'МЁРТВ' };
   },
 
-  closeAllMenus() {
-    document.querySelectorAll('.condition-select').forEach(m => m.remove());
-  },
+  closeAllMenus() { document.querySelectorAll('.condition-select').forEach(m => m.remove()); },
 
   removeCondition(uid, condId) {
     const c = this.combatants.find(x => x.uid === uid);
     if (!c || !c.conditions) return;
-    const info = this.getConditionInfo(condId);
-    const displayName = info.hasLevels && c.exhaustionLevel ? `${info.name} (ур. ${c.exhaustionLevel})` : info.name;
     c.conditions = c.conditions.filter(id => id !== condId);
+    const info = this.getConditionInfo(condId);
     if (info.hasLevels) c.exhaustionLevel = 0;
     this.renderCombatCards();
     this.highlightActive();
@@ -842,7 +817,6 @@ const app = {
     this.adjustTurnIndex();
     document.getElementById('setup-area').style.display = 'none';
     document.getElementById('combat-controls').style.display = 'flex';
-    document.getElementById('rules-panel').style.display = 'block';
     document.getElementById('round-display').textContent = this.round;
     this.renderCombatCards();
     this.highlightActive();
@@ -894,37 +868,35 @@ const app = {
     });
   },
 
-  deselectAll() {
-    document.querySelectorAll('.select-target').forEach(cb => cb.checked = false);
-  },
+  deselectAll() { document.querySelectorAll('.select-target').forEach(cb => cb.checked = false); },
 
-applyDamage(multiplier = 1) {
-  if (!this.combatActive) return;
-  const amount = parseInt(document.getElementById('hp-amount').value, 10);
-  if (isNaN(amount) || amount <= 0) return;
-  const selected = document.querySelectorAll('.select-target:checked');
-  if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
-  const actualDamage = Math.floor(amount * multiplier);
-  selected.forEach(cb => {
-    const uid = cb.dataset.uid;
-    const c = this.combatants.find(x => x.uid === uid);
-    if (!c || c.dead) return;
-    let rem = actualDamage;
-    if (c.tempHp > 0) {
-      if (c.tempHp >= rem) { c.tempHp -= rem; rem = 0; }
-      else { rem -= c.tempHp; c.tempHp = 0; c.maxTempHp = 0; }
-    }
-    if (rem > 0) {
-      c.currentHp = Math.max(0, (c.currentHp || 0) - rem);
-      if (c.currentHp <= 0) { c.dead = true; c.currentHp = 0; }
-    }
-  });
-  this.updateFirstAlive();
-  this.renderCombatCards();
-  this.adjustTurnIndex();
-  this.highlightActive();
-  document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
-},
+  applyDamage(multiplier = 1) {
+    if (!this.combatActive) return;
+    const amount = parseInt(document.getElementById('hp-amount').value,10);
+    if (isNaN(amount) || amount <= 0) return;
+    const selected = document.querySelectorAll('.select-target:checked');
+    if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
+    const actualDamage = Math.floor(amount * multiplier);
+    selected.forEach(cb => {
+      const uid = cb.dataset.uid;
+      const c = this.combatants.find(x => x.uid === uid);
+      if (!c || c.dead) return;
+      let rem = actualDamage;
+      if (c.tempHp > 0) {
+        if (c.tempHp >= rem) { c.tempHp -= rem; rem = 0; }
+        else { rem -= c.tempHp; c.tempHp = 0; c.maxTempHp = 0; }
+      }
+      if (rem > 0) {
+        c.currentHp = Math.max(0, (c.currentHp||0) - rem);
+        if (c.currentHp <= 0) { c.dead = true; c.currentHp = 0; }
+      }
+    });
+    this.updateFirstAlive();
+    this.renderCombatCards();
+    this.adjustTurnIndex();
+    this.highlightActive();
+    document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
+  },
 
   applyHeal() {
     if (!this.combatActive) return;
@@ -1032,39 +1004,30 @@ applyDamage(multiplier = 1) {
     document.getElementById('add-monster-modal').style.display = 'flex';
   },
 
+  openCoverModal() { document.getElementById('cover-modal').style.display = 'flex'; },
+  openConditionsModal() { document.getElementById('conditions-modal').style.display = 'flex'; },
+
   closeModal() {
     document.getElementById('stat-modal').style.display = 'none';
     document.getElementById('priority-modal').style.display = 'none';
     document.getElementById('add-monster-modal').style.display = 'none';
     document.getElementById('exhaustion-modal').style.display = 'none';
+    document.getElementById('cover-modal').style.display = 'none';
+    document.getElementById('conditions-modal').style.display = 'none';
   },
 
   endCombat() {
     this.combatActive = false;
     this.combatants = [];
-
-    // Показываем панель подготовки
     document.getElementById('setup-area').style.display = 'block';
-    // Скрываем панель управления боем
     document.getElementById('combat-controls').style.display = 'none';
-    // Скрываем справочную панель (правила)
-    const rulesPanel = document.getElementById('rules-panel');
-    if (rulesPanel) rulesPanel.style.display = 'none';
-
-    // Очищаем сетку карточек
     document.getElementById('combatants-grid').innerHTML = '';
-    // Делаем кнопку "Начать бой" неактивной
     const startBtn = document.getElementById('start-combat-btn');
     if (startBtn) startBtn.disabled = true;
-
-    // Сбрасываем счётчик участников
     document.getElementById('count-display').textContent = '0';
-
-    // Закрываем все модальные окна
     this.closeModal();
-    // Снимаем все чекбоксы (если есть)
     this.deselectAll();
-},
+  },
 
   showStatBlock(monId) {
     let mon = null;
@@ -1092,7 +1055,7 @@ applyDamage(multiplier = 1) {
 };
 
 document.addEventListener('DOMContentLoaded', () => app.init());
-document.querySelectorAll('#stat-modal, #priority-modal, #add-monster-modal, #exhaustion-modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) app.closeModal(); }));
+document.querySelectorAll('#stat-modal, #priority-modal, #add-monster-modal, #exhaustion-modal, #cover-modal, #conditions-modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) app.closeModal(); }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') app.closeModal(); });
 </script>
 </body>
