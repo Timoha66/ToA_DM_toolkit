@@ -438,11 +438,13 @@
       <div class="hp-controls">
         <span>💔 Групповой:</span>
         <input type="number" id="hp-amount" placeholder="Число" min="0">
-        <button class="btn ctrl-btn btn-damage" onclick="app.applyDamage()">🗡️ Урон</button>
+        <button class="btn ctrl-btn btn-damage" onclick="app.applyDamage(1)">🗡️ Урон</button>
         <button class="btn ctrl-btn btn-heal" onclick="app.applyHeal()">💚 Лечение</button>
+        <div style="display:flex; gap:0.3rem; margin-top:0.3rem;">
+        <button class="btn ctrl-btn" style="background:#b33a3a; color:#fff;" onclick="app.applyDamage(0.5)">½ Урон</button>
+        <button class="btn ctrl-btn" style="background:#b33a3a; color:#fff;" onclick="app.applyDamage(2)">×2 Урон</button>
+        <button class="btn ctrl-btn" style="background:#b33a3a; color:#fff;" onclick="app.applyDamage(0.25)">×¼ Урон</button>
       </div>
-    </div>
-  </main>
 </div>
 
 <!-- Панель правил (укрытия + состояния) -->
@@ -840,32 +842,33 @@ const app = {
     document.querySelectorAll('.select-target').forEach(cb => cb.checked = false);
   },
 
-  applyDamage() {
-    if (!this.combatActive) return;
-    const amount = parseInt(document.getElementById('hp-amount').value,10);
-    if (isNaN(amount) || amount <= 0) return;
-    const selected = document.querySelectorAll('.select-target:checked');
-    if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
-    selected.forEach(cb => {
-      const uid = cb.dataset.uid;
-      const c = this.combatants.find(x => x.uid === uid);
-      if (!c || c.dead) return;
-      let rem = amount;
-      if (c.tempHp > 0) {
-        if (c.tempHp >= rem) { c.tempHp -= rem; rem = 0; }
-        else { rem -= c.tempHp; c.tempHp = 0; c.maxTempHp = 0; }
-      }
-      if (rem > 0) {
-        c.currentHp = Math.max(0, (c.currentHp||0) - rem);
-        if (c.currentHp <= 0) { c.dead = true; c.currentHp = 0; }
-      }
-    });
-    this.updateFirstAlive();
-    this.renderCombatCards();
-    this.adjustTurnIndex();
-    this.highlightActive();
-    document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
-  },
+applyDamage(multiplier = 1) {
+  if (!this.combatActive) return;
+  const amount = parseInt(document.getElementById('hp-amount').value, 10);
+  if (isNaN(amount) || amount <= 0) return;
+  const selected = document.querySelectorAll('.select-target:checked');
+  if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
+  const actualDamage = Math.floor(amount * multiplier);
+  selected.forEach(cb => {
+    const uid = cb.dataset.uid;
+    const c = this.combatants.find(x => x.uid === uid);
+    if (!c || c.dead) return;
+    let rem = actualDamage;
+    if (c.tempHp > 0) {
+      if (c.tempHp >= rem) { c.tempHp -= rem; rem = 0; }
+      else { rem -= c.tempHp; c.tempHp = 0; c.maxTempHp = 0; }
+    }
+    if (rem > 0) {
+      c.currentHp = Math.max(0, (c.currentHp || 0) - rem);
+      if (c.currentHp <= 0) { c.dead = true; c.currentHp = 0; }
+    }
+  });
+  this.updateFirstAlive();
+  this.renderCombatCards();
+  this.adjustTurnIndex();
+  this.highlightActive();
+  document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
+},
 
   applyHeal() {
     if (!this.combatActive) return;
