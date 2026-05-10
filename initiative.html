@@ -229,25 +229,77 @@
     .ctrl-end { background: var(--danger); color: #fff; }
     .ctrl-deselect { background: var(--border); color: var(--text-main); }
 
-    .hp-controls {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--text-muted);
-      font-size: 0.9rem;
-    }
-    .hp-controls input {
-      width: 70px;
-      padding: 0.3rem;
-      background: var(--bg-dark);
-      border: 1px solid var(--border);
-      color: var(--text-main);
-      border-radius: 4px;
-      text-align: center;
-      font-family: 'Cinzel', serif;
-    }
-    .hp-controls .btn-damage { background: var(--danger); color: #fff; }
-    .hp-controls .btn-heal { background: var(--success); color: #fff; }
+.hp-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.hp-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.hp-controls input {
+  width: 80px;
+  padding: 0.3rem;
+  background: var(--bg-dark);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: 4px;
+  text-align: center;
+  font-family: 'Cinzel', serif;
+}
+.hp-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.hp-multipliers {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.hp-mult {
+  padding: 0.35rem 0.7rem;
+  font-size: 0.7rem;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: 0.2s;
+  font-family: 'Cinzel', serif;
+}
+.hp-mult:hover {
+  opacity: 0.8;
+}
+.hp-main-damage {
+  padding: 0.7rem 1.5rem;
+  font-size: 0.9rem;
+  flex: 1;
+  background: var(--danger);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.hp-main-heal {
+  padding: 0.7rem 1.5rem;
+  font-size: 0.9rem;
+  background: var(--success);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+}
+.hp-main-damage:hover,
+.hp-main-heal:hover {
+  opacity: 0.85;
+}
 
     /* === ПАНЕЛЬ ПРАВИЛ (УКРЫТИЯ И СОСТОЯНИЯ) === */
     #rules-panel {
@@ -435,16 +487,20 @@
         <button class="ctrl-btn ctrl-deselect" onclick="app.deselectAll()">☐ Снять выделение</button>
         <button class="ctrl-btn ctrl-end" onclick="app.endCombat()">Закончить бой</button>
       </div>
-      <div class="hp-controls">
-        <span>💔 Групповой:</span>
-        <input type="number" id="hp-amount" placeholder="Число" min="0">
-        <button class="btn ctrl-btn btn-damage" onclick="app.applyDamage(1)">🗡️ Урон</button>
-        <button class="btn ctrl-btn btn-heal" onclick="app.applyHeal()">💚 Лечение</button>
-        <div style="display:flex; gap:0.3rem; margin-top:0.3rem;">
-        <button class="btn ctrl-btn" style="background:#b33a3a; color:#fff;" onclick="app.applyDamage(0.5)">½ Урон</button>
-        <button class="btn ctrl-btn" style="background:#b33a3a; color:#fff;" onclick="app.applyDamage(2)">×2 Урон</button>
-        <button class="btn ctrl-btn" style="background:#b33a3a; color:#fff;" onclick="app.applyDamage(0.25)">×¼ Урон</button>
-      </div>
+<div class="hp-controls">
+  <span class="hp-label">💔 Введите урон:</span>
+  <input type="number" id="hp-amount" placeholder="Число" min="0">
+  <div class="hp-actions">
+    <!-- Множители урона слева -->
+    <div class="hp-multipliers">
+      <button class="btn ctrl-btn hp-mult" onclick="app.applyDamage(0.25)">×¼</button>
+      <button class="btn ctrl-btn hp-mult" onclick="app.applyDamage(0.5)">½</button>
+      <button class="btn ctrl-btn hp-mult" onclick="app.applyDamage(2)">×2</button>
+    </div>
+    <!-- Основные кнопки: Урон и Лечение -->
+    <button class="btn ctrl-btn btn-damage hp-main-damage" onclick="app.applyDamage(1)">🗡️ Урон</button>
+    <button class="btn ctrl-btn btn-heal hp-main-heal" onclick="app.applyHeal()">💚 Лечение</button>
+  </div>
 </div>
 
 <!-- Панель правил (укрытия + состояния) -->
