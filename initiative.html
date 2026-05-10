@@ -645,7 +645,6 @@ const app = {
     if (!c || !c.conditions) return;
     const info = this.getConditionInfo(condId);
     const displayName = info.hasLevels && c.exhaustionLevel ? `${info.name} (ур. ${c.exhaustionLevel})` : info.name;
-    if (!confirm(`Снять состояние "${displayName}"?`)) return;
     c.conditions = c.conditions.filter(id => id !== condId);
     if (info.hasLevels) c.exhaustionLevel = 0;
     this.renderCombatCards();
@@ -980,6 +979,33 @@ const app = {
     document.getElementById('add-monster-modal').style.display = 'none';
     document.getElementById('exhaustion-modal').style.display = 'none';
   },
+
+  endCombat() {
+    this.combatActive = false;
+    this.combatants = [];
+
+    // Показываем панель подготовки
+    document.getElementById('setup-area').style.display = 'block';
+    // Скрываем панель управления боем
+    document.getElementById('combat-controls').style.display = 'none';
+    // Скрываем справочную панель (правила)
+    const rulesPanel = document.getElementById('rules-panel');
+    if (rulesPanel) rulesPanel.style.display = 'none';
+
+    // Очищаем сетку карточек
+    document.getElementById('combatants-grid').innerHTML = '';
+    // Делаем кнопку "Начать бой" неактивной
+    const startBtn = document.getElementById('start-combat-btn');
+    if (startBtn) startBtn.disabled = true;
+
+    // Сбрасываем счётчик участников
+    document.getElementById('count-display').textContent = '0';
+
+    // Закрываем все модальные окна
+    this.closeModal();
+    // Снимаем все чекбоксы (если есть)
+    this.deselectAll();
+},
 
   showStatBlock(monId) {
     let mon = null;
