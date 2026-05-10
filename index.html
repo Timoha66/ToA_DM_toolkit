@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Справочники Чульта</title>
+  <style>
+    /* === ПЕРГАМЕНТНЫЙ СТИЛЬ === */
+    @font-face {
+      font-family: 'Mookmania';
+      src: url('fonts/Mookmania.otf') format('opentype');
+    }
+    @font-face {
+      font-family: 'Nodesto';
+      src: url('fonts/Nodesto.ttf') format('truetype');
+    }
+
+    :root {
+      --bg: #1a1208;
+      --paper: #f3e9d2;
+      --ink: #2c1e0e;
+      --ink-light: #5a3e1e;
+      --accent: #8b3a1a;
+      --accent-gold: #b8860b;
+      --border: #b89a6a;
+      --shadow: rgba(0,0,0,0.3);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(ellipse 80% 40% at 50% 0%, #2a1e0860 0%, transparent 70%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect width='60' height='60' fill='none'/%3E%3Cpath d='M0 30 L30 0 L60 30 L30 60 Z' fill='none' stroke='%238b5a2b' stroke-width='0.5' opacity='0.15'/%3E%3C/svg%3E");
+      font-family: 'Mookmania', Georgia, serif;
+      color: var(--ink);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    .hub-container {
+      max-width: 900px;
+      width: 100%;
+      background: var(--paper);
+      border: 3px solid var(--border);
+      border-radius: 24px;
+      padding: 3rem 2rem;
+      box-shadow: 12px 12px 0 var(--shadow);
+      text-align: center;
+    }
+
+    h1 {
+      font-family: 'Nodesto';
+      font-size: 3rem;
+      color: var(--ink);
+      text-shadow: 2px 2px 0 rgba(184,134,11,0.3);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+
+    .subtitle {
+      font-style: italic;
+      color: var(--ink-light);
+      margin-bottom: 2.5rem;
+      font-size: 1.2rem;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 1rem;
+    }
+
+    .button-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .hub-btn {
+      background: transparent;
+      border: 2px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem 1rem;
+      font-family: 'Mookmania', serif;
+      font-size: 1.4rem;
+      font-weight: bold;
+      color: var(--ink);
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 4px 4px 0 var(--shadow);
+      background: rgba(255,255,255,0.2);
+    }
+
+    .hub-btn:hover {
+      background: var(--accent-gold);
+      border-color: var(--accent-gold);
+      color: var(--paper);
+      transform: translate(-2px, -2px);
+      box-shadow: 6px 6px 0 var(--shadow);
+    }
+
+    .hub-btn .icon {
+      font-size: 2.5rem;
+      line-height: 1;
+    }
+
+    .footer-note {
+      color: var(--ink-light);
+      font-size: 0.9rem;
+      margin-top: 2rem;
+    }
+
+    @media (max-width: 600px) {
+      .hub-container {
+        padding: 2rem 1rem;
+      }
+      h1 {
+        font-family: 'Mookmania';
+        font-size: 2.2rem;
+      }
+      .hub-btn {
+        font-size: 1.1rem;
+        padding: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="hub-container">
+    <h1>📜 Справочники Чульта</h1>
+    <div class="subtitle">Помощь DM для проведения кампании по модулю "Гробница Аннигиляции" или связанных с ней приключений</div>
+
+    <div class="button-grid" id="buttonGrid"></div>
+
+    <div class="footer-note">
+      Кликните на карточку, чтобы открыть справочник
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      'use strict';
+
+      // ------------------------------------------------------------
+      // МАССИВ ССЫЛОК НА СПРАВОЧНИКИ
+      // Чтобы добавить новый справочник, просто добавьте объект в этот массив.
+      // ------------------------------------------------------------
+      const guides = [
+        {
+          title: 'Торговые принцы',
+          icon: '👑',
+          url: 'trading-princes.html'
+        },
+        {
+          title: 'Проводники',
+          icon: '🧭',
+          url: 'guides.html'
+        },
+        {
+          title: 'Навигация и погода',
+          icon: '⛈️🌄',
+          url: 'weather-navig.html'
+        },
+        {
+          title: 'Локации',
+          icon: '🏛️',
+          url: 'locations.html'
+        },
+        {
+          title: 'Фракции',
+          icon: '🎌',
+          url: 'factions.html'
+         },
+        {
+          title: 'Лор и описания',
+          icon: '📜',
+          url: 'lore.html'
+        },
+        {
+          title: 'Карта',
+          icon: '🗺️',
+          url: 'map.html'
+        },
+        {
+          title: 'Трекер инициативы',
+          icon: '🗡️',
+          url: 'initiative.html'
+        }
+        // Пример добавления нового:
+        // {
+        //   title: 'Фракции',
+        //   icon: '⚔️',
+        //   url: 'factions.html'
+        // }
+      ];
+
+      const grid = document.getElementById('buttonGrid');
+
+      guides.forEach(item => {
+        const btn = document.createElement('a');
+        btn.className = 'hub-btn';
+        btn.href = item.url;
+        btn.innerHTML = `
+          <span class="icon">${item.icon}</span>
+          <span>${item.title}</span>
+        `;
+        grid.appendChild(btn);
+      });
+    })();
+  </script>
+</body>
+</html>
