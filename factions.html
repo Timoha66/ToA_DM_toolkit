@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Фракции Чульта — Справочник</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mookmania:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    /* === ПЕРГАМЕНТНАЯ ТЕМА === */
+    @font-face {
+      font-family: 'Mookmania';
+      src: url('fonts/Mookmania.otf') format('opentype');
+    }
+        @font-face {
+      font-family: 'Nodesto';
+      src: url('fonts/Nodesto.ttf') format('truetype');
+    }
+
+    :root {
+      --parchment: #f3e9d2; --parchment-dark: #e3d5b8; --ink: #2c1e0e; --ink-light: #5a3e1e;
+      --accent: #8b3a1a; --accent-gold: #b8860b; --border: #b89a6a; --shadow: rgba(0,0,0,0.2);
+      --sidebar-width: 280px;
+      --ally: #2e5c1a; --enemy: #6b1a1a; --neutral: #5c4a1a; --cond: #2a3a6b;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Mookmania', Georgia, serif;
+      background: #1a1208 url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 10 L 90 10 L 90 90 L 10 90 Z" fill="none" stroke="%238b5a2b" stroke-width="0.3" opacity="0.15"/><path d="M20 20 L 80 20 L 80 80 L 20 80 Z" fill="none" stroke="%238b5a2b" stroke-width="0.2" opacity="0.1"/></svg>');
+      color: var(--ink); min-height: 100vh; line-height: 1.6;
+    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #d9c6a6; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+    .wrapper { display: flex; min-height: 100vh; }
+
+    /* === БОКОВАЯ ПАНЕЛЬ === */
+    .sidebar {
+      width: var(--sidebar-width); background: #2e2416 url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0 50 L 100 50 M50 0 L 50 100" stroke="%23b89a6a" stroke-width="0.5" opacity="0.1"/></svg>');
+      color: #ecd59e; position: fixed; height: 100vh; overflow-y: auto; padding: 20px 0; z-index: 100;
+      border-right: 3px solid var(--accent); box-shadow: 5px 0 15px var(--shadow);
+      font-family: 'Mookmania', serif; transition: transform 0.25s ease;
+    }
+    .sidebar.closed { transform: translateX(-100%); }
+    .sidebar h2 {
+      padding: 0 20px 15px; font-size: 1.3rem; font-weight: 600; letter-spacing: 2px;
+      border-bottom: 2px solid var(--accent-gold); margin-bottom: 15px; text-shadow: 2px 2px 0 #1a1208;
+    }
+    .sidebar .search-box { padding: 0 15px 15px; }
+    .sidebar .search-box input {
+      width: 100%; padding: 8px 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      color: #ecd59e; font-family: 'Mookmania', serif; font-size: 0.9rem; outline: none;
+    }
+    .sidebar .search-box input::placeholder { color: #a08060; }
+    .sidebar .search-box input:focus { border-color: var(--accent-gold); }
+
+    /* === АККОРДЕОН === */
+    .nav-group { margin-bottom: 8px; border-bottom: 1px dashed #5a4a2e; }
+    .nav-header {
+      display: flex; align-items: center; justify-content: space-between; padding: 8px 10px;
+      cursor: pointer; user-select: none; transition: background 0.15s;
+    }
+    .nav-header:hover { background: rgba(184, 134, 11, 0.15); }
+    .nav-title {
+      color: #c9aa7b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;
+    }
+    .nav-arrow { font-size: 0.7rem; color: #b89a6a; transition: transform 0.2s; }
+    .nav-group.collapsed .nav-arrow { transform: rotate(-90deg); }
+    .nav-items { display: block; max-height: 600px; overflow: hidden; transition: max-height 0.25s ease; padding-left: 5px; }
+    .nav-group.collapsed .nav-items { max-height: 0; }
+    .nav-items a {
+      display: block; padding: 6px 10px 6px 20px; color: #e0c090; text-decoration: none;
+      font-size: 0.9rem; border-left: 3px solid transparent; transition: 0.2s;
+      border-radius: 0 4px 4px 0; font-family: 'Mookmania', serif;
+    }
+    .nav-items a:hover, .nav-items a.active {
+      background: rgba(184, 134, 11, 0.2); color: #ffecb3; border-left-color: var(--accent-gold);
+    }
+    .nav-items a.active { font-weight: bold; }
+
+    /* === ОСНОВНАЯ ОБЛАСТЬ === */
+    .main {
+      margin-left: var(--sidebar-width); flex: 1; padding: 30px 40px 60px;
+      max-width: 1200px; background: transparent; transition: margin-left 0.25s ease;
+    }
+    .main.exp { margin-left: 0; }
+    .header {
+      margin-bottom: 30px; border-bottom: 2px solid var(--accent); padding-bottom: 15px;
+      display: flex; align-items: center; justify-content: space-between; position: relative;
+    }
+    .header h1 {
+      font-family: 'Nodesto', serif; font-size: 4rem; color: var(--ink-light);
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 0px var(--parchment-dark);
+    }
+    .header p { color: var(--parchment-dark); font-style: italic; }
+
+    .back-link {
+      font-family: 'Mookmania', serif; font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ink-light); text-decoration: none; border: 1px solid var(--border);
+      padding: 5px 12px; transition: all 0.2s; background: var(--parchment);
+    }
+    .back-link:hover { color: var(--parchment-dark); border-color: var(--accent-gold); background-color: var(--ink); }
+    .back-link::before { content: '← '; }
+
+    /* === КАРТОЧКИ === */
+    .faction-card {
+      background: var(--parchment); border: 2px solid var(--border); border-radius: 8px;
+      padding: 25px; margin-bottom: 30px; box-shadow: 8px 8px 0 var(--shadow);
+      scroll-margin-top: 20px; position: relative;
+    }
+    .faction-card::before {
+      content: "⚔️"; position: absolute; bottom: 10px; right: 15px; font-size: 1.5rem; opacity: 0.3;
+    }
+    .faction-title {
+      font-family: 'Mookmania', serif; font-size: 1.5rem; color: var(--ink);
+      border-bottom: 1px dashed var(--border); padding-bottom: 8px; margin-bottom: 8px;
+    }
+    .faction-type { color: var(--ink-light); font-style: italic; margin-bottom: 12px; }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .tag {
+      padding: 3px 10px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;
+      letter-spacing: 0.5px; border: 1px solid; font-family: 'Mookmania', serif;
+    }
+    .tag.ally { background: var(--ally); color: #f0e6c5; border-color: #6b8c42; }
+    .tag.enemy { background: var(--enemy); color: #f0d5c5; border-color: #a04040; }
+    .tag.neutral { background: var(--neutral); color: #f0e6c5; border-color: #a09040; }
+    .tag.cond { background: var(--cond); color: #d5d5f0; border-color: #6070a0; }
+    .info-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;
+    }
+    .info-block {
+      background: rgba(0,0,0,0.03); padding: 12px; border-radius: 6px; border-left: 3px solid var(--accent);
+    }
+    .info-block strong { display: block; font-size: 0.9rem; color: var(--ink-light); margin-bottom: 4px; }
+    h3 {
+      font-family: 'Mookmania', serif; font-size: 1.1rem; margin: 20px 0 10px; color: var(--ink);
+      border-bottom: 1px dotted var(--border); padding-bottom: 3px;
+    }
+    ul { padding-left: 20px; margin-bottom: 15px; }
+    li { margin-bottom: 6px; }
+    .npc-list { display: grid; gap: 10px; margin-bottom: 15px; }
+    .npc-item {
+      background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 4px; border-left: 3px solid var(--accent-gold);
+    }
+    .dm-notes {
+      background: #e8d5b0; border: 1px solid #b89a6a; border-radius: 6px; padding: 15px; margin-top: 15px;
+    }
+    .dm-notes h3 { color: #5c2e0e; margin-top: 0; }
+
+    /* Сводка */
+    .summary-table {
+      width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 0.85rem; background: var(--parchment);
+    }
+    .summary-table th, .summary-table td { padding: 10px; border: 1px solid var(--border); }
+    .summary-table th { background: rgba(0,0,0,0.05); }
+    .conflict-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 15px; margin-top: 20px; }
+    .conflict-item {
+      background: var(--parchment); padding: 16px; border-radius: 8px; border-left: 5px solid var(--accent);
+    }
+    .conflict-parties { display: block; font-family: 'Mookmania', serif; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+
+    /* Гамбургер */
+    .hamburger {
+      display: none; position: fixed; top: 15px; left: 15px; z-index: 200;
+      background: var(--parchment); border: 2px solid var(--accent); padding: 6px 10px;
+      cursor: pointer; box-shadow: 3px 3px 0 var(--shadow); font-size: 1.5rem; color: var(--ink);
+    }
+
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      .sidebar { transform: translateX(-100%); width: 260px; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0 !important; padding: 20px; }
+      .header { flex-direction: column; align-items: start; gap: 10px; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <button class="hamburger" id="hamburger">☰</button>
+  <aside class="sidebar" id="sidebar">
+    <h2>⚔️ Фракции</h2>
+    <div class="search-box"><input type="text" id="searchInput" placeholder="Поиск..."></div>
+    <nav id="sidebar-nav"></nav>
+  </aside>
+  <main class="main" id="main">
+    <div class="header">
+      <div><h1>Фракции Чульта</h1><p>Справочник Мастера</p></div>
+      <a class="back-link" href="index.html">Назад</a>
+    </div>
+    <div id="content-container"></div>
+    <footer style="margin-top:40px; text-align:center; color:var(--ink-light);">Справочник v2.0</footer>
+  </main>
+</div>
+<script>
+  // --- загрузка данных из JSON ---
+  fetch('data/factions-data.json')
+    .then(r => r.json())
+    .then(data => {
+      const factions = data.factions;
+      const sections = data.sections;
+      const summary = data.summary;
+      init(factions, sections, summary);
+    })
+    .catch(e => console.error(e));
+
+  function init(factions, sections, summary) {
+    const sidebar = document.getElementById('sidebar');
+    const navContainer = document.getElementById('sidebar-nav');
+    const content = document.getElementById('content-container');
+    const searchInput = document.getElementById('searchInput');
+
+    // рендер навигации
+    function renderNav() {
+      let html = '';
+      for (let [secId, sec] of Object.entries(sections)) {
+        html += `<div class="nav-group"><div class="nav-header"><span class="nav-title">${sec.title}</span><span class="nav-arrow">▼</span></div><div class="nav-items">`;
+        sec.ids.forEach(id => {
+          const f = factions.find(x => x.id === id);
+          if (f) html += `<a href="#${id}" data-id="${id}">${f.title.replace(/^№ \d+ │ /,'')}</a>`;
+        });
+        html += `</div></div>`;
+      }
+      html += `<div class="nav-group"><div class="nav-items"><a href="#summary">📊 Сводка</a></div></div>`;
+      navContainer.innerHTML = html;
+      document.querySelectorAll('.nav-header').forEach(h => h.addEventListener('click', e => {
+        h.closest('.nav-group').classList.toggle('collapsed');
+      }));
+    }
+
+    // рендер карточек
+    function renderContent() {
+      let html = '';
+      for (let [secId, sec] of Object.entries(sections)) {
+        html += `<section id="${secId}">`;
+        sec.ids.forEach(id => {
+          const f = factions.find(x => x.id === id);
+          if (!f) return;
+          html += `<div class="faction-card" id="${f.id}"><h2 class="faction-title">${f.title}</h2><p class="faction-type">${f.type}</p><div class="tags">${f.tags.map(t => {
+            let cls = 'cond'; if (t.includes('Союз')) cls='ally'; else if (t.includes('Враг')) cls='enemy'; else if (t.includes('Нейтр')) cls='neutral';
+            return `<span class="tag ${cls}">${t}</span>`;
+          }).join('')}</div><div class="info-grid">${f.info.map(i => `<div class="info-block"><strong>${i[0]}</strong>${i[1]}</div>`).join('')}</div>`;
+          if (f.npcs?.length) html += `<h3>Ключевые NPC</h3><div class="npc-list">${f.npcs.map(n => `<div class="npc-item">${n}</div>`).join('')}</div>`;
+          if (f.quests?.length) html += `<h3>Квесты</h3><ul>${f.quests.map(q => `<li>${q}</li>`).join('')}</ul>`;
+          if (f.dm) html += `<div class="dm-notes"><h3>📖 Заметки ДМ</h3><p>${f.dm}</p></div>`;
+          html += `</div>`;
+        });
+        html += `</section>`;
+      }
+      // сводка
+      html += `<section id="summary"><h2>📊 Сводные таблицы и конфликты</h2><table class="summary-table"><tr><th>Фракция</th><th>Отношение</th><th>Квест</th><th>Угроза</th><th>База</th></tr>`;
+      summary.table.forEach(r => html += `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`);
+      html += `</table><p style="margin:5px 0">* = возможно, но не обязательно дружественно</p><h3>🔥 Ключевые конфликты</h3><div class="conflict-grid">`;
+      summary.conflicts.forEach(c => {
+        const [parties, desc] = c.split(/:(.+)/);
+        html += `<div class="conflict-item"><span class="conflict-parties">⚡ ${parties}</span>${desc}</div>`;
+      });
+      html += `</div></section>`;
+      content.innerHTML = html;
+    }
+
+    // навигация и подсветка
+    function showLocation(id) {
+      document.querySelectorAll('.faction-card, #summary').forEach(c => c.style.display = 'none');
+      const target = document.getElementById(id);
+      if (target) { target.style.display = 'block'; target.scrollIntoView({ behavior: 'smooth' }); }
+      document.querySelectorAll('.nav-items a').forEach(a => a.classList.remove('active'));
+      document.querySelector(`.nav-items a[data-id="${id}"]`)?.classList.add('active');
+      if (id === 'summary') document.querySelector('a[href="#summary"]')?.classList.add('active');
+    }
+
+    renderNav(); renderContent();
+    // начальное состояние
+    const hash = location.hash.slice(1) || 'f1';
+    showLocation(hash);
+
+    // обработчики
+    navContainer.addEventListener('click', e => {
+      const link = e.target.closest('a'); if (!link) return;
+      e.preventDefault(); const id = link.dataset.id || 'summary';
+      showLocation(id); history.pushState(null,null,`#${id}`);
+    });
+    searchInput.addEventListener('input', e => {
+      const t = e.target.value.toLowerCase();
+      document.querySelectorAll('.nav-items a').forEach(a => {
+        const f = factions.find(x => x.id === a.dataset.id);
+        if (!f) return;
+        a.style.display = f.title.toLowerCase().includes(t) || f.tags.some(tg => tg.toLowerCase().includes(t)) ? 'block' : 'none';
+      });
+    });
+    window.addEventListener('popstate', () => showLocation(location.hash.slice(1)||'f1'));
+    document.getElementById('hamburger').addEventListener('click', () => sidebar.classList.toggle('open'));
+  }
+</script>
+</body>
+</html>

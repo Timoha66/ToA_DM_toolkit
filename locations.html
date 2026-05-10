@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Локации Чульта — Справочник DM</title>
+  <link href="https://fonts.googleapis.com/css2?family=Mookmania:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    /* === ПЕРГАМЕНТНАЯ ТЕМА === */
+    @font-face {
+      font-family: 'Mookmania';
+      src: url('fonts/Mookmania.otf') format('opentype');
+    }
+    @font-face {
+      font-family: 'Nodesto';
+      src: url('fonts/Nodesto.ttf') format('truetype');
+    }
+
+    :root {
+      --parchment: #f3e9d2; --parchment-dark: #e3d5b8; --ink: #2c1e0e; --ink-light: #5a3e1e;
+      --accent: #8b3a1a; --accent-gold: #b8860b; --border: #b89a6a; --shadow: rgba(0,0,0,0.2);
+      --sidebar-width: 270px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Mookmania', Georgia, serif;
+      background: #1a1208 url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 10 L 90 10 L 90 90 L 10 90 Z" fill="none" stroke="%238b5a2b" stroke-width="0.3" opacity="0.15"/><path d="M20 20 L 80 20 L 80 80 L 20 80 Z" fill="none" stroke="%238b5a2b" stroke-width="0.2" opacity="0.1"/></svg>');
+      color: var(--ink); min-height: 100vh; line-height: 1.6; margin: 0;
+    }
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: #d9c6a6; }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 4px; }
+    .wrapper { display: flex; min-height: 100vh; }
+
+    /* === БОКОВАЯ ПАНЕЛЬ === */
+    .sidebar {
+      width: var(--sidebar-width); background: #2e2416 url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M0 50 L 100 50 M50 0 L 50 100" stroke="%23b89a6a" stroke-width="0.5" opacity="0.1"/></svg>');
+      color: #ecd59e; position: fixed; height: 100vh; overflow-y: auto; padding: 20px 0; z-index: 100;
+      border-right: 3px solid var(--accent); box-shadow: 5px 0 15px var(--shadow);
+      font-family: 'Mookmania', serif; transition: transform 0.25s ease;
+    }
+    .sidebar.closed { transform: translateX(-100%); }
+    .sidebar h2 {
+      padding: 0 20px 15px; font-size: 1.3rem; font-weight: 600; letter-spacing: 2px;
+      border-bottom: 2px solid var(--accent-gold); margin-bottom: 15px; text-shadow: 2px 2px 0 #1a1208;
+    }
+    .sidebar .search-box { padding: 0 15px 15px; }
+    .sidebar .search-box input {
+      width: 100%; padding: 8px 10px; background: rgba(0,0,0,0.3); border: 1px solid var(--border);
+      color: #ecd59e; font-family: 'Mookmania', serif; font-size: 0.9rem; outline: none;
+    }
+    .sidebar .search-box input::placeholder { color: #a08060; }
+    .sidebar .search-box input:focus { border-color: var(--accent-gold); }
+    .sidebar nav { padding: 0 10px; }
+
+    /* === АККОРДЕОН ГРУПП === */
+    .nav-group { margin-bottom: 8px; border-bottom: 1px dashed #5a4a2e; }
+    .nav-header {
+      display: flex; align-items: center; justify-content: space-between; padding: 8px 10px;
+      cursor: pointer; user-select: none; transition: background 0.15s;
+    }
+    .nav-header:hover { background: rgba(184, 134, 11, 0.15); }
+    .nav-title {
+      color: #c9aa7b; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 2px;
+    }
+    .nav-arrow {
+      font-size: 0.7rem; color: #b89a6a; transition: transform 0.2s;
+    }
+    .nav-group.collapsed .nav-arrow { transform: rotate(-90deg); }
+    .nav-items {
+      display: block; max-height: 600px; overflow: hidden; transition: max-height 0.25s ease;
+      padding-left: 5px;
+    }
+    .nav-group.collapsed .nav-items { max-height: 0; }
+    .nav-items a {
+      display: block; padding: 6px 10px 6px 20px; color: #e0c090; text-decoration: none;
+      font-size: 0.9rem; border-left: 3px solid transparent; transition: 0.2s;
+      border-radius: 0 4px 4px 0; font-family: 'Mookmania', serif;
+    }
+    .nav-items a:hover, .nav-items a.active {
+      background: rgba(184, 134, 11, 0.2); color: #ffecb3; border-left-color: var(--accent-gold);
+    }
+    .nav-items a.active { font-weight: bold; }
+
+    /* === ОСНОВНАЯ ОБЛАСТЬ === */
+    .main {
+      margin-left: var(--sidebar-width); flex: 1; padding: 30px 40px 60px;
+      max-width: 1100px; background: transparent; transition: margin-left 0.25s ease;
+    }
+    .main.exp { margin-left: 0; }
+    .header {
+      margin-bottom: 30px; border-bottom: 2px solid var(--accent); padding-bottom: 15px;
+      display: flex; align-items: center; justify-content: space-between; position: relative;
+    }
+    .header h1 {
+      font-family: 'Nodesto', serif; font-size: 4rem; color: var(--ink-light);
+      letter-spacing: 2px;
+      text-shadow: 1px 1px 0px var(--parchment-dark);
+    }
+    .header p { color: var(--parchment-dark); font-style: italic; }
+
+    .back-link {
+      font-family: 'Mookmania', serif; font-size: 0.85rem; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--ink-light); text-decoration: none; border: 1px solid var(--border);
+      padding: 5px 12px; transition: all 0.2s; background: var(--parchment);
+    }
+    .back-link:hover { color: var(--parchment-dark); border-color: var(--accent-gold); background-color: var(--ink); }
+    .back-link::before { content: '← '; }
+
+    /* === КАРТОЧКИ === */
+    .location-card {
+      background: var(--parchment);
+      background-image: linear-gradient(to bottom, rgba(255,250,220,0.3), rgba(220,200,160,0.2));
+      border: 2px solid var(--border); border-radius: 8px; padding: 25px; margin-bottom: 30px;
+      box-shadow: 8px 8px 0 var(--shadow); display: none; scroll-margin-top: 20px; position: relative;
+    }
+    .location-card.active { display: block; animation: fadeIn 0.3s ease; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    .location-card::before {
+      content: "❦"; position: absolute; bottom: 5px; right: 15px; font-size: 1.5rem;
+      color: var(--accent); opacity: 0.3;
+    }
+    .loc-header {
+      display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px;
+      margin-bottom: 15px; border-bottom: 1px dashed var(--border); padding-bottom: 10px;
+    }
+    .loc-header h2 { font-family: 'Mookmania', serif; font-size: 1.8rem; color: var(--ink); }
+    .loc-header .en { color: var(--ink-light); font-style: italic; font-size: 1.1rem; }
+    .loc-type {
+      background: var(--ink-light); color: var(--parchment); font-size: 0.7rem; padding: 3px 8px; font-family: 'Mookmania';
+      border-radius: 20px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--accent-gold);
+    }
+    .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+    .tag {
+      padding: 3px 10px; border-radius: 20px; font-size: 0.9rem; font-weight: 600;
+      letter-spacing: 0.5px; border: 1px solid; font-family: 'Mookmania', serif;
+    }
+    .tag.ally { background: #2e5c1a; color: #f0e6c5; border-color: #6b8c42; }
+    .tag.enemy { background: #6b1a1a; color: #f0d5c5; border-color: #a04040; }
+    .tag.neutral { background: #5c4a1a; color: #f0e6c5; border-color: #a09040; }
+    .tag.special { background: #2a3a6b; color: #d5d5f0; border-color: #6070a0; }
+    .atmosphere {
+      background: rgba(0,0,0,0.03); padding: 15px; border-left: 5px solid var(--accent);
+      border-radius: 4px; font-style: italic; color: #2a1a0a; margin-bottom: 20px;
+    }
+    .content-grid { display: grid; gap: 15px; }
+    .info-section { margin-top: 10px; }
+    .info-section h3 {
+      font-family: 'Mookmania', serif; font-size: 1.1rem; color: var(--ink); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 8px; border-bottom: 1px dotted var(--border);
+      padding-bottom: 3px;
+    }
+    .info-section p, .info-section ul { margin-bottom: 10px; font-size: 0.95rem; }
+    .info-section ul { padding-left: 20px; }
+    .info-section li { margin-bottom: 4px; }
+    .npc-list { display: grid; gap: 8px; }
+    .npc-item {
+      background: rgba(0,0,0,0.03); padding: 8px 12px; border-radius: 4px;
+      border-left: 3px solid var(--accent-gold);
+    }
+    .npc-item strong { color: var(--ink); }
+    .npc-item span { color: var(--ink-light); font-size: 0.85rem; }
+    .dm-notes {
+      background: #e8d5b0; border: 1px solid #b89a6a; border-radius: 6px;
+      padding: 15px; margin-top: 20px; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.05);
+    }
+    .dm-notes h3 { color: #5c2e0e; margin-top: 0; }
+
+    /* Гамбургер */
+    .hamburger {
+      display: none; position: fixed; top: 15px; left: 15px; z-index: 200;
+      background: var(--parchment); border: 2px solid var(--accent); padding: 6px 10px;
+      cursor: pointer; box-shadow: 3px 3px 0 var(--shadow); font-size: 1.5rem;
+      line-height: 1; color: var(--ink);
+    }
+
+    @media (max-width: 768px) {
+      .hamburger { display: block; }
+      .sidebar { transform: translateX(-100%); box-shadow: 5px 0 20px #00000060; width: 260px; }
+      .sidebar.open { transform: translateX(0); }
+      .main { margin-left: 0 !important; padding: 20px; }
+      .loc-header { flex-direction: column; gap: 5px; }
+      .header { flex-direction: column; align-items: start; gap: 10px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .sidebar, .location-card, .nav-items { transition: none; animation: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <button class="hamburger" id="hamburger" aria-label="Меню">☰</button>
+
+  <aside class="sidebar" id="sidebar">
+    <h2>🗺️ Локации</h2>
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Поиск локации..." aria-label="Поиск">
+    </div>
+    <nav id="sidebar-nav" aria-label="Категории локаций"></nav>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="header">
+      <div>
+        <h1>Гробница Аннигиляции · Справочник</h1>
+        <p>Проверенная и расширенная версия для Мастера</p>
+      </div>
+      <a class="back-link" href="index.html">Назад</a>
+    </div>
+    <div id="locations-container"></div>
+  </main>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    const sidebar = document.getElementById('sidebar');
+    const hamburger = document.getElementById('hamburger');
+    const navContainer = document.getElementById('sidebar-nav');
+    const container = document.getElementById('locations-container');
+    const searchInput = document.getElementById('searchInput');
+
+    let locations = [];
+    let categories = {};
+
+    // Загрузка данных
+    fetch('data/locations-data.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Не удалось загрузить locations-data.json');
+        return response.json();
+      })
+      .then(data => {
+        locations = data.locations;
+        categories = data.categories;
+        init();
+      })
+      .catch(err => {
+        console.error(err);
+        container.innerHTML = '<p style="color:var(--red);">Ошибка загрузки данных. Убедитесь, что файл data/locations-data.json существует.</p>';
+      });
+
+    function init() {
+      renderNavigation();
+      renderCards();
+      setupEventListeners();
+
+      const hash = location.hash.slice(1);
+      showLocation(hash && locations.find(l => l.id === hash) ? hash : locations[0].id);
+    }
+
+    function renderNavigation() {
+      navContainer.innerHTML = '';
+      for (const [cat, ids] of Object.entries(categories)) {
+        const groupDiv = document.createElement('div');
+        groupDiv.className = 'nav-group';
+
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'nav-header';
+        headerDiv.setAttribute('role', 'button');
+        headerDiv.setAttribute('tabindex', '0');
+        headerDiv.setAttribute('aria-expanded', 'true');
+        headerDiv.innerHTML = `<span class="nav-title">${cat}</span><span class="nav-arrow">▼</span>`;
+
+        const itemsDiv = document.createElement('div');
+        itemsDiv.className = 'nav-items';
+
+        ids.forEach(id => {
+          const loc = locations.find(l => l.id === id);
+          if (!loc) return;
+          const a = document.createElement('a');
+          a.href = `#${loc.id}`;
+          a.dataset.id = loc.id;
+          a.textContent = loc.title;
+          itemsDiv.appendChild(a);
+        });
+
+        groupDiv.appendChild(headerDiv);
+        groupDiv.appendChild(itemsDiv);
+        navContainer.appendChild(groupDiv);
+
+        headerDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const group = headerDiv.closest('.nav-group');
+          group.classList.toggle('collapsed');
+          const expanded = !group.classList.contains('collapsed');
+          headerDiv.setAttribute('aria-expanded', expanded);
+        });
+      }
+    }
+
+    function renderCards() {
+      container.innerHTML = locations.map(loc => {
+        const tagClass = (t) => {
+          if (t.includes("Союз") || t.includes("Мир")) return "ally";
+          if (t.includes("Враждеб") || t.includes("Опасн")) return "enemy";
+          if (t.includes("Услов") || t.includes("Нейтр")) return "neutral";
+          return "special";
+        };
+        return `
+          <section id="${loc.id}" class="location-card">
+            <div class="loc-header"><h2>${loc.title}</h2><span class="en">${loc.en}</span><span class="loc-type">${loc.type}</span></div>
+            <div class="tags">${loc.tags.map(t => `<span class="tag ${tagClass(t)}">${t}</span>`).join('')}</div>
+            <div class="atmosphere">${loc.atmosphere}</div>
+            <div class="content-grid">
+              ${loc.chars ? `<div class="info-section"><h3>Характеристики</h3><p>${loc.chars}</p></div>` : ''}
+              ${loc.npcs && loc.npcs.length ? `<div class="info-section"><h3>Ключевые NPC</h3><div class="npc-list">${loc.npcs.map(n => `<div class="npc-item"><strong>${n.split(':')[0]}</strong>${n.includes(':') ? n.split(':').slice(1).join(':') : ''}</div>`).join('')}</div></div>` : ''}
+              ${loc.quests && loc.quests.length ? `<div class="info-section"><h3>Квесты и зацепки</h3><ul>${loc.quests.map(q => `<li>${q}</li>`).join('')}</ul></div>` : ''}
+              ${loc.dm ? `<div class="dm-notes"><h3>📖 Заметки ДМ</h3><p>${loc.dm}</p></div>` : ''}
+            </div>
+          </section>
+        `;
+      }).join('');
+    }
+
+    function showLocation(id) {
+      document.querySelectorAll('.location-card').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.sidebar nav a').forEach(a => a.classList.remove('active'));
+
+      const targetCard = document.getElementById(id);
+      const activeLink = document.querySelector(`.sidebar nav a[data-id="${id}"]`);
+
+      if (targetCard) {
+        targetCard.classList.add('active');
+        if (activeLink) activeLink.classList.add('active');
+        targetCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        history.pushState(null, null, `#${id}`);
+      } else {
+        const firstId = locations[0]?.id;
+        if (firstId) showLocation(firstId);
+      }
+
+      if (window.innerWidth <= 768) sidebar.classList.remove('open');
+    }
+
+    function filterLocations(term) {
+      const t = term.toLowerCase().trim();
+      document.querySelectorAll('.sidebar nav a').forEach(link => {
+        const loc = locations.find(l => l.id === link.dataset.id);
+        if (!loc) return;
+        const matches = loc.title.toLowerCase().includes(t) || loc.en.toLowerCase().includes(t) ||
+                        loc.tags.some(tag => tag.toLowerCase().includes(t)) ||
+                        (loc.chars && loc.chars.toLowerCase().includes(t));
+        link.style.display = matches ? 'block' : 'none';
+      });
+      document.querySelectorAll('.nav-group').forEach(group => {
+        const visible = group.querySelectorAll('a[style*="display: block"], a:not([style])');
+        group.style.display = visible.length > 0 ? 'block' : 'none';
+      });
+    }
+
+    function setupEventListeners() {
+      navContainer.addEventListener('click', (e) => {
+        const link = e.target.closest('a');
+        if (!link) return;
+        e.preventDefault();
+        showLocation(link.dataset.id);
+      });
+
+      hamburger.addEventListener('click', () => sidebar.classList.toggle('open'));
+
+      searchInput.addEventListener('input', (e) => filterLocations(e.target.value));
+
+      document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 768 && !sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+          sidebar.classList.remove('open');
+        }
+      });
+
+      window.addEventListener('popstate', () => {
+        const hash = location.hash.slice(1);
+        if (hash && locations.find(l => l.id === hash)) showLocation(hash);
+        else showLocation(locations[0].id);
+      });
+    }
+  })();
+</script>
+</body>
+</html>

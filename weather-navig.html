@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Навигация по Чульту</title>
+  <style>
+    /* === ПЕРГАМЕНТНАЯ ТЕМА === */
+    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=IM+Fell+English:ital@0;1&display=swap');
+
+    :root {
+      --bg: #1a1208;
+      --paper: #f3e9d2;
+      --ink: #2c1e0e;
+      --ink-light: #5a3e1e;
+      --accent: #8b3a1a;
+      --accent-gold: #b8860b;
+      --border: #b89a6a;
+      --shadow: rgba(0,0,0,0.3);
+      --green: #2e5c1a;
+      --red: #6b1a1a;
+      --amber: #a07020;
+      --blue: #2a3a6b;
+      --panel: #e8dcc8;
+      --deep: #d6c29c;
+      --text: #2c1e0e;
+      --text-dim: #5a3e1e;
+      --text-hi: #1a0f06;
+      --leaf: #4a7c30;
+      --leaf-lt: #6aaa46;
+      --teal: #1e6e58;
+      --teal-lt: #2eaa88;
+      --purple: #443878;
+      --purple-lt: #6858b0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      background-image: radial-gradient(ellipse 80% 40% at 50% 0%, #2a1e0860 0%, transparent 70%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect width='60' height='60' fill='none'/%3E%3Cpath d='M0 30 L30 0 L60 30 L30 60 Z' fill='none' stroke='%238b5a2b' stroke-width='0.5' opacity='0.15'/%3E%3C/svg%3E");
+      font-family: 'IM Fell English', Georgia, serif;
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+
+    /* === CANOPY HEADER === */
+    .canopy {
+      position: relative;
+      text-align: center;
+      padding: 2.5rem 2rem 2rem;
+      overflow: hidden;
+    }
+    .canopy::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, #1e3a0e88 0%, transparent 100%);
+      pointer-events: none;
+    }
+
+    .canopy-leaves {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 80px;
+      pointer-events: none;
+      opacity: 0.35;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      transition: all 0.2s;
+      z-index: 10;
+      background: var(--panel);
+    }
+    .back-link:hover {
+      color: var(--accent-gold);
+      border-color: var(--accent-gold);
+      background: var(--ink);
+    }
+    .back-link::before {
+      content: '← ';
+    }
+
+    .canopy h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(1.3rem, 4vw, 1.9rem);
+      font-weight: 600;
+      color: var(--accent-gold);
+      letter-spacing: 0.06em;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+      position: relative; z-index: 1;
+      line-height: 1.2;
+    }
+
+    .canopy-rule {
+      display: flex; align-items: center; gap: 10px;
+      margin: 1rem auto 0;
+      max-width: 360px;
+      color: var(--ink-light);
+      font-size: 0.6rem;
+    }
+    .canopy-rule::before, .canopy-rule::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    /* === MAIN LAYOUT === */
+    .tool-body {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 0 1.5rem 4rem;
+    }
+
+    /* === STEP LABELS === */
+    .step-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.6rem;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .step-label::after {
+      content: '';
+      flex: 1; height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+    .step-num {
+      display: inline-flex;
+      align-items: center; justify-content: center;
+      width: 18px; height: 18px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      font-size: 0.55rem;
+      color: var(--accent);
+      flex-shrink: 0;
+    }
+    .step-dc {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 0.68rem;
+      color: var(--ink-light);
+      letter-spacing: 0.05em;
+      text-transform: none;
+    }
+
+    /* === SECTION SPACING === */
+    .section {
+      margin-bottom: 1.5rem;
+    }
+
+    /* === BUTTONS === */
+    .btn-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+    }
+
+    .btn {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 8px 14px;
+      background: var(--paper);
+      border: 1px solid var(--border);
+      color: var(--ink);
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+    }
+    .btn:hover:not(:disabled) {
+      border-color: var(--accent-gold);
+      color: var(--paper);
+      background: rgba(184,134,11,0.15);
+    }
+    .btn:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* Активные состояния */
+    .btn[aria-pressed="true"].weather-btn {
+      background: rgba(184,134,11,0.2);
+      border-color: var(--accent-gold);
+      color: var(--leaf-lt);
+    }
+    .btn[aria-pressed="true"].weather-btn::after { content: ' ✓'; font-size: 0.55rem; }
+
+    .btn[aria-pressed="true"].pace-btn {
+      background: rgba(42,58,107,0.2);
+      border-color: var(--accent-gold);
+      color: var(--teal-lt);
+    }
+    .btn[aria-pressed="true"].pace-btn::after { content: ' ✓'; font-size: 0.55rem; }
+
+    .btn[aria-pressed="true"].roll-fail-light  { background:#e8d5b0; border-color:var(--amber); color:var(--amber); }
+    .btn[aria-pressed="true"].roll-fail-mid    { background:#e8d5b0; border-color:var(--red);  color:var(--red); }
+    .btn[aria-pressed="true"].roll-fail-heavy  { background:#e8d5b0; border-color:var(--red);  color:var(--red); }
+    .btn[aria-pressed="true"].roll-success     { background:#d9e6d0; border-color:var(--green); color:var(--green); }
+    .btn[aria-pressed="true"].roll-crit        { background:#d9d0e6; border-color:var(--purple); color:var(--purple); }
+
+    /* === BLOCKED NOTICE === */
+    .blocked-notice {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 0.88rem;
+      color: var(--red);
+      background: rgba(107,26,26,0.1);
+      border: 1px solid var(--red);
+      padding: 8px 14px;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    /* === RESULT CARD === */
+    .result-card {
+      background: var(--paper);
+      border: 2px solid var(--border);
+      padding: 1.4rem 1.6rem;
+      min-height: 120px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 6px 6px 0 var(--shadow);
+    }
+    .result-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent 10%, var(--accent-gold) 50%, transparent 90%);
+      opacity: 0.5;
+    }
+    .result-card::after {
+      content: '❧';
+      position: absolute;
+      bottom: 0.6rem; right: 1rem;
+      font-size: 0.7rem;
+      color: var(--ink-light);
+      opacity: 0.4;
+    }
+
+    .result-empty {
+      font-family: 'Mookmania', serif;
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--ink-light);
+    }
+
+    /* === ЗАГОЛОВОК РЕЗУЛЬТАТА С КРУПНЫМИ ПОКАЗАТЕЛЯМИ === */
+    .result-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .result-title {
+      font-family: 'Mookmania', serif;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.06em;
+    }
+
+    .result-stats {
+      display: flex;
+      gap: 20px;
+    }
+
+    .stat-badge {
+      font-family: 'Cinzel', serif;
+      text-align: right;
+    }
+
+    .stat-label {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--ink-light);
+    }
+
+    .stat-value {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1.2;
+    }
+
+    /* === CHIPS (тэги) === */
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      font-family: 'Cinzel', serif;
+      font-size: 0.65rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 0;
+      border: 1px solid;
+      margin-right: 6px;
+      margin-bottom: 6px;
+      clip-path: polygon(5px 0%, 100% 0%, calc(100% - 5px) 100%, 0% 100%);
+      font-weight: 600;
+    }
+    .ch-teal   { background: rgba(30,110,88,0.15);  border-color: var(--teal);   color: var(--teal); }
+    .ch-leaf   { background: rgba(74,124,48,0.15);  border-color: var(--green);  color: var(--green); }
+    .ch-amber  { background: rgba(160,112,32,0.15); border-color: var(--amber);  color: var(--amber); }
+    .ch-red    { background: rgba(107,26,26,0.15);  border-color: var(--red);    color: var(--red); }
+    .ch-green  { background: rgba(46,92,26,0.15);   border-color: var(--green);  color: var(--green); }
+    .ch-purple { background: rgba(68,56,120,0.15);  border-color: var(--purple); color: var(--purple); }
+    .ch-gray   { background: rgba(90,62,30,0.15);   border-color: var(--border); color: var(--ink-light); }
+    .ch-coral  { background: rgba(192,80,16,0.15);  border-color: var(--red);    color: var(--red); }
+
+    .row-chips {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    /* === EFFECT BOX === */
+    .effect-box {
+      border-left: 3px solid;
+      padding: 10px 14px;
+      font-family: 'IM Fell English', serif;
+      font-size: 0.92rem;
+      line-height: 1.6;
+      margin-top: 10px;
+    }
+    .ef-success { border-color: var(--green);  background: rgba(46,92,26,0.08);  color: var(--ink); }
+    .ef-amber   { border-color: var(--amber); background: rgba(160,112,32,0.08); color: var(--ink); }
+    .ef-red     { border-color: var(--red);    background: rgba(107,26,26,0.08);  color: var(--ink); }
+    .ef-purple  { border-color: var(--purple); background: rgba(68,56,120,0.08);  color: var(--ink); }
+
+    .perk-line {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--ink-light);
+      margin-bottom: 4px;
+    }
+    .perk-line::before { content: '— '; }
+
+    .hint-line {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--ink-light);
+      margin-top: 10px;
+    }
+
+    .dc-detail {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 0.8rem;
+      color: var(--ink-light);
+      margin-bottom: 6px;
+    }
+
+    /* === WEATHER FLAVOUR BOX === */
+    .weather-flavour {
+      display: none;
+      margin-top: 2rem;
+      border: 2px solid var(--border);
+      background: var(--paper);
+      padding: 1.2rem 1.4rem;
+      position: relative;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+      box-shadow: 6px 6px 0 var(--shadow);
+    }
+    .weather-flavour::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 0%, rgba(184,134,11,0.06) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .weather-flavour-label {
+      font-family: 'Cinzel', serif;
+      font-size: 0.8rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .weather-flavour-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+    .weather-flavour-text {
+      font-family: 'IM Fell English', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      line-height: 1.7;
+      color: var(--ink);
+      position: relative;
+    }
+  </style>
+</head>
+<body>
+
+<div class="canopy">
+  <svg class="canopy-leaves" viewBox="0 0 700 80" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <path d="M-10 0 Q30 60 70 20 Q110 -10 140 50 Q170 80 200 30 Q230 0 260 55 Q290 80 320 25 Q350 0 380 60 Q410 80 440 30 Q470 5 500 50 Q530 75 560 20 Q590 -5 620 45 Q650 70 700 10 L700 0 Z" fill="#2a4a18" opacity="0.6"/>
+    <path d="M-10 0 Q20 45 60 10 Q100 -15 130 40 Q160 65 200 15 Q240 -10 270 50 Q300 75 340 20 Q380 -5 410 55 Q440 80 480 25 Q520 -5 550 45 Q580 70 620 20 Q660 -5 710 35 L710 0 Z" fill="#1e3812" opacity="0.5"/>
+  </svg>
+
+  <a class="back-link" href="index.html">Назад</a>
+  <div class="eyebrow">Справочник Мастера Подземелий</div>
+  <h1>Навигация по Чульту</h1>
+  <div class="canopy-rule">✦ Выживание в джунглях ✦</div>
+</div>
+
+<div class="tool-body">
+
+  <!-- SECTION 1: WEATHER -->
+  <section class="section" aria-labelledby="weather-heading">
+    <h2 id="weather-heading" class="step-label"><span class="step-num" aria-hidden="true">1</span> Погода дня</h2>
+    <div class="btn-grid" id="weather-group"></div>
+  </section>
+
+  <!-- BLOCKED NOTICE -->
+  <div id="blocked-box" class="blocked-notice" role="alert"></div>
+
+  <!-- SECTION 2: PACE -->
+  <section class="section" aria-labelledby="pace-heading">
+    <h2 id="pace-heading" class="step-label"><span class="step-num" aria-hidden="true">2</span> Темп передвижения</h2>
+    <div class="btn-grid" id="pace-group"></div>
+  </section>
+
+  <!-- SECTION 3: ROLL -->
+  <section id="roll-section" style="display:none" class="section" aria-labelledby="roll-heading">
+    <h2 id="roll-heading" class="step-label">
+      <span class="step-num" aria-hidden="true">3</span>
+      Проверка Выживания
+      <span id="dc-text" class="step-dc"></span>
+    </h2>
+    <div class="btn-grid" id="roll-group"></div>
+  </section>
+
+  <!-- RESULT CARD -->
+  <div class="result-card" id="result-card" aria-live="polite" aria-atomic="true">
+    <div class="result-empty">Выбери погоду → темп → результат проверки</div>
+  </div>
+
+  <!-- WEATHER FLAVOUR -->
+  <div class="weather-flavour" id="weather-flavour" aria-live="polite">
+    <h3 class="weather-flavour-label">✦ Атмосфера дня</h3>
+    <div class="weather-flavour-text" id="weather-flavour-text"></div>
+  </div>
+
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    // ---------- ЗАГРУЗКА ДАННЫХ ----------
+    let weatherFlavour, weatherData, paceData, rollData;
+    const paceOrder = ['slow','normal','fast','march'];
+
+    const weatherGroup = document.getElementById('weather-group');
+    const paceGroup = document.getElementById('pace-group');
+    const rollGroup = document.getElementById('roll-group');
+    const rollSection = document.getElementById('roll-section');
+    const blockedBox = document.getElementById('blocked-box');
+    const resultCard = document.getElementById('result-card');
+    const dcText = document.getElementById('dc-text');
+    const weatherFlavourDiv = document.getElementById('weather-flavour');
+    const weatherFlavourText = document.getElementById('weather-flavour-text');
+
+    let state = { weather: null, pace: null, roll: null };
+
+    function createButtons(container, items, category, clickHandler) {
+      Object.entries(items).forEach(([key, data]) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn';
+        if (category === 'weather') btn.classList.add('weather-btn');
+        if (category === 'pace') btn.classList.add('pace-btn');
+        btn.textContent = data.name || data.label;
+        btn.dataset.key = key;
+        btn.dataset.category = category;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.addEventListener('click', clickHandler);
+        container.appendChild(btn);
+      });
+    }
+
+    fetch('data/weather-navig-data.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Файл данных не найден');
+        return response.json();
+      })
+      .then(data => {
+        weatherFlavour = data.weatherFlavour;
+        weatherData = data.weatherData;
+        paceData = data.paceData;
+        rollData = data.rollData;
+
+        createButtons(weatherGroup, weatherData, 'weather', handleButtonClick);
+        createButtons(paceGroup, paceData, 'pace', handleButtonClick);
+
+        const rollOrder = ['crit-fail', 'fail-7', 'fail-6', 'fail-3', 'pass', 'crit-pass'];
+        rollOrder.forEach(key => {
+          const btn = document.createElement('button');
+          btn.className = 'btn';
+          btn.textContent = rollData[key].label;
+          btn.dataset.key = key;
+          btn.dataset.category = 'roll';
+          btn.setAttribute('aria-pressed', 'false');
+          btn.addEventListener('click', handleButtonClick);
+          rollGroup.appendChild(btn);
+        });
+
+        updatePaceButtonsAvailability();
+      })
+      .catch(error => {
+        console.error('Ошибка загрузки:', error);
+        document.querySelector('.tool-body').innerHTML = '<p style="color:var(--red); text-align:center;">Ошибка загрузки данных.</p>';
+      });
+
+    function updatePaceButtonsAvailability() {
+      if (!weatherData) return;
+      const maxIdx = state.weather ? weatherData[state.weather].maxPace : 4;
+      document.querySelectorAll('[data-category="pace"]').forEach(btn => {
+        const key = btn.dataset.key;
+        const idx = paceOrder.indexOf(key);
+        const disabled = (idx >= maxIdx);
+        btn.disabled = disabled;
+        if (disabled) {
+          btn.setAttribute('aria-pressed', 'false');
+          btn.classList.remove('sel-pace');
+        }
+      });
+    }
+
+    function handleButtonClick(e) {
+      if (!weatherData || !paceData || !rollData) return;
+
+      const btn = e.currentTarget;
+      const category = btn.dataset.category;
+      const key = btn.dataset.key;
+      const isActive = btn.getAttribute('aria-pressed') === 'true';
+
+      document.querySelectorAll(`[data-category="${category}"]`).forEach(b => {
+        b.setAttribute('aria-pressed', 'false');
+        b.classList.remove(`sel-${category}`);
+        if (category === 'roll') {
+          b.classList.remove('roll-fail-light', 'roll-fail-mid', 'roll-fail-heavy', 'roll-success', 'roll-crit');
+        }
+      });
+
+      if (!isActive) {
+        btn.setAttribute('aria-pressed', 'true');
+        if (category === 'weather') btn.classList.add('sel-weather');
+        else if (category === 'pace') btn.classList.add('sel-pace');
+        else if (category === 'roll') btn.classList.add(rollData[key].selCls);
+        state[category] = key;
+      } else {
+        state[category] = null;
+        if (category === 'weather') {
+          state.pace = null; state.roll = null;
+          rollSection.style.display = 'none';
+          blockedBox.style.display = 'none';
+          weatherFlavourDiv.style.display = 'none';
+          resultCard.innerHTML = '<div class="result-empty">Выбери погоду → темп → результат проверки</div>';
+        } else if (category === 'pace') {
+          state.roll = null;
+          rollSection.style.display = 'none';
+          showPaceInfo();
+        } else if (category === 'roll') {
+          showPaceInfo();
+        }
+      }
+
+      if (category === 'weather') {
+        updatePaceButtonsAvailability();
+        if (state.weather) {
+          const w = weatherData[state.weather];
+          showWeatherFlavour(state.weather);
+          if (w.maxPace === 0) {
+            blockedBox.textContent = '⚠ ' + w.note;
+            blockedBox.style.display = 'block';
+            resultCard.innerHTML = `<div class="result-empty" style="color:var(--red);">Движение невозможно. ${w.note}</div>`;
+            rollSection.style.display = 'none';
+          } else {
+            blockedBox.style.display = 'none';
+            if (!state.pace) resultCard.innerHTML = '<div class="result-empty">Выбери темп передвижения</div>';
+            rollSection.style.display = 'none';
+          }
+        } else {
+          weatherFlavourDiv.style.display = 'none';
+          blockedBox.style.display = 'none';
+          updatePaceButtonsAvailability();
+        }
+        if (isActive) {
+          state.pace = null; state.roll = null;
+          document.querySelectorAll('[data-category="pace"]').forEach(b => {
+            b.setAttribute('aria-pressed', 'false');
+            b.classList.remove('sel-pace');
+          });
+        }
+      }
+
+      if (category === 'pace' && state.weather) {
+        if (state.pace) {
+          const w = weatherData[state.weather];
+          const p = paceData[state.pace];
+          const finalDC = p.dc + w.dcMod;
+          let dcLabel = `DC ${p.dc}`;
+          if (w.dcMod > 0) dcLabel += ` + ${w.dcMod} (погода) = DC ${finalDC}`;
+          if (w.disadv) dcLabel += ' · помеха';
+          dcText.textContent = `(${dcLabel})`;
+          rollSection.style.display = 'block';
+          showPaceInfo();
+        } else {
+          rollSection.style.display = 'none';
+          if (state.weather) resultCard.innerHTML = '<div class="result-empty">Выбери темп передвижения</div>';
+        }
+        state.roll = null;
+        document.querySelectorAll('[data-category="roll"]').forEach(b => {
+          b.setAttribute('aria-pressed', 'false');
+          b.classList.remove('roll-fail-light', 'roll-fail-mid', 'roll-fail-heavy', 'roll-success', 'roll-crit');
+        });
+      }
+
+      if (category === 'roll' && state.weather && state.pace) {
+        if (state.roll) showResult();
+        else showPaceInfo();
+      }
+    }
+
+    function effectiveDC() {
+      return paceData[state.pace].dc + weatherData[state.weather].dcMod;
+    }
+
+    function showPaceInfo() {
+      if (!state.pace || !state.weather) return;
+      const p = paceData[state.pace];
+      const w = weatherData[state.weather];
+      const dc = effectiveDC();
+
+      let html = `<div class="result-header">`;
+      html += `<span class="result-title">${p.name}</span>`;
+      html += `<div class="result-stats">`;
+      html += `<div class="stat-badge"><div class="stat-label">Гексов/день</div><div class="stat-value">${p.hexes}</div></div>`;
+      html += `<div class="stat-badge"><div class="stat-label">DC</div><div class="stat-value">${dc}${w.disadv ? '*' : ''}</div></div>`;
+      html += `</div></div>`;
+
+      html += '<div class="row-chips">';
+      if (w.dcMod > 0) html += `<span class="chip ch-coral">Погода +${w.dcMod} к DC</span>`;
+      if (w.disadv) html += '<span class="chip ch-coral">Помеха на бросок</span>';
+      if (w.note) html += `<span class="chip ch-gray">${w.note}</span>`;
+      html += '</div>';
+
+      p.perks.forEach(pk => { html += `<div class="perk-line">${pk}</div>`; });
+      html += '<div class="hint-line">Выбери результат проверки Выживания</div>';
+      resultCard.innerHTML = html;
+    }
+
+    function showResult() {
+      const p = paceData[state.pace];
+      const w = weatherData[state.weather];
+      const r = rollData[state.roll];
+      const dc = effectiveDC();
+
+      let html = `<div class="result-header">`;
+      html += `<span class="result-title">${p.name} · ${w.name}</span>`;
+      html += `<div class="result-stats">`;
+      html += `<div class="stat-badge"><div class="stat-label">Гексов/день</div><div class="stat-value">${p.hexes}</div></div>`;
+      html += `<div class="stat-badge"><div class="stat-label">DC</div><div class="stat-value">${dc}${w.disadv ? '*' : ''}</div></div>`;
+      html += `</div></div>`;
+
+      html += '<div class="row-chips">';
+      html += `<span class="chip ${r.chip}">${r.label}</span>`;
+      if (w.dcMod > 0) html += `<span class="chip ch-coral">Погода +${w.dcMod} к DC</span>`;
+      if (w.disadv) html += '<span class="chip ch-coral">Помеха на бросок</span>';
+      html += '</div>';
+
+      if (w.dcMod > 0 || w.disadv) {
+        html += '<div class="dc-detail">';
+        if (w.dcMod > 0) html += `DC ${paceData[state.pace].dc} + ${w.dcMod} = DC ${dc}. `;
+        if (w.disadv) html += 'Бросок с помехой.';
+        html += '</div>';
+      }
+
+      html += `<div class="effect-box ${r.ef}">${r.text}</div>`;
+      resultCard.innerHTML = html;
+    }
+
+    function showWeatherFlavour(key) {
+      if (!weatherFlavour) return;
+      const variants = weatherFlavour[key];
+      if (variants) {
+        const picked = variants[Math.floor(Math.random() * variants.length)];
+        weatherFlavourText.textContent = picked;
+        weatherFlavourDiv.style.display = 'block';
+      } else {
+        weatherFlavourDiv.style.display = 'none';
+      }
+    }
+
+    function pl(n) { return n === 1 ? 'гекс' : n < 5 ? 'гекса' : 'гексов'; }
+  })();
+</script>
+</body>
+</html>

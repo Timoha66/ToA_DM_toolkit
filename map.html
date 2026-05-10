@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Интерактивная карта Чульта</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #1a1208;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Cinzel', serif;
+    }
+    .map-container {
+      background: #2e2416;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
+      border: 3px solid #b89a6a;
+    }
+    canvas {
+      display: block;
+      margin: 0 auto;
+      border: 2px solid #8b3a1a;
+      border-radius: 8px;
+      cursor: crosshair;
+      max-width: 100%;
+      height: auto;
+    }
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      margin-top: 15px;
+    }
+    button {
+      font-family: 'Cinzel', serif;
+      font-size: 1rem;
+      padding: 8px 14px;
+      background: #f3e9d2;
+      border: 2px solid #b89a6a;
+      color: #2c1e0e;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+      transition: 0.1s;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #e3d5b8;
+      transform: translate(1px, 1px);
+      box-shadow: 2px 2px 0 rgba(0,0,0,0.2);
+    }
+    .info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 10px 5px 0;
+      color: #ecd59e;
+    }
+    .coord {
+      background: #1a1208;
+      padding: 5px 12px;
+      border-radius: 20px;
+      border: 1px solid #b89a6a;
+      font-family: monospace;
+      font-size: 1rem;
+    }
+    .save-indicator {
+      color: #6aaa46;
+      margin-left: 10px;
+      font-size: 0.9rem;
+    }
+    .back-link {
+      color: #b89a6a;
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .coord-input-group {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      margin-left: 10px;
+    }
+    .coord-input-group label {
+      color: #ecd59e;
+      font-size: 0.8rem;
+    }
+    .coord-input-group input {
+      width: 70px;
+      padding: 5px;
+      border-radius: 6px;
+      border: 1px solid #b89a6a;
+      background: #f3e9d2;
+      font-family: monospace;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+<div class="map-container">
+  <canvas id="mapCanvas" width="1611" height="2160"></canvas>
+  
+  <div class="info">
+    <span>
+      <span class="coord" id="coordDisplay">x: 500, y: 350</span>
+      <span class="save-indicator" id="saveIndicator"></span>
+    </span>
+    <a class="back-link" href="index.html">← Назад</a>
+  </div>
+
+  <div class="controls">
+    <button id="moveUp">↑</button>
+    <button id="moveLeft">←</button>
+    <button id="moveDown">↓</button>
+    <button id="moveRight">→</button>
+
+    <div class="coord-input-group">
+      <label>X:</label>
+      <input type="number" id="inputX" min="0" max="1000" step="1" value="500">
+      <label>Y:</label>
+      <input type="number" id="inputY" min="0" max="700" step="1" value="350">
+      <button id="gotoCoords">➤ Перейти</button>
+    </div>
+
+    <button id="savePosition">💾 Сохранить</button>
+    <button id="resetToken">🔄 Сбросить</button>
+    <button id="clearSaved">🗑️ Сбросить сохранённое</button>
+  </div>
+  <p style="color:#a08060; margin-top:8px; font-size:0.8rem; text-align:center;">
+    Стрелки на клавиатуре • Перетаскивание мышью • Шаг: 10px • Позиция сохраняется автоматически
+  </p>
+</div>
+
+<script>
+  (function() {
+    const canvas = document.getElementById('mapCanvas');
+    const ctx = canvas.getContext('2d');
+    const coordDisplay = document.getElementById('coordDisplay');
+    const saveIndicator = document.getElementById('saveIndicator');
+    const inputX = document.getElementById('inputX');
+    const inputY = document.getElementById('inputY');
+
+    const STEP = 10;
+    const TOKEN_RADIUS = 12;
+    const STORAGE_KEY = 'chult_token_position';
+
+    // Начальная позиция
+    let tokenX = canvas.width / 2;
+    let tokenY = canvas.height / 2;
+
+    // Загрузка сохранённой позиции
+    function loadSavedPosition() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          const pos = JSON.parse(saved);
+          if (pos.x >= TOKEN_RADIUS && pos.x <= canvas.width - TOKEN_RADIUS &&
+              pos.y >= TOKEN_RADIUS && pos.y <= canvas.height - TOKEN_RADIUS) {
+            tokenX = pos.x;
+            tokenY = pos.y;
+            saveIndicator.textContent = '✓ Загружено';
+            return true;
+          }
+        } catch(e) {}
+      }
+      saveIndicator.textContent = '';
+      return false;
+    }
+
+    // Сохранение позиции
+    function savePosition() {
+      const pos = { x: Math.round(tokenX), y: Math.round(tokenY) };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(pos));
+      saveIndicator.textContent = '✓ Сохранено';
+    }
+
+    // Очистка сохранённой позиции
+    function clearSavedPosition() {
+      localStorage.removeItem(STORAGE_KEY);
+      saveIndicator.textContent = '✗ Не сохранено';
+    }
+
+    // Загружаем при старте
+    loadSavedPosition();
+
+    const mapImage = new Image();
+    mapImage.src = 'pic/chult_map.jpg';  // путь к твоей карте
+
+    // Обновление полей ввода
+    function updateInputFields() {
+      inputX.value = Math.round(tokenX);
+      inputY.value = Math.round(tokenY);
+    }
+
+    // Отрисовка
+    function draw() {
+      if (mapImage.complete) {
+        ctx.drawImage(mapImage, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = '#2e2416';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#ecd59e';
+        ctx.font = '18px Cinzel';
+        ctx.textAlign = 'center';
+        ctx.fillText('Загрузка карты...', canvas.width/2, canvas.height/2);
+      }
+
+      // Жетон
+      ctx.beginPath();
+      ctx.arc(tokenX, tokenY, TOKEN_RADIUS, 0, 2 * Math.PI);
+      ctx.fillStyle = '#c04040';
+      ctx.shadowColor = '#000';
+      ctx.shadowBlur = 8;
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.strokeStyle = '#f0d080';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(tokenX, tokenY, 3, 0, 2 * Math.PI);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+
+      coordDisplay.textContent = `x: ${Math.round(tokenX)}, y: ${Math.round(tokenY)}`;
+      updateInputFields();
+    }
+
+    mapImage.onload = () => draw();
+
+    // Перемещение
+    function move(dx, dy) {
+      const newX = tokenX + dx;
+      const newY = tokenY + dy;
+      if (newX >= TOKEN_RADIUS && newX <= canvas.width - TOKEN_RADIUS) tokenX = newX;
+      if (newY >= TOKEN_RADIUS && newY <= canvas.height - TOKEN_RADIUS) tokenY = newY;
+      draw();
+      savePosition();
+    }
+
+    // Переход к заданным координатам
+    function gotoCoords(x, y) {
+      let newX = Math.min(Math.max(x, TOKEN_RADIUS), canvas.width - TOKEN_RADIUS);
+      let newY = Math.min(Math.max(y, TOKEN_RADIUS), canvas.height - TOKEN_RADIUS);
+      tokenX = newX;
+      tokenY = newY;
+      draw();
+      savePosition();
+    }
+
+    // Кнопки перемещения
+    document.getElementById('moveUp').addEventListener('click', () => move(0, -STEP));
+    document.getElementById('moveDown').addEventListener('click', () => move(0, STEP));
+    document.getElementById('moveLeft').addEventListener('click', () => move(-STEP, 0));
+    document.getElementById('moveRight').addEventListener('click', () => move(STEP, 0));
+
+    // Кнопка "Перейти"
+    document.getElementById('gotoCoords').addEventListener('click', () => {
+      const x = parseInt(inputX.value, 10);
+      const y = parseInt(inputY.value, 10);
+      if (!isNaN(x) && !isNaN(y)) gotoCoords(x, y);
+    });
+
+    // Enter в полях ввода
+    inputX.addEventListener('keypress', (e) => { if(e.key === 'Enter') gotoCoords(parseInt(inputX.value,10), parseInt(inputY.value,10)); });
+    inputY.addEventListener('keypress', (e) => { if(e.key === 'Enter') gotoCoords(parseInt(inputX.value,10), parseInt(inputY.value,10)); });
+
+    // Сохранить вручную
+    document.getElementById('savePosition').addEventListener('click', () => {
+      savePosition();
+      draw();
+    });
+
+    // Сбросить в центр
+    document.getElementById('resetToken').addEventListener('click', () => {
+      tokenX = canvas.width / 2;
+      tokenY = canvas.height / 2;
+      draw();
+      savePosition();
+    });
+
+    // Очистить сохранённое
+    document.getElementById('clearSaved').addEventListener('click', () => {
+      clearSavedPosition();
+      draw();
+    });
+
+    // Клавиатура
+    window.addEventListener('keydown', (e) => {
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+      switch (e.key) {
+        case 'ArrowUp': e.preventDefault(); move(0, -STEP); break;
+        case 'ArrowDown': e.preventDefault(); move(0, STEP); break;
+        case 'ArrowLeft': e.preventDefault(); move(-STEP, 0); break;
+        case 'ArrowRight': e.preventDefault(); move(STEP, 0); break;
+      }
+    });
+
+    // Перетаскивание мышью
+    let isDragging = false;
+    canvas.addEventListener('mousedown', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const mouseX = (e.clientX - rect.left) * scaleX;
+      const mouseY = (e.clientY - rect.top) * scaleY;
+      if (Math.hypot(mouseX - tokenX, mouseY - tokenY) <= TOKEN_RADIUS + 10) {
+        isDragging = true;
+        canvas.style.cursor = 'grabbing';
+        e.preventDefault();
+      }
+    });
+    canvas.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      let newX = (e.clientX - rect.left) * scaleX;
+      let newY = (e.clientY - rect.top) * scaleY;
+      newX = Math.min(Math.max(newX, TOKEN_RADIUS), canvas.width - TOKEN_RADIUS);
+      newY = Math.min(Math.max(newY, TOKEN_RADIUS), canvas.height - TOKEN_RADIUS);
+      tokenX = newX;
+      tokenY = newY;
+      draw();
+    });
+    window.addEventListener('mouseup', () => {
+      if (isDragging) {
+        isDragging = false;
+        canvas.style.cursor = 'crosshair';
+        savePosition();
+      }
+    });
+
+    // Инициализация
+    if (mapImage.complete) draw(); else draw();
+    updateInputFields();
+  })();
+</script>
+</body>
+</html>

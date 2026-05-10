@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Трекер Инициативы — Монстры Чульта</title>
+  <style>
+    /* === ПЕРГАМЕНТНАЯ ТЕМА (ОБНОВЛЁННАЯ) === */
+    :root {
+      --bg-dark: #1a1208;
+      --bg-panel: #2e2416;
+      --bg-card: #3e321e;
+      --border: #b89a6a;
+      --accent: #b8860b;
+      --accent-hover: #c9a84c;
+      --text-main: #ecd59e;
+      --text-muted: #a08060;
+      --danger: #b33a3a;
+      --success: #2e5c1a;
+      --active-glow: 0 0 15px rgba(184, 134, 11, 0.5);
+      --hp-green: #4caf50;
+      --hp-yellow: #ffeb3b;
+      --hp-orange: #ff9800;
+      --hp-red: #f44336;
+      --temp-hp-color: #2196F3;
+      --blood: #8b0000;
+      --dying: #4a0000;
+      --dead-bg: #0a0a0a;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cinzel', serif;
+      background: var(--bg-dark) url('data:image/svg+xml;utf8,<svg width="100" height="100" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 10 L 90 10 L 90 90 L 10 90 Z" fill="none" stroke="%238b5a2b" stroke-width="0.3" opacity="0.15"/><path d="M20 20 L 80 20 L 80 80 L 20 80 Z" fill="none" stroke="%238b5a2b" stroke-width="0.2" opacity="0.1"/></svg>');
+      color: var(--text-main);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    header {
+      background: var(--bg-panel);
+      border-bottom: 2px solid var(--border);
+      padding: 0.8rem 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    header h1 { font-size: 1.4rem; color: var(--accent); letter-spacing: 0.05em; }
+    .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.2s; border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 4px; }
+    .back-link:hover { color: var(--accent); border-color: var(--accent); }
+
+    .container { display: flex; flex: 1; overflow: hidden; }
+
+    /* SIDEBAR */
+    aside {
+      width: 280px;
+      background: var(--bg-panel);
+      border-right: 2px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .categories { flex: 1; overflow-y: auto; padding: 0.5rem; }
+    .category { margin-bottom: 0.8rem; }
+    .cat-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.5rem; cursor: pointer; font-weight: 600; color: var(--accent);
+      background: var(--bg-card); border-radius: 4px; margin-bottom: 0.3rem; border: 1px solid var(--border);
+    }
+    .cat-content { padding-left: 0.5rem; display: none; }
+    .category.open .cat-content { display: block; }
+    .monster-card {
+      padding: 0.4rem 0.6rem; margin: 0.2rem 0; background: var(--bg-dark);
+      border-radius: 4px; cursor: pointer; font-size: 0.85rem; border-left: 3px solid transparent;
+      transition: 0.15s; color: var(--text-main);
+    }
+    .monster-card:hover { background: var(--bg-card); border-left-color: var(--accent); }
+
+    /* MAIN AREA */
+    main { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 1rem; gap: 1rem; position: relative; }
+    #setup-area { background: var(--bg-panel); border-radius: 8px; padding: 1.5rem; border: 1px solid var(--border); }
+    .setup-title { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--accent); font-family: 'Cinzel', serif; }
+
+    #combatants-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.8rem;
+      flex: 1; overflow-y: auto; padding: 0.5rem; align-content: start;
+    }
+
+    .combatant-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      position: relative;
+      transition: 0.3s;
+      color: var(--text-main);
+    }
+    .combatant-card.active { border-color: var(--accent); box-shadow: var(--active-glow); z-index: 10; transform: scale(1.02); }
+    .combatant-card.inactive { opacity: 0.5; filter: grayscale(0.5); }
+    .combatant-card.bloodied {
+      background: linear-gradient(rgba(139,0,0,0.2), rgba(139,0,0,0.2)), var(--bg-card);
+      background-image: radial-gradient(circle at 20% 30%, rgba(200,0,0,0.3) 2%, transparent 10%),
+                        radial-gradient(circle at 80% 70%, rgba(200,0,0,0.3) 2%, transparent 10%),
+                        radial-gradient(circle at 40% 80%, rgba(200,0,0,0.2) 5%, transparent 20%);
+      border-color: var(--blood);
+    }
+    .combatant-card.dying {
+      background: linear-gradient(rgba(74,0,0,0.4), rgba(74,0,0,0.4)), var(--bg-card);
+      border-color: var(--dying);
+    }
+    .combatant-card.dead {
+      background: #111;
+      border-color: #333;
+      filter: grayscale(1);
+      opacity: 0.8;
+    }
+    .combatant-card.dead .card-name { color: #888; }
+    .combatant-card.dead .hp-text { color: #666; }
+    .combatant-card.dead .hp-bar-fill { background-color: #444 !important; }
+    .combatant-card.dead::after {
+      content: "💀";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      opacity: 0.7;
+      pointer-events: none;
+    }
+    .dead-revive-btn {
+      position: absolute;
+      bottom: 0.5rem;
+      left: 0.5rem;
+      background: #111;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+      border-radius: 8px;
+      padding: 0.4rem 0.8rem;
+      font-weight: bold;
+      font-size: 0.8rem;
+      cursor: pointer;
+      z-index: 5;
+      box-shadow: 0 0 8px rgba(0,0,0,0.5);
+      transition: 0.2s;
+    }
+    .dead-revive-btn:hover { background: var(--accent); color: #111; }
+
+    .status-badge {
+      position: absolute;
+      bottom: 0.5rem;
+      right: 0.5rem;
+      font-size: 0.65rem;
+      font-weight: bold;
+      padding: 0.2rem 0.4rem;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.7);
+      border: 1px solid;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      z-index: 2;
+      pointer-events: none;
+    }
+    .combatant-card.bloodied .status-badge { color: #ffaaaa; border-color: #ff4444; }
+    .combatant-card.dying .status-badge { color: #ff8888; border-color: #ff2222; }
+    .combatant-card.dead .status-badge { color: #888; border-color: #555; }
+
+    .card-name { font-weight: 600; font-size: 0.95rem; }
+    .card-ac { font-size: 0.7rem; color: var(--text-muted); margin-top: 0.1rem; }
+    .card-init-input {
+      width: 100%; padding: 0.3rem; background: var(--bg-dark); border: 1px solid var(--border);
+      color: var(--text-main); border-radius: 4px; text-align: center; font-size: 0.9rem; font-family: 'Cinzel', serif;
+    }
+    .card-actions { display: flex; gap: 0.4rem; margin-top: 0.3rem; flex-wrap: wrap; }
+    .btn {
+      padding: 0.4rem 0.6rem; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem; transition: 0.2s; font-family: 'Cinzel', serif;
+    }
+    .btn-expand { background: var(--border); color: var(--text-main); }
+    .btn-expand:hover { background: var(--text-muted); }
+    .btn-remove { background: var(--danger); color: #fff; }
+    .btn-remove:hover { opacity: 0.8; }
+    .btn-temp { background: var(--temp-hp-color); color: #fff; }
+
+    /* Чекбокс выбора цели */
+    .select-target {
+      width: 18px; height: 18px;
+      accent-color: var(--accent);
+      cursor: pointer;
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      z-index: 3;
+    }
+
+    /* Health bar */
+    .hp-bar-container { width: 100%; height: 12px; background: #1a1208; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; margin-top: 0.2rem; }
+    .hp-bar-fill { height: 100%; transition: width 0.3s, background-color 0.3s; border-radius: 6px; }
+    .hp-green { background-color: var(--hp-green); }
+    .hp-yellow { background-color: var(--hp-yellow); }
+    .hp-orange { background-color: var(--hp-orange); }
+    .hp-red { background-color: var(--hp-red); }
+    .temp-hp-bar-fill { background-color: var(--temp-hp-color); }
+    .hp-text { font-size: 0.7rem; color: var(--text-muted); text-align: right; margin-top: 0.1rem; }
+
+    #start-combat-btn {
+      display: block; width: 100%; max-width: 300px; margin: 1rem auto 0; padding: 0.8rem;
+      background: var(--accent); color: #111; font-weight: bold; font-size: 1rem; border: none;
+      border-radius: 6px; cursor: pointer; transition: 0.2s; font-family: 'Cinzel', serif;
+    }
+    #start-combat-btn:hover { background: var(--accent-hover); transform: translateY(-2px); }
+    #start-combat-btn:disabled { background: var(--border); color: var(--text-muted); cursor: not-allowed; transform: none; }
+
+    /* COMBAT CONTROLS */
+    #combat-controls {
+      display: none; background: var(--bg-panel); border-radius: 8px; padding: 0.8rem;
+      flex-direction: column; align-items: center; gap: 0.8rem; border: 1px solid var(--border);
+    }
+    .combat-meta { display: flex; gap: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+    .round-counter { color: var(--accent); font-weight: bold; }
+    .controls-btns { display: flex; gap: 0.8rem; flex-wrap: wrap; justify-content: center; }
+    .ctrl-btn {
+      padding: 0.6rem 1.2rem; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.2s; font-family: 'Cinzel', serif;
+    }
+    .ctrl-next { background: var(--accent); color: #111; }
+    .ctrl-next:hover { background: var(--accent-hover); }
+    .ctrl-add { background: var(--success); color: #fff; }
+    .ctrl-end { background: var(--danger); color: #fff; }
+    .ctrl-deselect { background: var(--border); color: var(--text-main); }
+
+    .hp-controls {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+    }
+    .hp-controls input {
+      width: 70px;
+      padding: 0.3rem;
+      background: var(--bg-dark);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      border-radius: 4px;
+      text-align: center;
+      font-family: 'Cinzel', serif;
+    }
+    .hp-controls .btn-damage { background: var(--danger); color: #fff; }
+    .hp-controls .btn-heal { background: var(--success); color: #fff; }
+
+    /* === ПАНЕЛЬ ПРАВИЛ (УКРЫТИЯ И СОСТОЯНИЯ) === */
+    #rules-panel {
+      display: none;
+      position: fixed;
+      top: 5rem;
+      right: 1rem;
+      width: 260px;
+      background: rgba(20, 10, 0, 0.92);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 0.8rem;
+      color: var(--text-main);
+      font-size: 0.7rem;
+      line-height: 1.5;
+      z-index: 50;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    #rules-panel h4 {
+      font-size: 0.8rem;
+      color: var(--accent);
+      margin-bottom: 0.3rem;
+      border-bottom: 1px solid var(--accent);
+      padding-bottom: 0.2rem;
+    }
+    #rules-panel span.highlight { color: var(--accent); font-weight: bold; }
+    .condition-rule {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.3rem;
+      margin-bottom: 0.4rem;
+    }
+    .condition-rule .cond-icon {
+      font-size: 1rem;
+      width: 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .condition-rule .cond-desc {
+      color: var(--text-muted);
+    }
+
+    /* === СОСТОЯНИЯ (conditions) === */
+    .conditions-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.3rem;
+      align-items: center;
+      margin-top: 0.2rem;
+    }
+    .condition-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      font-weight: bold;
+      cursor: pointer;
+      position: relative;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.5);
+    }
+    .condition-badge:hover::after {
+      content: attr(data-tooltip);
+      position: absolute;
+      bottom: 120%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #111;
+      color: #fff;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-size: 0.65rem;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .add-condition-btn {
+      background: transparent;
+      border: 1px dashed var(--text-muted);
+      color: var(--text-muted);
+      padding: 0.3rem 0.5rem;
+      font-size: 0.7rem;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+    .condition-select {
+      display: none;
+      position: fixed;
+      z-index: 300;
+      background: var(--bg-panel);
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      max-height: 200px;
+      overflow-y: auto;
+      width: 180px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .condition-select.open { display: block; }
+    .condition-select div {
+      padding: 0.3rem 0.5rem;
+      cursor: pointer;
+      font-size: 0.7rem;
+    }
+    .condition-select div:hover { background: var(--accent); color: #111; }
+
+    /* MODALS */
+    #stat-modal, #priority-modal, #add-monster-modal, #exhaustion-modal {
+      display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85); z-index: 100; justify-content: center; align-items: center;
+    }
+    .modal-content {
+      background: var(--bg-panel); border: 2px solid var(--border); border-radius: 10px;
+      width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; padding: 1.5rem;
+      position: relative; color: var(--text-main);
+    }
+    .close-modal { position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+    .close-modal:hover { color: var(--accent); }
+    .stat-name { font-size: 1.5rem; color: var(--accent); margin-bottom: 0.5rem; }
+    .stat-type { color: var(--text-muted); font-style: italic; margin-bottom: 1rem; }
+    .stat-block { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.8rem; margin-bottom: 1.5rem; }
+    .stat-item { background: var(--bg-dark); padding: 0.5rem; border-radius: 4px; text-align: center; border: 1px solid var(--border); }
+    .stat-label { font-size: 0.75rem; color: var(--text-muted); display: block; }
+    .stat-val { font-size: 1rem; font-weight: 600; }
+    .stat-section { margin-bottom: 1rem; }
+    .stat-section h4 { color: var(--accent); margin-bottom: 0.3rem; font-size: 0.9rem; }
+    .stat-section p { color: var(--text-main); font-size: 0.9rem; line-height: 1.4; white-space: pre-line; }
+    .priority-group { margin-bottom: 1.5rem; }
+    .priority-group h3 { color: var(--accent); margin-bottom: 0.5rem; }
+    .priority-row { display: flex; align-items: center; justify-content: space-between; padding: 0.3rem 0; }
+    .priority-row input {
+      width: 60px; padding: 0.3rem; background: var(--bg-dark); border: 1px solid var(--border);
+      color: var(--text-main); border-radius: 4px; text-align: center; font-family: 'Cinzel', serif;
+    }
+    .priority-row label { flex: 1; }
+    #apply-priority-btn {
+      margin-top: 1rem; padding: 0.6rem; background: var(--accent); color: #111;
+      border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-family: 'Cinzel', serif;
+    }
+    .add-monster-list .category { margin-top: 0.5rem; }
+    .add-monster-list .monster-row {
+      display: flex; align-items: center; justify-content: space-between; padding: 0.3rem 0; gap: 0.5rem;
+    }
+    .add-monster-list .monster-row .monster-card { flex: 1; margin: 0; cursor: default; }
+    .add-monster-list .monster-row input, .add-monster-list .monster-row select {
+      background: var(--bg-dark); border: 1px solid var(--border); color: var(--text-main);
+      border-radius: 4px; text-align: center; font-family: 'Cinzel', serif;
+    }
+    #add-monster-batch-btn {
+      display: block; width: 100%; margin-top: 1rem; padding: 0.6rem;
+      background: var(--accent); color: #111; font-weight: bold; border: none; border-radius: 6px;
+      cursor: pointer; font-family: 'Cinzel', serif;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🗡️ Трекер Инициативы</h1>
+  <a href="index.html" class="back-link">← На главную</a>
+</header>
+
+<div class="container">
+  <aside>
+    <div class="categories" id="sidebar-list"></div>
+  </aside>
+
+  <main>
+    <div id="setup-area">
+      <div class="setup-title">⚙️ Подготовка боя</div>
+      <button id="start-combat-btn" disabled onclick="app.startCombat()">⚔️ НАЧАТЬ БОЙ</button>
+    </div>
+    <div id="combatants-grid"></div>
+
+    <div id="combat-controls">
+      <div class="combat-meta">
+        <span>Раунд: <span class="round-counter" id="round-display">1</span></span>
+        <span>Участников: <span id="count-display">0</span></span>
+      </div>
+      <div class="controls-btns">
+        <button class="ctrl-btn ctrl-next" onclick="app.nextTurn()">Следующий ход</button>
+        <button class="ctrl-btn ctrl-add" onclick="app.openAddMonsterModal()">➕ Монстр</button>
+        <button class="ctrl-btn ctrl-deselect" onclick="app.deselectAll()">☐ Снять выделение</button>
+        <button class="ctrl-btn ctrl-end" onclick="app.endCombat()">Закончить бой</button>
+      </div>
+      <div class="hp-controls">
+        <span>💔 Групповой:</span>
+        <input type="number" id="hp-amount" placeholder="Число" min="0">
+        <button class="btn ctrl-btn btn-damage" onclick="app.applyDamage()">🗡️ Урон</button>
+        <button class="btn ctrl-btn btn-heal" onclick="app.applyHeal()">💚 Лечение</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Панель правил (укрытия + состояния) -->
+<div id="rules-panel">
+  <h4>🛡️ Укрытия</h4>
+  <div><span class="highlight">1/2:</span> +2 КД и спасброскам Ловкости</div>
+  <div><span class="highlight">3/4:</span> +5 КД и спасброскам Ловкости</div>
+  <div><span class="highlight">Полное:</span> нельзя выбрать целью атаки или заклинания с броском атаки</div>
+  <h4 style="margin-top:0.8rem;">📜 Состояния</h4>
+  <div id="conditions-list"></div>
+</div>
+
+<!-- Модальные окна -->
+<div id="stat-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><div id="modal-body"></div></div></div>
+<div id="priority-modal"><div class="modal-content"><h2>⚡ Одинаковая инициатива</h2><p style="margin-bottom:1rem; color:var(--text-muted)">Задайте порядок внутри каждой группы (1 — первый).</p><div id="priority-content"></div><button id="apply-priority-btn" onclick="app.applyPriority()">✅ Подтвердить порядок</button></div></div>
+<div id="add-monster-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><h2>➕ Добавить монстров в бой</h2><p style="font-size:0.8rem; color:var(--text-muted)">Заполните инициативу только для нужных монстров. Пустые строки будут пропущены.</p><div id="add-monster-content" class="add-monster-list"></div><button id="add-monster-batch-btn" onclick="app.spawnBatch()">✅ Добавить выбранных</button></div></div>
+<div id="exhaustion-modal"><div class="modal-content"><h3>Выберите уровень истощения</h3><div id="exhaustion-levels" style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:1rem;"></div></div></div>
+
+<script>
+const app = {
+  data: [],
+  conditionsData: [],
+  combatants: [],
+  turnIndex: 0,
+  round: 1,
+  combatActive: false,
+  uidCounter: 0,
+  firstAliveUid: null,
+  pendingExhaustionUid: null,
+
+  async init() {
+    try {
+      const [monsterRes, condRes] = await Promise.all([
+        fetch('data/initiative-data.json'),
+        fetch('data/conditions.json')
+      ]);
+      if (!monsterRes.ok || !condRes.ok) throw new Error('Ошибка загрузки JSON');
+      this.data = await monsterRes.json();
+      this.conditionsData = await condRes.json();
+      this.renderSidebar();
+      this.renderRulesPanel();
+    } catch (e) {
+      console.error(e);
+      document.getElementById('sidebar-list').innerHTML = '<div style="color:red;padding:1rem">Ошибка загрузки данных.</div>';
+    }
+  },
+
+  renderSidebar() {
+    const container = document.getElementById('sidebar-list');
+    container.innerHTML = '';
+    this.data.categories.forEach(cat => {
+      const div = document.createElement('div');
+      div.className = 'category';
+      div.innerHTML = `
+        <div class="cat-header" onclick="this.parentElement.classList.toggle('open')">
+          <span>${cat.name}</span> <span>▼</span>
+        </div>
+        <div class="cat-content">
+          ${cat.monsters.map(m => `<div class="monster-card" data-id="${m.id}" data-cat="${cat.id}" onclick="app.spawnMonster('${cat.id}', '${m.id}')">${m.name}</div>`).join('')}
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  },
+
+  renderRulesPanel() {
+    const container = document.getElementById('conditions-list');
+    container.innerHTML = this.conditionsData.map(c => `
+      <div class="condition-rule">
+        <span class="cond-icon">${c.icon || (c.name ? c.name[0] : '?')}</span>
+        <span class="cond-desc"><strong>${c.name}:</strong> ${c.effect}</span>
+      </div>
+    `).join('');
+  },
+
+  getIndexedName(monId, baseName) {
+    const count = this.combatants.filter(c => c.id === monId).length;
+    return `${baseName} ${count+1}`;
+  },
+
+  spawnMonster(catId, monId) {
+    if (this.combatActive) return;
+    const cat = this.data.categories.find(c => c.id === catId);
+    const mon = cat.monsters.find(m => m.id === monId);
+    const uid = `uid-${this.uidCounter++}`;
+    const maxHp = this.parseMaxHp(mon.hp);
+    const name = this.getIndexedName(monId, mon.name);
+    this.combatants.push({ uid, id: monId, name, initiative: null, data: mon, maxHp, currentHp: maxHp, tempHp: 0, maxTempHp: 0, dead: false, priority: 0, conditions: [], exhaustionLevel: 0 });
+    this.renderCombatants();
+    document.getElementById('start-combat-btn').disabled = false;
+  },
+
+  parseMaxHp(hpStr) { if (!hpStr) return 0; const m = hpStr.match(/(\d+)/); return m ? parseInt(m[1],10) : 0; },
+
+  getConditionInfo(condId) {
+    return this.conditionsData.find(c => c.id === condId) || { name: condId, icon: condId[0], hasLevels: false };
+  },
+
+  renderCombatants() {
+    const grid = document.getElementById('combatants-grid');
+    grid.innerHTML = '';
+    this.combatants.forEach(c => {
+      const div = document.createElement('div');
+      div.className = 'combatant-card';
+      div.id = `card-${c.uid}`;
+      if (!this.combatActive) {
+        div.innerHTML = `
+          <div class="card-name">${c.name}</div>
+          <input type="number" class="card-init-input" placeholder="Инициатива" data-uid="${c.uid}" 
+                 value="${c.initiative !== null ? c.initiative : ''}" 
+                 onchange="app.updateInit('${c.uid}', this.value)">
+          <div class="card-actions">
+            <button class="btn btn-expand" onclick="app.showStatBlock('${c.id}')">📖 Статблок</button>
+            <button class="btn btn-remove" onclick="app.removeCombatant('${c.uid}')">🗑️</button>
+          </div>
+        `;
+      } else {
+        const maxHp = c.maxHp || 0;
+        const curHp = Math.min(Math.max(c.currentHp||0,0), maxHp);
+        const tempHp = c.tempHp || 0;
+        const maxTempHp = c.maxTempHp || 0;
+        const hpPct = maxHp ? (curHp/maxHp)*100 : 0;
+        const tempPct = maxTempHp ? (tempHp/maxTempHp)*100 : 0;
+        const { color: hpCls, status } = this.getHealthStatus(curHp, maxHp, c.dead);
+        let tempBar = '';
+        if (tempHp > 0 && maxTempHp > 0) {
+          tempBar = `<div class="hp-bar-container" style="margin-top:2px;"><div class="hp-bar-fill temp-hp-bar-fill" style="width:${tempPct}%;"></div></div>
+                     <div class="hp-text" style="color:var(--temp-hp-color);">Врем: ${tempHp} / ${maxTempHp}</div>`;
+        }
+        // Состояния + чекбокс (если не мёртв)
+        let conditionsHtml = '';
+        let checkboxHtml = '';
+        if (!c.dead) {
+          checkboxHtml = `<input type="checkbox" class="select-target" data-uid="${c.uid}">`;
+          if (c.conditions && c.conditions.length > 0) {
+            conditionsHtml = '<div class="conditions-container">';
+            c.conditions.forEach(condId => {
+              const info = this.getConditionInfo(condId);
+              const display = info.hasLevels && c.exhaustionLevel ? `${info.icon || info.name[0]}${c.exhaustionLevel}` : (info.icon || info.name[0]);
+              const tooltip = info.hasLevels && c.exhaustionLevel ? `${info.name} (ур. ${c.exhaustionLevel})` : info.name;
+              conditionsHtml += `<div class="condition-badge" data-tooltip="${tooltip}" onclick="app.removeCondition('${c.uid}', '${condId}')">${display}</div>`;
+            });
+            conditionsHtml += `<button class="add-condition-btn" onclick="app.openConditionMenu(event, '${c.uid}')">+</button></div>`;
+          } else {
+            conditionsHtml = `<div class="conditions-container"><button class="add-condition-btn" onclick="app.openConditionMenu(event, '${c.uid}')">+ Состояние</button></div>`;
+          }
+        }
+        if (c.dead) {
+          div.innerHTML = `
+            <div class="card-name">${c.name} <span style="color:var(--accent);font-size:0.8rem">(${c.initiative})</span></div>
+            <div class="card-ac">КД: ${c.data.ac || '?'}</div>
+            <button class="dead-revive-btn" onclick="app.revive('${c.uid}')">🪄 Поднять</button>
+            <div class="status-badge">МЁРТВ</div>
+          `;
+          div.classList.add('dead');
+        } else {
+          let actionsHtml = `
+            <button class="btn btn-expand" onclick="app.showStatBlock('${c.id}')">📖 Статблок</button>
+            <button class="btn btn-temp" onclick="app.addTempHp('${c.uid}')">💙</button>
+            <button class="btn btn-remove" onclick="app.removeCombatant('${c.uid}')">🗑️</button>
+          `;
+          div.innerHTML = `
+            ${checkboxHtml}
+            <div class="card-name">${c.name} <span style="color:var(--accent);font-size:0.8rem">(${c.initiative})</span></div>
+            <div class="card-ac">КД: ${c.data.ac || '?'}</div>
+            <div class="hp-bar-container"><div class="hp-bar-fill ${hpCls}" style="width:${Math.min(hpPct,100)}%;"></div></div>
+            ${tempBar}
+            <div class="hp-text">${curHp} / ${maxHp}${status ? ' · '+status : ''}</div>
+            ${conditionsHtml}
+            <div class="card-actions">${actionsHtml}</div>
+            ${status ? `<div class="status-badge">${status}</div>` : ''}
+          `;
+          div.classList.remove('dead','dying','bloodied');
+          if (curHp <= maxHp*0.1 && curHp > 0) div.classList.add('dying');
+          else if (curHp <= maxHp*0.5 && curHp > 0) div.classList.add('bloodied');
+        }
+      }
+      grid.appendChild(div);
+    });
+    document.getElementById('count-display').textContent = this.combatActive ? this.combatants.filter(c => !c.dead).length : this.combatants.length;
+  },
+
+  getHealthStatus(cur, max, dead) {
+    if (dead) return { color: 'hp-red', status: 'МЁРТВ' };
+    if (max === 0) return { color: 'hp-green', status: '' };
+    const p = (cur/max)*100;
+    if (p >= 75) return { color: 'hp-green', status: '' };
+    if (p > 50) return { color: 'hp-yellow', status: '' };
+    if (p > 10) return { color: 'hp-orange', status: 'Окровавлен' };
+    if (p > 0) return { color: 'hp-red', status: 'При смерти' };
+    return { color: 'hp-red', status: 'МЁРТВ' };
+  },
+
+  closeAllMenus() {
+    document.querySelectorAll('.condition-select').forEach(m => m.remove());
+  },
+
+  removeCondition(uid, condId) {
+    const c = this.combatants.find(x => x.uid === uid);
+    if (!c || !c.conditions) return;
+    const info = this.getConditionInfo(condId);
+    const displayName = info.hasLevels && c.exhaustionLevel ? `${info.name} (ур. ${c.exhaustionLevel})` : info.name;
+    if (!confirm(`Снять состояние "${displayName}"?`)) return;
+    c.conditions = c.conditions.filter(id => id !== condId);
+    if (info.hasLevels) c.exhaustionLevel = 0;
+    this.renderCombatCards();
+    this.highlightActive();
+  },
+
+  openConditionMenu(e, uid) {
+    e.stopPropagation();
+    this.closeAllMenus();
+    const btn = e.target;
+    const rect = btn.getBoundingClientRect();
+    const menu = document.createElement('div');
+    menu.className = 'condition-select open';
+    let top = rect.bottom + 4;
+    let left = rect.left;
+    if (top + 200 > window.innerHeight) top = rect.top - 204;
+    menu.style.top = top + 'px';
+    menu.style.left = left + 'px';
+    
+    this.conditionsData.forEach(cond => {
+      const opt = document.createElement('div');
+      opt.textContent = cond.icon ? `${cond.icon} ${cond.name}` : cond.name;
+      opt.onclick = (ev) => {
+        ev.stopPropagation();
+        if (cond.id === 'exhaustion') {
+          this.pendingExhaustionUid = uid;
+          this.openExhaustionModal();
+        } else {
+          const c = this.combatants.find(x => x.uid === uid);
+          if (c) {
+            if (!c.conditions) c.conditions = [];
+            if (!c.conditions.includes(cond.id)) c.conditions.push(cond.id);
+            this.renderCombatCards();
+            this.highlightActive();
+          }
+        }
+        menu.remove();
+      };
+      menu.appendChild(opt);
+    });
+    document.body.appendChild(menu);
+    const closeHandler = (ev) => {
+      if (!menu.contains(ev.target)) {
+        menu.remove();
+        document.removeEventListener('click', closeHandler);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', closeHandler), 10);
+  },
+
+  openExhaustionModal() {
+    const container = document.getElementById('exhaustion-levels');
+    container.innerHTML = '';
+    for (let i = 1; i <= 6; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'btn ctrl-btn ctrl-next';
+      btn.textContent = `Уровень ${i}`;
+      btn.onclick = () => {
+        const c = this.combatants.find(x => x.uid === this.pendingExhaustionUid);
+        if (c) {
+          if (!c.conditions) c.conditions = [];
+          if (!c.conditions.includes('exhaustion')) c.conditions.push('exhaustion');
+          c.exhaustionLevel = i;
+          this.renderCombatCards();
+          this.highlightActive();
+        }
+        document.getElementById('exhaustion-modal').style.display = 'none';
+      };
+      container.appendChild(btn);
+    }
+    document.getElementById('exhaustion-modal').style.display = 'flex';
+  },
+
+  updateInit(uid, val) {
+    const c = this.combatants.find(x => x.uid === uid);
+    if (c) { const n = parseFloat(val); c.initiative = isNaN(n) ? null : n; }
+  },
+
+  removeCombatant(uid) {
+    const c = this.combatants.find(x => x.uid === uid);
+    if (!c) return;
+    if (!confirm(`Удалить ${c.name}?`)) return;
+    this.combatants = this.combatants.filter(x => x.uid !== uid);
+    if (this.combatActive) {
+      if (this.combatants.length === 0) { this.endCombat(); return; }
+      this.updateFirstAlive();
+      this.adjustTurnIndex();
+      this.renderCombatCards();
+      this.highlightActive();
+    } else {
+      this.renderCombatants();
+      if (this.combatants.length === 0) document.getElementById('start-combat-btn').disabled = true;
+    }
+  },
+
+  startCombat() {
+    if (!this.combatants.every(c => Number.isFinite(c.initiative))) { alert('Заполните инициативу!'); return; }
+    const groups = {};
+    this.combatants.forEach(c => { const k = c.initiative; if (!groups[k]) groups[k] = []; groups[k].push(c); });
+    const dup = Object.keys(groups).filter(k => groups[k].length > 1);
+    if (dup.length) { this.pendingStart = true; this.openPriorityModal(groups, dup); return; }
+    this.beginCombat();
+  },
+
+  openPriorityModal(groups, keys) {
+    const cont = document.getElementById('priority-content');
+    cont.innerHTML = '';
+    keys.forEach(key => {
+      const grp = groups[key];
+      const div = document.createElement('div'); div.className = 'priority-group';
+      div.innerHTML = `<h3>Инициатива: ${key}</h3>`;
+      grp.forEach(c => {
+        const row = document.createElement('div'); row.className = 'priority-row';
+        row.innerHTML = `<label>${c.name}</label><input type="number" min="1" max="${grp.length}" value="1" data-uid="${c.uid}">`;
+        div.appendChild(row);
+      });
+      cont.appendChild(div);
+    });
+    document.getElementById('priority-modal').style.display = 'flex';
+  },
+
+  applyPriority() {
+    document.querySelectorAll('#priority-content input').forEach(inp => {
+      const uid = inp.dataset.uid; const val = parseInt(inp.value,10);
+      if (!isNaN(val) && val >= 1) { const c = this.combatants.find(x => x.uid === uid); if (c) c.priority = val; }
+    });
+    document.getElementById('priority-modal').style.display = 'none';
+    if (this.pendingStart) { this.pendingStart = false; this.beginCombat(); }
+  },
+
+  beginCombat() {
+    this.combatants.sort((a,b) => b.initiative - a.initiative || (a.priority||0) - (b.priority||0));
+    this.combatActive = true;
+    this.turnIndex = 0; this.round = 1;
+    this.combatants.forEach(c => { c.dead = false; c.priority = 0; c.tempHp = 0; c.maxTempHp = 0; c.conditions = []; c.exhaustionLevel = 0; });
+    this.updateFirstAlive();
+    this.adjustTurnIndex();
+    document.getElementById('setup-area').style.display = 'none';
+    document.getElementById('combat-controls').style.display = 'flex';
+    document.getElementById('rules-panel').style.display = 'block';
+    document.getElementById('round-display').textContent = this.round;
+    this.renderCombatCards();
+    this.highlightActive();
+    document.getElementById('count-display').textContent = this.combatants.filter(c => !c.dead).length;
+  },
+
+  updateFirstAlive() { const a = this.combatants.filter(c => !c.dead); this.firstAliveUid = a.length ? a[0].uid : null; },
+
+  renderCombatCards() { this.renderCombatants(); },
+
+  adjustTurnIndex() {
+    if (!this.combatActive || this.combatants.length === 0) return;
+    const alive = this.combatants.filter(c => !c.dead).length;
+    if (alive === 0) { this.endCombat(); return; }
+    if (this.turnIndex >= this.combatants.length) this.turnIndex = 0;
+    if (this.combatants[this.turnIndex].dead) {
+      for (let i = 0; i < this.combatants.length; i++) {
+        const idx = (this.turnIndex + i) % this.combatants.length;
+        if (!this.combatants[idx].dead) { this.turnIndex = idx; break; }
+      }
+    }
+  },
+
+  nextTurn() {
+    if (!this.combatActive) return;
+    const prevFirst = this.firstAliveUid;
+    this.turnIndex = (this.turnIndex + 1) % this.combatants.length;
+    this.adjustTurnIndex();
+    if (this.combatants[this.turnIndex].uid === this.firstAliveUid && this.firstAliveUid !== prevFirst) {
+      this.round++;
+    } else if (this.firstAliveUid === prevFirst && this.combatants[this.turnIndex].uid === this.firstAliveUid) {
+      this.round++;
+    }
+    document.getElementById('round-display').textContent = this.round;
+    this.highlightActive();
+    document.getElementById('count-display').textContent = this.combatants.filter(c => !c.dead).length;
+  },
+
+  highlightActive() {
+    document.querySelectorAll('.combatant-card').forEach(el => el.classList.remove('active','inactive'));
+    if (!this.combatActive) return;
+    this.combatants.forEach((c,i) => {
+      const el = document.getElementById(`card-${c.uid}`);
+      if (el) {
+        if (i === this.turnIndex) el.classList.add('active');
+        else if (c.dead) el.classList.add('dead');
+        else el.classList.add('inactive');
+      }
+    });
+  },
+
+  deselectAll() {
+    document.querySelectorAll('.select-target').forEach(cb => cb.checked = false);
+  },
+
+  applyDamage() {
+    if (!this.combatActive) return;
+    const amount = parseInt(document.getElementById('hp-amount').value,10);
+    if (isNaN(amount) || amount <= 0) return;
+    const selected = document.querySelectorAll('.select-target:checked');
+    if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
+    selected.forEach(cb => {
+      const uid = cb.dataset.uid;
+      const c = this.combatants.find(x => x.uid === uid);
+      if (!c || c.dead) return;
+      let rem = amount;
+      if (c.tempHp > 0) {
+        if (c.tempHp >= rem) { c.tempHp -= rem; rem = 0; }
+        else { rem -= c.tempHp; c.tempHp = 0; c.maxTempHp = 0; }
+      }
+      if (rem > 0) {
+        c.currentHp = Math.max(0, (c.currentHp||0) - rem);
+        if (c.currentHp <= 0) { c.dead = true; c.currentHp = 0; }
+      }
+    });
+    this.updateFirstAlive();
+    this.renderCombatCards();
+    this.adjustTurnIndex();
+    this.highlightActive();
+    document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
+  },
+
+  applyHeal() {
+    if (!this.combatActive) return;
+    const amount = parseInt(document.getElementById('hp-amount').value,10);
+    if (isNaN(amount) || amount <= 0) return;
+    const selected = document.querySelectorAll('.select-target:checked');
+    if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
+    selected.forEach(cb => {
+      const uid = cb.dataset.uid;
+      const c = this.combatants.find(x => x.uid === uid);
+      if (!c || c.dead) return;
+      const max = c.maxHp || 0;
+      c.currentHp = Math.min(max, (c.currentHp||0) + amount);
+      if (c.currentHp > 0) c.dead = false;
+    });
+    this.updateFirstAlive();
+    this.renderCombatCards();
+    this.highlightActive();
+    document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
+  },
+
+  addTempHp(uid) {
+    const c = this.combatants.find(x => x.uid === uid);
+    if (!c || c.dead) return;
+    const val = prompt('Временные хиты (заменяют текущие):', c.tempHp || '');
+    if (val === null) return;
+    const num = parseInt(val,10);
+    if (isNaN(num) || num < 0) return;
+    c.tempHp = num; c.maxTempHp = num;
+    this.renderCombatCards(); this.highlightActive();
+  },
+
+  revive(uid) {
+    const c = this.combatants.find(x => x.uid === uid);
+    if (!c || !c.dead) return;
+    const val = prompt('Количество ХП после поднятия:', Math.floor(c.maxHp/2) || 1);
+    if (val === null) return;
+    const num = parseInt(val,10);
+    if (isNaN(num) || num <= 0) return;
+    c.currentHp = Math.min(c.maxHp, num);
+    c.dead = false; c.tempHp = 0; c.maxTempHp = 0;
+    this.updateFirstAlive();
+    this.renderCombatCards(); this.adjustTurnIndex(); this.highlightActive();
+    document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
+  },
+
+  spawnBatch() {
+    const rows = document.querySelectorAll('#add-monster-content .monster-row');
+    const prevActiveUid = this.combatActive ? this.combatants[this.turnIndex]?.uid : null;
+    let anyAdded = false;
+    rows.forEach(row => {
+      const qty = parseInt(row.querySelector('.quantity-select').value,10);
+      if (qty <= 0) return;
+      const initInput = row.querySelector('.batch-init-input');
+      const initVal = parseFloat(initInput.value);
+      if (isNaN(initVal)) return;
+      const monCard = row.querySelector('.monster-card');
+      const catId = monCard.dataset.cat;
+      const monId = monCard.dataset.id;
+      const cat = this.data.categories.find(c => c.id === catId);
+      const mon = cat.monsters.find(m => m.id === monId);
+      for (let i = 0; i < qty; i++) {
+        const uid = `uid-${this.uidCounter++}`;
+        const maxHp = this.parseMaxHp(mon.hp);
+        const name = this.getIndexedName(monId, mon.name);
+        this.combatants.push({ uid, id: monId, name, initiative: initVal, data: mon, maxHp, currentHp: maxHp, tempHp: 0, maxTempHp: 0, dead: false, priority: 0, conditions: [], exhaustionLevel: 0 });
+      }
+      anyAdded = true;
+    });
+    if (!anyAdded) return;
+    this.combatants.sort((a,b) => b.initiative - a.initiative || (a.priority||0) - (b.priority||0));
+    if (prevActiveUid) {
+      const newIdx = this.combatants.findIndex(c => c.uid === prevActiveUid);
+      if (newIdx !== -1) this.turnIndex = newIdx;
+      else this.adjustTurnIndex();
+    } else {
+      this.adjustTurnIndex();
+    }
+    this.updateFirstAlive();
+    this.renderCombatCards();
+    this.highlightActive();
+    document.getElementById('count-display').textContent = this.combatants.filter(c => !c.dead).length;
+    document.getElementById('add-monster-modal').style.display = 'none';
+  },
+
+  openAddMonsterModal() {
+    if (!this.combatActive) return;
+    const cont = document.getElementById('add-monster-content');
+    cont.innerHTML = '';
+    this.data.categories.forEach(cat => {
+      const catDiv = document.createElement('div'); catDiv.className = 'category open';
+      catDiv.innerHTML = `<div class="cat-header"><span>${cat.name}</span></div><div class="cat-content" style="display:block;"></div>`;
+      const content = catDiv.querySelector('.cat-content');
+      cat.monsters.forEach(m => {
+        const row = document.createElement('div'); row.className = 'monster-row';
+        row.innerHTML = `
+          <div class="monster-card" data-cat="${cat.id}" data-id="${m.id}">${m.name}</div>
+          <select class="quantity-select"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          <input type="number" class="batch-init-input" placeholder="Иниц." style="width:80px;">
+        `;
+        content.appendChild(row);
+      });
+      cont.appendChild(catDiv);
+    });
+    document.getElementById('add-monster-modal').style.display = 'flex';
+  },
+
+  closeModal() {
+    document.getElementById('stat-modal').style.display = 'none';
+    document.getElementById('priority-modal').style.display = 'none';
+    document.getElementById('add-monster-modal').style.display = 'none';
+    document.getElementById('exhaustion-modal').style.display = 'none';
+  },
+
+  showStatBlock(monId) {
+    let mon = null;
+    for (const cat of this.data.categories) { mon = cat.monsters.find(m => m.id === monId); if (mon) break; }
+    if (!mon) return;
+    const s = mon.stats || {};
+    document.getElementById('modal-body').innerHTML = `
+      <div class="stat-name">${mon.name}</div><div class="stat-type">${mon.type||''}</div>
+      <div class="stat-block">
+        <div class="stat-item"><span class="stat-label">КД</span><span class="stat-val">${mon.ac||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ОЗ</span><span class="stat-val">${mon.hp||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">Скорость</span><span class="stat-val">${mon.speed||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">СИЛ</span><span class="stat-val">${s.str||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ЛОВ</span><span class="stat-val">${s.dex||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ТЕЛ</span><span class="stat-val">${s.con||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ИНТ</span><span class="stat-val">${s.int||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">МДР</span><span class="stat-val">${s.wis||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ХАР</span><span class="stat-val">${s.cha||'-'}</span></div>
+      </div>
+      <div class="stat-section"><h4>⚔️ Действия</h4><p>${(mon.actions||[]).join('\n')||'Нет'}</p></div>
+      <div class="stat-section"><h4>🛡️ Особенности</h4><p>${(mon.traits||[]).join('\n')||'Нет'}</p></div>
+    `;
+    document.getElementById('stat-modal').style.display = 'flex';
+  }
+};
+
+document.addEventListener('DOMContentLoaded', () => app.init());
+document.querySelectorAll('#stat-modal, #priority-modal, #add-monster-modal, #exhaustion-modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) app.closeModal(); }));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') app.closeModal(); });
+</script>
+</body>
+</html>

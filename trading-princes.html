@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Торговые принцы — Порт Нянзару</title>
+  <style>
+    /* === ПЕРГАМЕНТНАЯ ТЕМА === */
+    @font-face {
+      font-family: 'Mookmania';
+      src: url('fonts/Mookmania/Mookmania.otf') format('opentype');
+    }
+    :root {
+      --bg: #1a1208;
+      --paper: #f3e9d2;
+      --ink: #2c1e0e;
+      --ink-light: #5a3e1e;
+      --accent: #8b3a1a;
+      --accent-gold: #b8860b;
+      --border: #b89a6a;
+      --shadow: rgba(0,0,0,0.3);
+      --green: #2e5c1a;
+      --red: #6b1a1a;
+      --amber: #a07020;
+      --blue: #2a3a6b;
+      --panel: #e8dcc8;
+      --deep: #d6c29c;
+      --text: #2c1e0e;
+      --text-dim: #5a3e1e;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      font-family: 'Mookmania', Georgia, serif;
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      background-image: radial-gradient(ellipse 80% 40% at 50% 0%, #2a1e0860 0%, transparent 70%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='60'%3E%3Crect width='60' height='60' fill='none'/%3E%3Cpath d='M30 0 L60 30 L30 60 L0 30 Z' fill='none' stroke='%233a2e1a18' stroke-width='0.5'/%3E%3C/svg%3E");
+    }
+
+    /* === ТИПОГРАФИКА === */
+    .header {
+      text-align: center;
+      padding: 3.5rem 2rem 2rem;
+      position: relative;
+    }
+    .header::after {
+      content: '';
+      display: block;
+      width: 260px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent-gold), transparent);
+      margin: 1.5rem auto 0;
+    }
+    .header-eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      color: var(--ink-light);
+      text-transform: uppercase;
+      margin-bottom: 0.7rem;
+    }
+    h1 {
+      font-size: clamp(1.6rem, 4vw, 2.8rem);
+      font-weight: 800;
+      color: var(--accent-gold);
+      letter-spacing: 0.05em;
+      line-height: 1.1;
+      text-shadow: 2px 2px 0 rgba(0,0,0,0.3);
+    }
+    .header-sub {
+      font-style: italic;
+      color: var(--text-dim);
+      margin-top: 0.5rem;
+      font-size: 1.05rem;
+    }
+
+    .back-link {
+      position: absolute;
+      top: 1.5rem;
+      left: 1.5rem;
+      font-family: 'Cinzel', serif;
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      transition: all 0.2s;
+      z-index: 10;
+      background: var(--panel);
+    }
+    .back-link:hover {
+      color: var(--accent-gold);
+      border-color: var(--accent-gold);
+      background: var(--ink);
+    }
+    .back-link::before {
+      content: '← ';
+    }
+
+    /* === СЕЛЕКТОР === */
+    .selector {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.65rem;
+      padding: 2rem 1.5rem 1.5rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .prince-btn {
+      font-family: 'Mookmania', serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      background: var(--ink);
+      border: 1px solid var(--accent-gold);
+      color: var(--amber);
+      padding: 0.55rem 1.1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+    }
+    .prince-btn:hover {
+      border-color: var(--accent);
+      color: var(--paper);
+      background: var(--accent);
+    }
+    .prince-btn.active {
+      background:var(--green);
+      border-color: var(--accent-gold);
+      color: var(--deep);
+    }
+
+    /* ОБЛАСТЬ КАРТОЧЕК */
+    .card-area {
+      max-width: 1664px;
+      margin: 0 auto;
+      padding: 0 1.5rem 5rem;
+    }
+
+    .prince-card {
+      display: none;
+      animation: cardIn 0.35s ease forwards;
+    }
+    .prince-card.visible {
+      display: block;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .prince-card.visible { animation: none; }
+    }
+
+    /* КАРТОЧКА С ПОРТРЕТОМ */
+    .card-with-portrait {
+      display: grid;
+      grid-template-columns: 400px 1fr;
+      background: var(--panel);
+      border: 2px solid var(--border);
+      position: relative;
+      overflow: hidden;
+      box-shadow: 8px 8px 0 var(--shadow);
+    }
+    .card-with-portrait::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, transparent 10%, var(--accent-gold) 40%, var(--accent-gold) 60%, transparent 90%);
+      z-index: 2;
+    }
+    .card-with-portrait::after {
+      content: '◆';
+      position: absolute;
+      top: 0.6rem; right: 0.9rem;
+      font-size: 0.5rem;
+      color: var(--ink-light);
+      opacity: 0.6;
+      z-index: 1;
+    }
+
+    /* ПОРТРЕТНАЯ КОЛОНКА */
+    .portrait-col {
+      position: relative;
+      overflow: hidden;
+      border-right: 1px solid var(--border);
+      background: var(--deep);
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+    .portrait-col img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: top center;
+      display: block;
+      filter: sepia(20%) contrast(1.05);
+    }
+    .portrait-col::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .portrait-placeholder {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      border: 1px dashed var(--border);
+      margin: 0.8rem;
+      background: transparent;
+    }
+    .ph-icon { font-size: 2.2rem; opacity: 0.3; }
+    .ph-label {
+      font-size: 0.52rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      text-align: center;
+      padding: 0 0.5rem;
+      line-height: 1.6;
+    }
+    .portrait-caption {
+      position: absolute;
+      bottom: 0.8rem;
+      left: 0;
+      right: 0;
+      text-align: center;
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(black);
+      z-index: 2;
+    }
+
+    /* ИНФО-КОЛОНКА */
+    .info-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      padding: 1.8rem 2rem 1.2rem;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 1rem;
+      align-items: start;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-name {
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1;
+    }
+    .card-name-en {
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--text-dim);
+      margin-top: 0.3rem;
+    }
+    .card-domain {
+      font-size: 0.65rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 0.6rem;
+    }
+
+    .card-badge {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .alignment-badge {
+      font-size: 0.8rem;
+      letter-spacing: 0.15em;
+      padding: 0.2rem 0.4rem;
+      border: 1px solid var(--border);
+      color: var(--text-dim);
+      display: inline-block;
+      margin-bottom: 0.4rem;
+    }
+    .class-tag {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--ink-light);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      text-align: right;
+    }
+
+    /* ТЕЛО КАРТОЧКИ */
+    .card-body {
+      padding: 1.8rem 2rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.8rem;
+      flex: 1;
+    }
+
+    h2, h3 {
+      font-size: 0.6rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: normal;
+    }
+    h2::after, h3::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    .card-text {
+      font-size: 1.0rem;
+      line-height: 1.7;
+      color: var(--text);
+      font-weight: 300;
+    }
+    .card-text em {
+      color: var(--accent);
+      font-style: normal;
+    }
+
+    /* ТОРГОВЛЯ */
+    .trade-items-list {
+      margin-top: 0.6rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+    .trade-item-row {
+      display: flex;
+      align-items: baseline;
+      font-size: 0.95rem;
+    }
+    .trade-item-name {
+      color: var(--text);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .trade-item-leader {
+      flex: 1;
+      border-bottom: 1px dotted var(--border);
+      margin: 0 0.5rem 0.2rem;
+      min-width: 12px;
+    }
+    .trade-item-price {
+      font-family: 'Mookmania', serif;
+      color: var(--accent);
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .trade-note {
+      margin-top: 0.8rem;
+      font-size: 0.85rem;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* СЕКРЕТЫ / КВЕСТЫ */
+    .secret-block {
+      margin-top: 1.2rem;
+      padding: 1rem 1.2rem;
+      border-left: 2px solid var(--red);
+      background: rgba(107,26,26,0.08);
+    }
+    .secret-block h3 { color: var(--red); }
+    .secret-block h3::after { background: rgba(107,26,26,0.3); }
+
+    .quest-block {
+      margin-top: 1.2rem;
+      padding: 1rem 1.2rem;
+      border-left: 2px solid var(--blue);
+      background: rgba(42,58,107,0.08);
+    }
+    .quest-block h3 { color: var(--blue); }
+    .quest-block h3::after { background: rgba(42,58,107,0.3); }
+
+    /* ВИЛЛА */
+    .villa-block {
+      margin-top: 1.2rem;
+      padding: 0.8rem 1rem;
+      border-left: 2px solid var(--accent-gold);
+      background: rgba(184,134,11,0.08);
+    }
+    .villa-block h3 { color: var(--accent-gold); }
+    .villa-block h3::after { background: rgba(184,134,11,0.3); }
+
+    /* ФУТЕР */
+    .card-footer {
+      padding: 1rem 2rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: flex-start;
+      align-items: center;
+    }
+    .trait-pill {
+      font-style: italic;
+      font-size: 0.95rem;
+      color: var(--text-dim);
+    }
+    .trait-pill::before { content: '« '; color: var(--ink-light); }
+    .trait-pill::after  { content: ' »'; color: var(--ink-light); }
+
+    /* АДАПТИВНОСТЬ */
+    @media (max-width: 700px) {
+      .card-with-portrait { grid-template-columns: 1fr; }
+      .portrait-col { height: 260px; border-right: none; border-bottom: 1px solid var(--border); }
+      .card-body { grid-template-columns: 1fr; padding: 1.5rem 1.5rem; }
+      .card-header { grid-template-columns: 1fr; }
+      .card-badge { text-align: left; }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--text-dim);
+    }
+    .empty-state .symbol {
+      font-size: 2.5rem;
+      opacity: 0.3;
+      margin-bottom: 1rem;
+    }
+    .empty-state p {
+      font-style: italic;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <a class="back-link" href="index.html">Назад</a>
+  <div class="header-eyebrow">Порт Нянзару · Чульт</div>
+  <h1>Торговые Принцы</h1>
+  <div class="header-sub">Семь правителей. Семь монополий. Один город.</div>
+</div>
+
+<div class="selector" id="selector"></div>
+
+<div class="card-area">
+  <div id="empty-state" class="empty-state">
+    <div class="symbol">⚜</div>
+    <p id="status-message">Загрузка данных...</p>
+  </div>
+  <div id="cardsContainer"></div>
+</div>
+
+<script>
+  (function(){
+    "use strict";
+
+    const selectorDiv = document.getElementById('selector');
+    const cardsContainer = document.getElementById('cardsContainer');
+    const emptyState = document.getElementById('empty-state');
+    const statusMessage = document.getElementById('status-message');
+    let activeButton = null;
+
+    function renderApp(princesData) {
+      selectorDiv.innerHTML = '';
+      cardsContainer.innerHTML = '';
+
+      if (!princesData.length) {
+        statusMessage.textContent = 'Нет данных о принцах.';
+        return;
+      }
+
+      princesData.forEach((prince) => {
+        const btn = document.createElement('button');
+        btn.className = 'prince-btn';
+        btn.textContent = prince.name;
+        btn.dataset.id = prince.id;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.addEventListener('click', (e) => switchPrince(prince.id, btn));
+        selectorDiv.appendChild(btn);
+      });
+
+      princesData.forEach((prince) => {
+        const card = document.createElement('div');
+        card.className = 'prince-card';
+        card.id = `card-${prince.id}`;
+        card.setAttribute('role', 'tabpanel');
+        card.setAttribute('aria-labelledby', `btn-${prince.id}`);
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'card-with-portrait';
+
+        const portraitCol = document.createElement('div');
+        portraitCol.className = 'portrait-col';
+        if (prince.portraitFile) {
+          portraitCol.innerHTML = `
+            <img src="${prince.portraitFile}" alt="${prince.portraitName}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div class="portrait-placeholder" style="display: none;">
+              <div class="ph-icon">🧑‍💼</div>
+              <div class="ph-label">Нет портрета</div>
+            </div>
+            <div class="portrait-caption"></div>
+          `;
+        } else {
+          portraitCol.innerHTML = `
+            <div class="portrait-placeholder">
+              <div class="ph-icon">🧑‍💼</div>
+              <div class="ph-label">Нет портрета</div>
+            </div>
+            <div class="portrait-caption">${prince.portraitName}</div>
+          `;
+        }
+        wrapper.appendChild(portraitCol);
+
+        const infoCol = document.createElement('div');
+        infoCol.className = 'info-col';
+
+        const header = document.createElement('div');
+        header.className = 'card-header';
+        header.innerHTML = `
+          <div>
+            <div class="card-name">${prince.name}</div>
+            <div class="card-name-en">${prince.nameEn}</div>
+            <div class="card-domain">${prince.domain}</div>
+          </div>
+          <div class="card-badge">
+            <span class="alignment-badge">${prince.alignment}</span>
+            ${prince.classTags.map(tag => `<span class="class-tag">${tag}</span>`).join('')}
+          </div>
+        `;
+        infoCol.appendChild(header);
+
+        const body = document.createElement('div');
+        body.className = 'card-body';
+
+        const leftDiv = document.createElement('div');
+        leftDiv.innerHTML = `<h2>Характер</h2><div class="card-text">${prince.character}</div>`;
+        if (prince.secret) {
+          const secretDiv = document.createElement('div');
+          secretDiv.className = 'secret-block';
+          secretDiv.innerHTML = `<h3>${prince.secret.title}</h3><div class="card-text">${prince.secret.text}</div>`;
+          leftDiv.appendChild(secretDiv);
+        }
+        body.appendChild(leftDiv);
+
+        const rightDiv = document.createElement('div');
+        const tradeTitle = document.createElement('h2');
+        tradeTitle.textContent = 'Торговля';
+        rightDiv.appendChild(tradeTitle);
+
+        if (prince.tradeItems && prince.tradeItems.length) {
+          const listDiv = document.createElement('div');
+          listDiv.className = 'trade-items-list';
+          prince.tradeItems.forEach(item => {
+            const row = document.createElement('div');
+            row.className = 'trade-item-row';
+            row.innerHTML = `
+              <span class="trade-item-name">${item.name}</span>
+              <span class="trade-item-leader"></span>
+              <span class="trade-item-price">${item.price} ${item.currency}</span>
+            `;
+            listDiv.appendChild(row);
+          });
+          rightDiv.appendChild(listDiv);
+        }
+
+        if (prince.tradeNote) {
+          const noteDiv = document.createElement('div');
+          noteDiv.className = 'trade-note';
+          noteDiv.textContent = prince.tradeNote;
+          rightDiv.appendChild(noteDiv);
+        }
+
+        if (prince.villa) {
+          const villaDiv = document.createElement('div');
+          villaDiv.className = 'villa-block';
+          villaDiv.innerHTML = `<h3>Вилла</h3><div class="card-text">${prince.villa}</div>`;
+          rightDiv.appendChild(villaDiv);
+        }
+
+        if (prince.quest) {
+          const questDiv = document.createElement('div');
+          questDiv.className = 'quest-block';
+          questDiv.innerHTML = `<h3>${prince.quest.title}</h3><div class="card-text">${prince.quest.text}</div>`;
+          rightDiv.appendChild(questDiv);
+        }
+        if (prince.extraInfo) {
+          const extraDiv = document.createElement('div');
+          extraDiv.style.marginTop = '1rem';
+          extraDiv.innerHTML = `<h2>Мотивация</h2><div class="card-text">${prince.extraInfo}</div>`;
+          rightDiv.appendChild(extraDiv);
+        }
+        body.appendChild(rightDiv);
+        infoCol.appendChild(body);
+
+        const footer = document.createElement('div');
+        footer.className = 'card-footer';
+        footer.innerHTML = `<span class="trait-pill">${prince.footerPill}</span>`;
+        infoCol.appendChild(footer);
+
+        wrapper.appendChild(infoCol);
+        card.appendChild(wrapper);
+        cardsContainer.appendChild(card);
+      });
+
+      document.querySelectorAll('.prince-btn').forEach(btn => btn.id = 'btn-' + btn.dataset.id);
+      emptyState.style.display = 'block';
+      statusMessage.textContent = 'Выберите торгового принца, чтобы открыть его досье';
+    }
+
+    function switchPrince(id, btn) {
+      if (activeButton === btn) {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-pressed', 'false');
+        document.querySelectorAll('.prince-card').forEach(c => c.classList.remove('visible'));
+        emptyState.style.display = 'block';
+        activeButton = null;
+        return;
+      }
+
+      if (activeButton) {
+        activeButton.classList.remove('active');
+        activeButton.setAttribute('aria-pressed', 'false');
+      }
+
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+      activeButton = btn;
+
+      document.querySelectorAll('.prince-card').forEach(c => c.classList.remove('visible'));
+      const targetCard = document.getElementById(`card-${id}`);
+      targetCard.classList.add('visible');
+      emptyState.style.display = 'none';
+      targetCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    fetch('data/trading-princes-data.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Файл данных не найден');
+        return response.json();
+      })
+      .then(data => renderApp(data))
+      .catch(error => {
+        console.error('Ошибка загрузки:', error);
+        statusMessage.innerHTML = `Ошибка загрузки данных.<br>Убедитесь, что файл <code>data/trading-princes-data.json</code> существует.`;
+      });
+  })();
+</script>
+</body>
+</html>
