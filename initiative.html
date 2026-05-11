@@ -76,37 +76,47 @@
       position: relative;
     }
     aside.collapsed {
-      width: 60px;
+      width: 70px;
     }
     .sidebar-toggle {
       position: absolute;
       top: 0.5rem;
-      right: 0.5rem;
-      background: transparent;
+      right: 0;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--bg-panel);
       border: 1px solid var(--border);
+      border-right: none;
       color: var(--text-muted);
-      padding: 0.2rem 0.5rem;
-      border-radius: 4px;
       cursor: pointer;
       font-size: 0.9rem;
-      z-index: 5;
+      z-index: 10;
+      border-radius: 4px 0 0 4px;
+      transition: background 0.2s;
     }
-    .sidebar-toggle:hover { border-color: var(--accent); color: var(--accent); }
+    .sidebar-toggle:hover { background: var(--bg-card); color: var(--accent); }
+    aside.collapsed .sidebar-toggle { right: auto; left: 100%; border-radius: 0 4px 4px 0; border-left: none; border-right: 1px solid var(--border); }
+
     .categories { flex: 1; overflow-y: auto; padding: 0.5rem; }
     aside.collapsed .categories { padding: 0.5rem 0.2rem; }
     .category { margin-bottom: 0.8rem; }
     .cat-header {
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex; align-items: center;
+      gap: 0.4rem;
       padding: 0.5rem; cursor: pointer; font-weight: 600; color: var(--accent);
       background: var(--bg-card); border-radius: 4px; margin-bottom: 0.3rem; border: 1px solid var(--border);
     }
-    aside.collapsed .cat-header {
-      justify-content: center;
-      padding: 0.5rem 0.2rem;
-      margin-bottom: 0.6rem;
-    }
-    aside.collapsed .cat-header .cat-name { display: none; }
-    aside.collapsed .cat-header .cat-arrow { display: none; }
+    .cat-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .cat-name { flex: 1; font-size: 0.8rem; }
+    .cat-arrow { font-size: 0.7rem; flex-shrink: 0; }
+    aside.collapsed .cat-header { justify-content: center; padding: 0.5rem 0.2rem; gap: 0; }
+    aside.collapsed .cat-name,
+    aside.collapsed .cat-arrow { display: none; }
+    aside.collapsed .cat-icon { font-size: 1.3rem; margin: 0; }
+
     .cat-content { padding-left: 0.5rem; display: none; }
     .category.open .cat-content { display: block; }
     aside.collapsed .cat-content { display: none !important; }
@@ -119,21 +129,20 @@
 
     /* Popup menu for collapsed sidebar */
     .cat-popup {
-      position: absolute;
-      left: 60px;
-      top: 0;
+      position: fixed;
+      z-index: 200;
       background: var(--bg-panel);
       border: 1px solid var(--accent);
-      border-radius: 4px;
-      z-index: 50;
-      min-width: 200px;
-      max-height: 300px;
+      border-radius: 6px;
+      min-width: 190px;
+      max-height: 260px;
       overflow-y: auto;
-      box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.6);
       display: none;
+      padding: 0.3rem;
     }
     .cat-popup.open { display: block; }
-    .cat-popup .monster-card { border-left: none; }
+    .cat-popup .monster-card { margin: 0.2rem 0; }
 
     /* MAIN AREA */
     main { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 1rem; gap: 1rem; position: relative; }
@@ -565,11 +574,15 @@ const app = {
       div.className = 'category';
       const icon = cat.icon || (cat.name ? cat.name[0] : '?');
       div.innerHTML = `
-        <div class="cat-header" onclick="app.toggleCategory(this)">
-          <span class="cat-name">${icon} ${cat.name}</span>
+        <div class="cat-header">
+          <span class="cat-icon">${icon}</span>
+          <span class="cat-name">${cat.name}</span>
           <span class="cat-arrow">▼</span>
         </div>
         <div class="cat-content">
+          ${cat.monsters.map(m => `<div class="monster-card" data-id="${m.id}" data-cat="${cat.id}" onclick="app.spawnMonster('${cat.id}', '${m.id}')">${m.name}</div>`).join('')}
+        </div>
+        <div class="cat-popup">
           ${cat.monsters.map(m => `<div class="monster-card" data-id="${m.id}" data-cat="${cat.id}" onclick="app.spawnMonster('${cat.id}', '${m.id}')">${m.name}</div>`).join('')}
         </div>
       `;
@@ -578,6 +591,7 @@ const app = {
   },
 
   toggleCategory(headerEl) {
+    if (this.sidebarCollapsed) return;
     const category = headerEl.closest('.category');
     category.classList.toggle('open');
   },
@@ -592,6 +606,28 @@ const app = {
     } else {
       sidebar.classList.remove('collapsed');
       toggleBtn.textContent = '◀';
+    }
+  },
+
+  // Открыть popup для категории (свёрнутая панель)
+  openCatPopup(e, catDiv) {
+    e.stopPropagation();
+    if (!this.sidebarCollapsed) return;
+    const popup = catDiv.querySelector('.cat-popup');
+    if (!popup) return;
+    const header = catDiv.querySelector('.cat-header');
+    const rect = header.getBoundingClientRect();
+    popup.style.top = rect.top + 'px';
+    popup.style.left = (rect.right + 4) + 'px';
+    popup.classList.toggle('open');
+    const closePopup = (ev) => {
+      if (!popup.contains(ev.target) && ev.target !== header) {
+        popup.classList.remove('open');
+        document.removeEventListener('click', closePopup);
+      }
+    };
+    if (popup.classList.contains('open')) {
+      setTimeout(() => document.addEventListener('click', closePopup), 10);
     }
   },
 
@@ -1107,6 +1143,18 @@ const app = {
 document.addEventListener('DOMContentLoaded', () => app.init());
 document.querySelectorAll('#stat-modal, #priority-modal, #add-monster-modal, #exhaustion-modal, #cover-modal, #conditions-modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) app.closeModal(); }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') app.closeModal(); });
+
+// Глобальный обработчик клика по заголовку категории
+document.getElementById('sidebar-list').addEventListener('click', e => {
+  const header = e.target.closest('.cat-header');
+  if (!header) return;
+  const category = header.closest('.category');
+  if (app.sidebarCollapsed) {
+    app.openCatPopup(e, category);
+  } else {
+    app.toggleCategory(header);
+  }
+});
 </script>
 </body>
 </html>
