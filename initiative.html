@@ -72,22 +72,68 @@
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      transition: width 0.25s ease;
+      position: relative;
     }
+    aside.collapsed {
+      width: 60px;
+    }
+    .sidebar-toggle {
+      position: absolute;
+      top: 0.5rem;
+      right: 0.5rem;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      z-index: 5;
+    }
+    .sidebar-toggle:hover { border-color: var(--accent); color: var(--accent); }
     .categories { flex: 1; overflow-y: auto; padding: 0.5rem; }
+    aside.collapsed .categories { padding: 0.5rem 0.2rem; }
     .category { margin-bottom: 0.8rem; }
     .cat-header {
       display: flex; justify-content: space-between; align-items: center;
       padding: 0.5rem; cursor: pointer; font-weight: 600; color: var(--accent);
       background: var(--bg-card); border-radius: 4px; margin-bottom: 0.3rem; border: 1px solid var(--border);
     }
+    aside.collapsed .cat-header {
+      justify-content: center;
+      padding: 0.5rem 0.2rem;
+      margin-bottom: 0.6rem;
+    }
+    aside.collapsed .cat-header .cat-name { display: none; }
+    aside.collapsed .cat-header .cat-arrow { display: none; }
     .cat-content { padding-left: 0.5rem; display: none; }
     .category.open .cat-content { display: block; }
+    aside.collapsed .cat-content { display: none !important; }
     .monster-card {
       padding: 0.4rem 0.6rem; margin: 0.2rem 0; background: var(--bg-dark);
       border-radius: 4px; cursor: pointer; font-size: 0.85rem; border-left: 3px solid transparent;
       transition: 0.15s; color: var(--text-main);
     }
     .monster-card:hover { background: var(--bg-card); border-left-color: var(--accent); }
+
+    /* Popup menu for collapsed sidebar */
+    .cat-popup {
+      position: absolute;
+      left: 60px;
+      top: 0;
+      background: var(--bg-panel);
+      border: 1px solid var(--accent);
+      border-radius: 4px;
+      z-index: 50;
+      min-width: 200px;
+      max-height: 300px;
+      overflow-y: auto;
+      box-shadow: 4px 4px 10px rgba(0,0,0,0.5);
+      display: none;
+    }
+    .cat-popup.open { display: block; }
+    .cat-popup .monster-card { border-left: none; }
 
     /* MAIN AREA */
     main { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 1rem; gap: 1rem; position: relative; }
@@ -433,7 +479,8 @@
 </header>
 
 <div class="container">
-  <aside>
+  <aside id="sidebar">
+    <button class="sidebar-toggle" onclick="app.toggleSidebar()" title="Свернуть/развернуть">◀</button>
     <div class="categories" id="sidebar-list"></div>
   </aside>
 
@@ -472,27 +519,9 @@
   </main>
 </div>
 
-<!-- Модальное окно: Укрытия -->
-<div id="cover-modal">
-  <div class="modal-content">
-    <button class="close-modal" onclick="app.closeModal()">✖</button>
-    <h2>🛡️ Укрытия</h2>
-    <div><span class="highlight" style="color:var(--accent); font-weight:bold;">1/2:</span> +2 КД и спасброскам Ловкости</div>
-    <div><span class="highlight" style="color:var(--accent); font-weight:bold;">3/4:</span> +5 КД и спасброскам Ловкости</div>
-    <div><span class="highlight" style="color:var(--accent); font-weight:bold;">Полное:</span> нельзя выбрать целью атаки или заклинания с броском атаки</div>
-  </div>
-</div>
-
-<!-- Модальное окно: Состояния -->
-<div id="conditions-modal">
-  <div class="modal-content">
-    <button class="close-modal" onclick="app.closeModal()">✖</button>
-    <h2>📜 Состояния</h2>
-    <div id="conditions-list"></div>
-  </div>
-</div>
-
-<!-- Остальные модальные окна -->
+<!-- Модальные окна -->
+<div id="cover-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><h2>🛡️ Укрытия</h2><div><span class="highlight" style="color:var(--accent); font-weight:bold;">1/2:</span> +2 КД и спасброскам Ловкости</div><div><span class="highlight" style="color:var(--accent); font-weight:bold;">3/4:</span> +5 КД и спасброскам Ловкости</div><div><span class="highlight" style="color:var(--accent); font-weight:bold;">Полное:</span> нельзя выбрать целью атаки или заклинания с броском атаки</div></div></div>
+<div id="conditions-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><h2>📜 Состояния</h2><div id="conditions-list"></div></div></div>
 <div id="stat-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><div id="modal-body"></div></div></div>
 <div id="priority-modal"><div class="modal-content"><h2>⚡ Одинаковая инициатива</h2><p style="margin-bottom:1rem; color:var(--text-muted)">Задайте порядок внутри каждой группы (1 — первый).</p><div id="priority-content"></div><button id="apply-priority-btn" onclick="app.applyPriority()">✅ Подтвердить порядок</button></div></div>
 <div id="add-monster-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><h2>➕ Добавить монстров в бой</h2><p style="font-size:0.8rem; color:var(--text-muted)">Заполните инициативу только для нужных монстров. Пустые строки будут пропущены.</p><div id="add-monster-content" class="add-monster-list"></div><button id="add-monster-batch-btn" onclick="app.spawnBatch()">✅ Добавить выбранных</button></div></div>
@@ -509,11 +538,12 @@ const app = {
   uidCounter: 0,
   firstAliveUid: null,
   pendingExhaustionUid: null,
+  sidebarCollapsed: false,
 
   async init() {
     try {
       const [monsterRes, condRes] = await Promise.all([
-        fetch('data/creatures.json'),
+        fetch('data/initiative-data.json'),
         fetch('data/conditions.json')
       ]);
       if (!monsterRes.ok || !condRes.ok) throw new Error('Ошибка загрузки JSON');
@@ -533,9 +563,11 @@ const app = {
     this.data.categories.forEach(cat => {
       const div = document.createElement('div');
       div.className = 'category';
+      const icon = cat.icon || (cat.name ? cat.name[0] : '?');
       div.innerHTML = `
-        <div class="cat-header" onclick="this.parentElement.classList.toggle('open')">
-          <span>${cat.name}</span> <span>▼</span>
+        <div class="cat-header" onclick="app.toggleCategory(this)">
+          <span class="cat-name">${icon} ${cat.name}</span>
+          <span class="cat-arrow">▼</span>
         </div>
         <div class="cat-content">
           ${cat.monsters.map(m => `<div class="monster-card" data-id="${m.id}" data-cat="${cat.id}" onclick="app.spawnMonster('${cat.id}', '${m.id}')">${m.name}</div>`).join('')}
@@ -543,6 +575,24 @@ const app = {
       `;
       container.appendChild(div);
     });
+  },
+
+  toggleCategory(headerEl) {
+    const category = headerEl.closest('.category');
+    category.classList.toggle('open');
+  },
+
+  toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const toggleBtn = sidebar.querySelector('.sidebar-toggle');
+    this.sidebarCollapsed = !this.sidebarCollapsed;
+    if (this.sidebarCollapsed) {
+      sidebar.classList.add('collapsed');
+      toggleBtn.textContent = '▶';
+    } else {
+      sidebar.classList.remove('collapsed');
+      toggleBtn.textContent = '◀';
+    }
   },
 
   renderConditionsList() {
