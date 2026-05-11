@@ -47,18 +47,31 @@
     }
     .header-left { display: flex; align-items: center; gap: 1rem; }
     header h1 { font-size: 1.4rem; color: var(--accent); letter-spacing: 0.05em; }
-    .header-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      padding: 0.3rem 0.8rem;
-      border-radius: 4px;
-      cursor: pointer;
-      font-family: 'Cinzel', serif;
-      font-size: 0.8rem;
-      transition: 0.2s;
+    
+    /* Кнопка-меню "Правила" */
+    .rules-dropdown { position: relative; display: inline-block; }
+    .rules-btn {
+      background: transparent; border: 1px solid var(--border); color: var(--text-muted);
+      padding: 0.3rem 0.8rem; border-radius: 4px; cursor: pointer;
+      font-family: 'Cinzel', serif; font-size: 0.8rem; transition: 0.2s;
+      display: flex; align-items: center; gap: 0.3rem;
     }
-    .header-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .rules-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .rules-btn .arrow { font-size: 0.6rem; }
+    
+    .rules-menu {
+      display: none; position: absolute; top: 100%; left: 0; margin-top: 4px;
+      background: var(--bg-panel); border: 1px solid var(--accent); border-radius: 6px;
+      min-width: 180px; box-shadow: 0 4px 12px rgba(0,0,0,0.5); z-index: 110; padding: 0.3rem 0;
+    }
+    .rules-menu.open { display: block; }
+    .rules-menu button {
+      display: block; width: 100%; background: none; border: none; color: var(--text-main);
+      padding: 0.5rem 1rem; text-align: left; font-family: 'Cinzel', serif; font-size: 0.8rem;
+      cursor: pointer; transition: background 0.2s;
+    }
+    .rules-menu button:hover { background: var(--bg-card); color: var(--accent); }
+
     .back-link { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.2s; border: 1px solid var(--border); padding: 0.3rem 0.8rem; border-radius: 4px; }
     .back-link:hover { color: var(--accent); border-color: var(--accent); }
 
@@ -67,33 +80,19 @@
     /* SIDEBAR WRAPPER + TOGGLE */
     .sidebar-wrapper { position: relative; display: flex; }
     aside {
-      width: 280px;
-      background: var(--bg-panel);
-      border-right: 2px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      transition: width 0.25s ease;
+      width: 280px; background: var(--bg-panel); border-right: 2px solid var(--border);
+      display: flex; flex-direction: column; overflow: hidden; transition: width 0.25s ease;
     }
     aside.collapsed { width: 70px; }
     .sidebar-toggle {
-      width: 28px;
-      height: 28px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg-panel);
-      border: 1px solid var(--border);
-      color: var(--text-muted);
-      cursor: pointer;
-      font-size: 0.9rem;
-      z-index: 20;
-      border-radius: 0 4px 4px 0;
-      transition: background 0.2s;
-      flex-shrink: 0;
-      margin-top: 0.5rem;
+      width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;
+      background: var(--bg-panel); border: 1px solid var(--border); color: var(--text-muted);
+      cursor: pointer; font-size: 0.8rem; z-index: 20; border-radius: 0 4px 4px 0;
+      transition: background 0.2s; flex-shrink: 0; margin-top: 0.5rem;
+      writing-mode: horizontal-tb; white-space: nowrap; padding: 0 6px; gap: 0.3rem;
     }
     .sidebar-toggle:hover { background: var(--bg-card); color: var(--accent); }
+    .sidebar-toggle .toggle-text { font-size: 0.6rem; letter-spacing: 0.1em; }
 
     .categories { flex: 1; overflow-y: auto; padding: 0.5rem; }
     aside.collapsed .categories { padding: 0.5rem 0.2rem; }
@@ -319,8 +318,13 @@
 <header>
   <div class="header-left">
     <h1>🗡️ Трекер Инициативы</h1>
-    <button class="header-btn" onclick="app.openCoverModal()">🛡️ Укрытия</button>
-    <button class="header-btn" onclick="app.openConditionsModal()">📜 Состояния</button>
+    <div class="rules-dropdown">
+      <button class="rules-btn" id="rulesBtn">📜 Правила <span class="arrow">▼</span></button>
+      <div class="rules-menu" id="rulesMenu">
+        <button data-rule="cover">🛡️ Укрытия</button>
+        <button data-rule="conditions">📜 Состояния</button>
+      </div>
+    </div>
   </div>
   <a href="index.html" class="back-link">← На главную</a>
 </header>
@@ -330,7 +334,9 @@
     <aside id="sidebar">
       <div class="categories" id="sidebar-list"></div>
     </aside>
-    <button class="sidebar-toggle" onclick="app.toggleSidebar()" title="Свернуть/развернуть">◀</button>
+    <button class="sidebar-toggle" id="sidebarToggle" onclick="app.toggleSidebar()">
+      <span class="toggle-text">СВЕРНУТЬ</span> ◀
+    </button>
   </div>
 
   <main>
@@ -369,7 +375,7 @@
 </div>
 
 <!-- Модальные окна -->
-<div id="cover-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><h2>🛡️ Укрытия</h2><div><span class="highlight" style="color:var(--accent); font-weight:bold;">1/2:</span> +2 КД и спасброскам Ловкости</div><div><span class="highlight" style="color:var(--accent); font-weight:bold;">3/4:</span> +5 КД и спасброскам Ловкости</div><div><span class="highlight" style="color:var(--accent); font-weight:bold;">Полное:</span> нельзя выбрать целью атаки или заклинания с броском атаки</div></div></div>
+<div id="cover-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><div id="cover-content"></div></div></div>
 <div id="conditions-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><h2>📜 Состояния</h2><div id="conditions-list"></div></div></div>
 <div id="stat-modal"><div class="modal-content"><button class="close-modal" onclick="app.closeModal()">✖</button><div id="modal-body"></div></div></div>
 <div id="priority-modal"><div class="modal-content"><h2>⚡ Одинаковая инициатива</h2><p style="margin-bottom:1rem; color:var(--text-muted)">Задайте порядок внутри каждой группы (1 — первый).</p><div id="priority-content"></div><button id="apply-priority-btn" onclick="app.applyPriority()">✅ Подтвердить порядок</button></div></div>
@@ -380,6 +386,7 @@
 const app = {
   data: [],
   conditionsData: [],
+  coverData: [],
   combatants: [],
   turnIndex: 0,
   round: 1,
@@ -391,13 +398,15 @@ const app = {
 
   async init() {
     try {
-      const [creatureRes, condRes] = await Promise.all([
+      const [creatureRes, condRes, coverRes] = await Promise.all([
         fetch('data/creatures.json'),
-        fetch('data/conditions.json')
+        fetch('data/conditions.json'),
+        fetch('data/cover_position.json')
       ]);
-      if (!creatureRes.ok || !condRes.ok) throw new Error('Ошибка загрузки JSON');
+      if (!creatureRes.ok || !condRes.ok || !coverRes.ok) throw new Error('Ошибка загрузки JSON');
       this.data = await creatureRes.json();
       this.conditionsData = await condRes.json();
+      this.coverData = await coverRes.json();
       this.renderSidebar();
       this.renderConditionsList();
     } catch (e) {
@@ -438,14 +447,14 @@ const app = {
 
   toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
-    const toggleBtn = document.querySelector('.sidebar-toggle');
+    const toggleBtn = document.getElementById('sidebarToggle');
     this.sidebarCollapsed = !this.sidebarCollapsed;
     if (this.sidebarCollapsed) {
       sidebar.classList.add('collapsed');
-      toggleBtn.textContent = '▶';
+      toggleBtn.innerHTML = '<span class="toggle-text">РАЗВЕРНУТЬ</span> ▶';
     } else {
       sidebar.classList.remove('collapsed');
-      toggleBtn.textContent = '◀';
+      toggleBtn.innerHTML = '<span class="toggle-text">СВЕРНУТЬ</span> ◀';
     }
   },
 
@@ -478,6 +487,27 @@ const app = {
         <span style="color:var(--text-muted);"><strong>${c.name}:</strong> ${c.effect}</span>
       </div>
     `).join('');
+  },
+
+  openRulesModal(ruleType) {
+    if (ruleType === 'cover') {
+      const container = document.getElementById('cover-content');
+      container.innerHTML = '<h2>🛡️ Укрытия и Позиции</h2>';
+      this.coverData.categories.forEach(cat => {
+        container.innerHTML += `<h3 style="margin-top:1rem;">${cat.icon} ${cat.name}</h3>`;
+        cat.rules.forEach(rule => {
+          container.innerHTML += `
+            <div style="display:flex; align-items:flex-start; gap:0.5rem; margin-bottom:0.5rem;">
+              <span style="font-size:1.2rem; width:24px; text-align:center;">${rule.icon || '•'}</span>
+              <span><strong>${rule.name}:</strong> ${rule.effect}</span>
+            </div>`;
+        });
+      });
+      document.getElementById('cover-modal').style.display = 'flex';
+    } else if (ruleType === 'conditions') {
+      document.getElementById('conditions-modal').style.display = 'flex';
+    }
+    document.getElementById('rulesMenu').classList.remove('open');
   },
 
   getIndexedName(monId, baseName) {
@@ -659,7 +689,13 @@ const app = {
       btn.textContent = `Уровень ${i}`;
       btn.onclick = () => {
         const c = this.combatants.find(x => x.uid === this.pendingExhaustionUid);
-        if (c) { if (!c.conditions) c.conditions = []; if (!c.conditions.includes('exhaustion')) c.conditions.push('exhaustion'); c.exhaustionLevel = i; this.renderCombatCards(); this.highlightActive(); }
+        if (c) {
+          if (!c.conditions) c.conditions = [];
+          if (!c.conditions.includes('exhaustion')) c.conditions.push('exhaustion');
+          c.exhaustionLevel = i;
+          this.renderCombatCards();
+          this.highlightActive();
+        }
         document.getElementById('exhaustion-modal').style.display = 'none';
       };
       container.appendChild(btn);
@@ -667,181 +703,337 @@ const app = {
     document.getElementById('exhaustion-modal').style.display = 'flex';
   },
 
-  updateInit(uid, val) { const c = this.combatants.find(x => x.uid === uid); if (c) { const n = parseFloat(val); c.initiative = isNaN(n) ? null : n; } },
+  updateInit(uid, val) {
+    const c = this.combatants.find(x => x.uid === uid);
+    if (c) { const n = parseFloat(val); c.initiative = isNaN(n) ? null : n; }
+  },
 
   removeCombatant(uid) {
-    const c = this.combatants.find(x => x.uid === uid); if (!c) return;
+    const c = this.combatants.find(x => x.uid === uid);
+    if (!c) return;
     if (!confirm(`Удалить ${c.name}?`)) return;
     this.combatants = this.combatants.filter(x => x.uid !== uid);
     if (this.combatActive) {
       if (this.combatants.length === 0) { this.endCombat(); return; }
-      this.updateFirstAlive(); this.adjustTurnIndex(); this.renderCombatCards(); this.highlightActive();
-    } else { this.renderCombatants(); if (this.combatants.length === 0) document.getElementById('start-combat-btn').disabled = true; }
+      this.updateFirstAlive();
+      this.adjustTurnIndex();
+      this.renderCombatCards();
+      this.highlightActive();
+    } else {
+      this.renderCombatants();
+      if (this.combatants.length === 0) document.getElementById('start-combat-btn').disabled = true;
+    }
   },
 
   startCombat() {
     if (!this.combatants.every(c => Number.isFinite(c.initiative))) { alert('Заполните инициативу!'); return; }
-    const groups = {}; this.combatants.forEach(c => { const k = c.initiative; if (!groups[k]) groups[k] = []; groups[k].push(c); });
+    const groups = {};
+    this.combatants.forEach(c => { const k = c.initiative; if (!groups[k]) groups[k] = []; groups[k].push(c); });
     const dup = Object.keys(groups).filter(k => groups[k].length > 1);
     if (dup.length) { this.pendingStart = true; this.openPriorityModal(groups, dup); return; }
     this.beginCombat();
   },
 
   openPriorityModal(groups, keys) {
-    const cont = document.getElementById('priority-content'); cont.innerHTML = '';
+    const cont = document.getElementById('priority-content');
+    cont.innerHTML = '';
     keys.forEach(key => {
-      const grp = groups[key]; const div = document.createElement('div'); div.className = 'priority-group';
+      const grp = groups[key];
+      const div = document.createElement('div'); div.className = 'priority-group';
       div.innerHTML = `<h3>Инициатива: ${key}</h3>`;
-      grp.forEach(c => { const row = document.createElement('div'); row.className = 'priority-row'; row.innerHTML = `<label>${c.name}</label><input type="number" min="1" max="${grp.length}" value="1" data-uid="${c.uid}">`; div.appendChild(row); });
+      grp.forEach(c => {
+        const row = document.createElement('div'); row.className = 'priority-row';
+        row.innerHTML = `<label>${c.name}</label><input type="number" min="1" max="${grp.length}" value="1" data-uid="${c.uid}">`;
+        div.appendChild(row);
+      });
       cont.appendChild(div);
     });
     document.getElementById('priority-modal').style.display = 'flex';
   },
 
   applyPriority() {
-    document.querySelectorAll('#priority-content input').forEach(inp => { const uid = inp.dataset.uid; const val = parseInt(inp.value,10); if (!isNaN(val) && val >= 1) { const c = this.combatants.find(x => x.uid === uid); if (c) c.priority = val; } });
+    document.querySelectorAll('#priority-content input').forEach(inp => {
+      const uid = inp.dataset.uid; const val = parseInt(inp.value,10);
+      if (!isNaN(val) && val >= 1) { const c = this.combatants.find(x => x.uid === uid); if (c) c.priority = val; }
+    });
     document.getElementById('priority-modal').style.display = 'none';
     if (this.pendingStart) { this.pendingStart = false; this.beginCombat(); }
   },
 
   beginCombat() {
     this.combatants.sort((a,b) => b.initiative - a.initiative || (a.priority||0) - (b.priority||0));
-    this.combatActive = true; this.turnIndex = 0; this.round = 1;
+    this.combatActive = true;
+    this.turnIndex = 0; this.round = 1;
     this.combatants.forEach(c => { c.dead = false; c.priority = 0; c.tempHp = 0; c.maxTempHp = 0; c.conditions = []; c.exhaustionLevel = 0; });
-    this.updateFirstAlive(); this.adjustTurnIndex();
+    this.updateFirstAlive();
+    this.adjustTurnIndex();
     document.getElementById('setup-area').style.display = 'none';
     document.getElementById('combat-controls').style.display = 'flex';
     document.getElementById('round-display').textContent = this.round;
-    this.renderCombatCards(); this.highlightActive();
+    this.renderCombatCards();
+    this.highlightActive();
     document.getElementById('count-display').textContent = this.combatants.filter(c => !c.dead).length;
   },
 
   updateFirstAlive() { const a = this.combatants.filter(c => !c.dead); this.firstAliveUid = a.length ? a[0].uid : null; },
+
   renderCombatCards() { this.renderCombatants(); },
 
   adjustTurnIndex() {
     if (!this.combatActive || this.combatants.length === 0) return;
-    const alive = this.combatants.filter(c => !c.dead).length; if (alive === 0) { this.endCombat(); return; }
+    const alive = this.combatants.filter(c => !c.dead).length;
+    if (alive === 0) { this.endCombat(); return; }
     if (this.turnIndex >= this.combatants.length) this.turnIndex = 0;
-    if (this.combatants[this.turnIndex].dead) { for (let i = 0; i < this.combatants.length; i++) { const idx = (this.turnIndex + i) % this.combatants.length; if (!this.combatants[idx].dead) { this.turnIndex = idx; break; } } }
+    if (this.combatants[this.turnIndex].dead) {
+      for (let i = 0; i < this.combatants.length; i++) {
+        const idx = (this.turnIndex + i) % this.combatants.length;
+        if (!this.combatants[idx].dead) { this.turnIndex = idx; break; }
+      }
+    }
   },
 
   nextTurn() {
     if (!this.combatActive) return;
     const prevFirst = this.firstAliveUid;
-    this.turnIndex = (this.turnIndex + 1) % this.combatants.length; this.adjustTurnIndex();
-    if (this.combatants[this.turnIndex].uid === this.firstAliveUid && this.firstAliveUid !== prevFirst) { this.round++; }
-    else if (this.firstAliveUid === prevFirst && this.combatants[this.turnIndex].uid === this.firstAliveUid) { this.round++; }
-    document.getElementById('round-display').textContent = this.round; this.highlightActive();
+    this.turnIndex = (this.turnIndex + 1) % this.combatants.length;
+    this.adjustTurnIndex();
+    if (this.combatants[this.turnIndex].uid === this.firstAliveUid && this.firstAliveUid !== prevFirst) {
+      this.round++;
+    } else if (this.firstAliveUid === prevFirst && this.combatants[this.turnIndex].uid === this.firstAliveUid) {
+      this.round++;
+    }
+    document.getElementById('round-display').textContent = this.round;
+    this.highlightActive();
     document.getElementById('count-display').textContent = this.combatants.filter(c => !c.dead).length;
   },
 
   highlightActive() {
     document.querySelectorAll('.combatant-card').forEach(el => el.classList.remove('active','inactive'));
     if (!this.combatActive) return;
-    this.combatants.forEach((c,i) => { const el = document.getElementById(`card-${c.uid}`); if (el) { if (i === this.turnIndex) el.classList.add('active'); else if (c.dead) el.classList.add('dead'); else el.classList.add('inactive'); } });
+    this.combatants.forEach((c,i) => {
+      const el = document.getElementById(`card-${c.uid}`);
+      if (el) {
+        if (i === this.turnIndex) el.classList.add('active');
+        else if (c.dead) el.classList.add('dead');
+        else el.classList.add('inactive');
+      }
+    });
   },
+
   deselectAll() { document.querySelectorAll('.select-target').forEach(cb => cb.checked = false); },
 
   applyDamage(multiplier = 1) {
     if (!this.combatActive) return;
-    const amount = parseInt(document.getElementById('hp-amount').value,10); if (isNaN(amount) || amount <= 0) return;
-    const selected = document.querySelectorAll('.select-target:checked'); if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
+    const amount = parseInt(document.getElementById('hp-amount').value,10);
+    if (isNaN(amount) || amount <= 0) return;
+    const selected = document.querySelectorAll('.select-target:checked');
+    if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
     const actualDamage = Math.floor(amount * multiplier);
-    selected.forEach(cb => { const uid = cb.dataset.uid; const c = this.combatants.find(x => x.uid === uid); if (!c || c.dead) return; let rem = actualDamage; if (c.tempHp > 0) { if (c.tempHp >= rem) { c.tempHp -= rem; rem = 0; } else { rem -= c.tempHp; c.tempHp = 0; c.maxTempHp = 0; } } if (rem > 0) { c.currentHp = Math.max(0, (c.currentHp||0) - rem); if (c.currentHp <= 0) { c.dead = true; c.currentHp = 0; } } });
-    this.updateFirstAlive(); this.renderCombatCards(); this.adjustTurnIndex(); this.highlightActive();
+    selected.forEach(cb => {
+      const uid = cb.dataset.uid;
+      const c = this.combatants.find(x => x.uid === uid);
+      if (!c || c.dead) return;
+      let rem = actualDamage;
+      if (c.tempHp > 0) {
+        if (c.tempHp >= rem) { c.tempHp -= rem; rem = 0; }
+        else { rem -= c.tempHp; c.tempHp = 0; c.maxTempHp = 0; }
+      }
+      if (rem > 0) {
+        c.currentHp = Math.max(0, (c.currentHp||0) - rem);
+        if (c.currentHp <= 0) { c.dead = true; c.currentHp = 0; }
+      }
+    });
+    this.updateFirstAlive();
+    this.renderCombatCards();
+    this.adjustTurnIndex();
+    this.highlightActive();
     document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
   },
 
   applyHeal() {
     if (!this.combatActive) return;
-    const amount = parseInt(document.getElementById('hp-amount').value,10); if (isNaN(amount) || amount <= 0) return;
-    const selected = document.querySelectorAll('.select-target:checked'); if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
-    selected.forEach(cb => { const uid = cb.dataset.uid; const c = this.combatants.find(x => x.uid === uid); if (!c || c.dead) return; const max = c.maxHp || 0; c.currentHp = Math.min(max, (c.currentHp||0) + amount); if (c.currentHp > 0) c.dead = false; });
-    this.updateFirstAlive(); this.renderCombatCards(); this.highlightActive();
+    const amount = parseInt(document.getElementById('hp-amount').value,10);
+    if (isNaN(amount) || amount <= 0) return;
+    const selected = document.querySelectorAll('.select-target:checked');
+    if (selected.length === 0) { alert('Отметьте цели чекбоксами!'); return; }
+    selected.forEach(cb => {
+      const uid = cb.dataset.uid;
+      const c = this.combatants.find(x => x.uid === uid);
+      if (!c || c.dead) return;
+      const max = c.maxHp || 0;
+      c.currentHp = Math.min(max, (c.currentHp||0) + amount);
+      if (c.currentHp > 0) c.dead = false;
+    });
+    this.updateFirstAlive();
+    this.renderCombatCards();
+    this.highlightActive();
     document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
   },
 
-  addTempHp(uid) { const c = this.combatants.find(x => x.uid === uid); if (!c || c.dead) return; const val = prompt('Временные хиты:', c.tempHp || ''); if (val === null) return; const num = parseInt(val,10); if (isNaN(num)||num<0) return; c.tempHp = num; c.maxTempHp = num; this.renderCombatCards(); this.highlightActive(); },
+  addTempHp(uid) {
+    const c = this.combatants.find(x => x.uid === uid);
+    if (!c || c.dead) return;
+    const val = prompt('Временные хиты:', c.tempHp || '');
+    if (val === null) return;
+    const num = parseInt(val,10);
+    if (isNaN(num) || num < 0) return;
+    c.tempHp = num; c.maxTempHp = num;
+    this.renderCombatCards(); this.highlightActive();
+  },
 
   revive(uid) {
-    const c = this.combatants.find(x => x.uid === uid); if (!c || !c.dead) return;
-    const val = prompt('ХП после поднятия:', Math.floor(c.maxHp/2)||1); if (val === null) return;
-    const num = parseInt(val,10); if (isNaN(num)||num<=0) return;
-    c.currentHp = Math.min(c.maxHp, num); c.dead = false; c.tempHp = 0; c.maxTempHp = 0;
-    this.updateFirstAlive(); this.renderCombatCards(); this.adjustTurnIndex(); this.highlightActive();
+    const c = this.combatants.find(x => x.uid === uid);
+    if (!c || !c.dead) return;
+    const val = prompt('ХП после поднятия:', Math.floor(c.maxHp/2) || 1);
+    if (val === null) return;
+    const num = parseInt(val,10);
+    if (isNaN(num) || num <= 0) return;
+    c.currentHp = Math.min(c.maxHp, num);
+    c.dead = false; c.tempHp = 0; c.maxTempHp = 0;
+    this.updateFirstAlive();
+    this.renderCombatCards(); this.adjustTurnIndex(); this.highlightActive();
     document.getElementById('count-display').textContent = this.combatants.filter(x => !x.dead).length;
   },
 
   spawnBatch() {
-    const rows = document.querySelectorAll('#add-monster-content .monster-row'); const prevActiveUid = this.combatActive ? this.combatants[this.turnIndex]?.uid : null; let anyAdded = false;
+    const rows = document.querySelectorAll('#add-monster-content .monster-row');
+    const prevActiveUid = this.combatActive ? this.combatants[this.turnIndex]?.uid : null;
+    let anyAdded = false;
     rows.forEach(row => {
-      const qty = parseInt(row.querySelector('.quantity-select').value,10); if (qty <= 0) return;
-      const initInput = row.querySelector('.batch-init-input'); const initVal = parseFloat(initInput.value); if (isNaN(initVal)) return;
-      const monCard = row.querySelector('.monster-card'); const catId = monCard.dataset.cat; const monId = monCard.dataset.id;
-      const cat = this.data.categories.find(c => c.id === catId); const mon = cat.creatures.find(m => m.id === monId);
-      for (let i = 0; i < qty; i++) { const uid = `uid-${this.uidCounter++}`; const maxHp = this.parseMaxHp(mon.hp); const name = this.getIndexedName(monId, mon.name); this.combatants.push({ uid, id: monId, name, initiative: initVal, data: mon, maxHp, currentHp: maxHp, tempHp: 0, maxTempHp: 0, dead: false, priority: 0, conditions: [], exhaustionLevel: 0 }); }
+      const qty = parseInt(row.querySelector('.quantity-select').value,10);
+      if (qty <= 0) return;
+      const initInput = row.querySelector('.batch-init-input');
+      const initVal = parseFloat(initInput.value);
+      if (isNaN(initVal)) return;
+      const monCard = row.querySelector('.monster-card');
+      const catId = monCard.dataset.cat;
+      const monId = monCard.dataset.id;
+      const cat = this.data.categories.find(c => c.id === catId);
+      const mon = cat.creatures.find(m => m.id === monId);
+      for (let i = 0; i < qty; i++) {
+        const uid = `uid-${this.uidCounter++}`;
+        const maxHp = this.parseMaxHp(mon.hp);
+        const name = this.getIndexedName(monId, mon.name);
+        this.combatants.push({ uid, id: monId, name, initiative: initVal, data: mon, maxHp, currentHp: maxHp, tempHp: 0, maxTempHp: 0, dead: false, priority: 0, conditions: [], exhaustionLevel: 0 });
+      }
       anyAdded = true;
     });
     if (!anyAdded) return;
     this.combatants.sort((a,b) => b.initiative - a.initiative || (a.priority||0) - (b.priority||0));
-    if (prevActiveUid) { const newIdx = this.combatants.findIndex(c => c.uid === prevActiveUid); if (newIdx !== -1) this.turnIndex = newIdx; else this.adjustTurnIndex(); } else { this.adjustTurnIndex(); }
-    this.updateFirstAlive(); this.renderCombatCards(); this.highlightActive();
+    if (prevActiveUid) {
+      const newIdx = this.combatants.findIndex(c => c.uid === prevActiveUid);
+      if (newIdx !== -1) this.turnIndex = newIdx;
+      else this.adjustTurnIndex();
+    } else {
+      this.adjustTurnIndex();
+    }
+    this.updateFirstAlive();
+    this.renderCombatCards();
+    this.highlightActive();
     document.getElementById('count-display').textContent = this.combatants.filter(c => !c.dead).length;
     document.getElementById('add-monster-modal').style.display = 'none';
   },
 
   openAddMonsterModal() {
     if (!this.combatActive) return;
-    const cont = document.getElementById('add-monster-content'); cont.innerHTML = '';
+    const cont = document.getElementById('add-monster-content');
+    cont.innerHTML = '';
     this.data.categories.forEach(cat => {
       const catDiv = document.createElement('div'); catDiv.className = 'category open';
-      catDiv.innerHTML = `<div class="cat-header"><span>${cat.name}</span></div><div class="cat-content" style="display:block;"></div>`; const content = catDiv.querySelector('.cat-content');
-      cat.creatures.forEach(m => { const row = document.createElement('div'); row.className = 'monster-row'; row.innerHTML = `<div class="monster-card" data-cat="${cat.id}" data-id="${m.id}">${m.name}</div><select class="quantity-select"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><input type="number" class="batch-init-input" placeholder="Иниц." style="width:80px;">`; content.appendChild(row); });
+      catDiv.innerHTML = `<div class="cat-header"><span>${cat.name}</span></div><div class="cat-content" style="display:block;"></div>`;
+      const content = catDiv.querySelector('.cat-content');
+      cat.creatures.forEach(m => {
+        const row = document.createElement('div'); row.className = 'monster-row';
+        row.innerHTML = `
+          <div class="monster-card" data-cat="${cat.id}" data-id="${m.id}">${m.name}</div>
+          <select class="quantity-select"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select>
+          <input type="number" class="batch-init-input" placeholder="Иниц." style="width:80px;">
+        `;
+        content.appendChild(row);
+      });
       cont.appendChild(catDiv);
     });
     document.getElementById('add-monster-modal').style.display = 'flex';
   },
 
-  openCoverModal() { document.getElementById('cover-modal').style.display = 'flex'; },
-  openConditionsModal() { document.getElementById('conditions-modal').style.display = 'flex'; },
+  openCoverModal() { this.openRulesModal('cover'); },
+  openConditionsModal() { this.openRulesModal('conditions'); },
 
   closeModal() {
     ['stat-modal','priority-modal','add-monster-modal','exhaustion-modal','cover-modal','conditions-modal'].forEach(id => document.getElementById(id).style.display = 'none');
   },
 
   endCombat() {
-    this.combatActive = false; this.combatants = [];
+    this.combatActive = false;
+    this.combatants = [];
     document.getElementById('setup-area').style.display = 'block';
     document.getElementById('combat-controls').style.display = 'none';
     document.getElementById('combatants-grid').innerHTML = '';
     document.getElementById('start-combat-btn').disabled = true;
     document.getElementById('count-display').textContent = '0';
-    this.closeModal(); this.deselectAll();
+    this.closeModal();
+    this.deselectAll();
   },
 
   showStatBlock(monId) {
-    let mon = null; for (const cat of this.data.categories) { mon = cat.creatures.find(m => m.id === monId); if (mon) break; } if (!mon) return;
+    let mon = null;
+    for (const cat of this.data.categories) { mon = cat.creatures.find(m => m.id === monId); if (mon) break; }
+    if (!mon) return;
     const s = mon.stats || {};
-    document.getElementById('modal-body').innerHTML = `<div class="stat-name">${mon.name}</div><div class="stat-type">${mon.type||''}</div><div class="stat-block"><div class="stat-item"><span class="stat-label">КД</span><span class="stat-val">${mon.ac||'-'}</span></div><div class="stat-item"><span class="stat-label">ОЗ</span><span class="stat-val">${mon.hp||'-'}</span></div><div class="stat-item"><span class="stat-label">Скорость</span><span class="stat-val">${mon.speed||'-'}</span></div><div class="stat-item"><span class="stat-label">СИЛ</span><span class="stat-val">${s.str||'-'}</span></div><div class="stat-item"><span class="stat-label">ЛОВ</span><span class="stat-val">${s.dex||'-'}</span></div><div class="stat-item"><span class="stat-label">ТЕЛ</span><span class="stat-val">${s.con||'-'}</span></div><div class="stat-item"><span class="stat-label">ИНТ</span><span class="stat-val">${s.int||'-'}</span></div><div class="stat-item"><span class="stat-label">МДР</span><span class="stat-val">${s.wis||'-'}</span></div><div class="stat-item"><span class="stat-label">ХАР</span><span class="stat-val">${s.cha||'-'}</span></div></div><div class="stat-section"><h4>⚔️ Действия</h4><p>${(mon.actions||[]).join('\n')||'Нет'}</p></div><div class="stat-section"><h4>🛡️ Особенности</h4><p>${(mon.traits||[]).join('\n')||'Нет'}</p></div>`;
+    document.getElementById('modal-body').innerHTML = `
+      <div class="stat-name">${mon.name}</div><div class="stat-type">${mon.type||''}</div>
+      <div class="stat-block">
+        <div class="stat-item"><span class="stat-label">КД</span><span class="stat-val">${mon.ac||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ОЗ</span><span class="stat-val">${mon.hp||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">Скорость</span><span class="stat-val">${mon.speed||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">СИЛ</span><span class="stat-val">${s.str||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ЛОВ</span><span class="stat-val">${s.dex||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ТЕЛ</span><span class="stat-val">${s.con||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ИНТ</span><span class="stat-val">${s.int||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">МДР</span><span class="stat-val">${s.wis||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">ХАР</span><span class="stat-val">${s.cha||'-'}</span></div>
+      </div>
+      <div class="stat-section"><h4>⚔️ Действия</h4><p>${(mon.actions||[]).join('\n')||'Нет'}</p></div>
+      <div class="stat-section"><h4>🛡️ Особенности</h4><p>${(mon.traits||[]).join('\n')||'Нет'}</p></div>
+    `;
     document.getElementById('stat-modal').style.display = 'flex';
   }
 };
 
-document.addEventListener('DOMContentLoaded', () => app.init());
-document.querySelectorAll('#stat-modal, #priority-modal, #add-monster-modal, #exhaustion-modal, #cover-modal, #conditions-modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) app.closeModal(); }));
-document.addEventListener('keydown', e => { if (e.key === 'Escape') app.closeModal(); });
+// Обработчик для кнопки "Правила"
+document.addEventListener('DOMContentLoaded', () => {
+  app.init();
+  
+  document.getElementById('rulesBtn').addEventListener('click', () => {
+    document.getElementById('rulesMenu').classList.toggle('open');
+  });
 
-// Глобальный обработчик клика по заголовку категории
-document.getElementById('sidebar-list').addEventListener('click', e => {
-  const header = e.target.closest('.cat-header');
-  if (!header) return;
-  const category = header.closest('.category');
-  if (app.sidebarCollapsed) {
-    app.openCatPopup(e, category);
-  } else {
-    app.toggleCategory(header);
-  }
+  document.querySelectorAll('.rules-menu button').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const ruleType = e.target.dataset.rule;
+      app.openRulesModal(ruleType);
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.rules-dropdown')) {
+      document.getElementById('rulesMenu').classList.remove('open');
+    }
+  });
+
+  document.querySelectorAll('#stat-modal, #priority-modal, #add-monster-modal, #exhaustion-modal, #cover-modal, #conditions-modal').forEach(m => m.addEventListener('click', e => { if (e.target === m) app.closeModal(); }));
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') app.closeModal(); });
+
+  document.getElementById('sidebar-list').addEventListener('click', e => {
+    const header = e.target.closest('.cat-header');
+    if (!header) return;
+    const category = header.closest('.category');
+    if (app.sidebarCollapsed) {
+      app.openCatPopup(e, category);
+    } else {
+      app.toggleCategory(header);
+    }
+  });
 });
 </script>
 </body>
