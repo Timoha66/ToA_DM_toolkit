@@ -1048,51 +1048,174 @@ const app = {
   showStatBlock(monId) {
     let mon = null;
     for (const cat of this.data.categories) {
-      mon = cat.creatures.find(m => m.id === monId);
-      if (mon) break;
+        mon = cat.creatures.find(m => m.id === monId);
+        if (mon) break;
     }
     if (!mon) return;
 
     const ab = mon.abilities || {};
-    const formatAb = (abObj) => abObj ? `${abObj.value} (${abObj.mod >= 0 ? '+' : ''}${abObj.mod})` : '-';
+    const formatAb = (abObj) => abObj ? `${abObj.value} (${abObj.mod >= 0 ? '+' : ''}${abObj.mod})` : '—';
 
-    let speedStr = '';
+    // Скорость
+    let speedParts = [];
     if (mon.speed) {
-      const parts = [];
-      Object.entries(mon.speed).forEach(([key, val]) => {
-        if (key === 'hover' && val === true) return;
-        parts.push(val + ' фт. ' + (key === 'walk' ? 'ходьба' : key === 'fly' ? 'полёт' : key === 'swim' ? 'плавание' : key === 'climb' ? 'лазание' : key));
-        if (key === 'fly' && mon.speed.hover) parts[parts.length-1] += ' (зависание)';
-      });
-      speedStr = parts.join(', ');
+        Object.entries(mon.speed).forEach(([key, val]) => {
+            if (key === 'hover' && val === true) return; // hover добавим к полёту
+            const typeNames = { walk: 'ходьба', fly: 'полёт', swim: 'плавание', climb: 'лазание', burrow: 'копание' };
+            const typeName = typeNames[key] || key;
+            let part = `${val} фт. (${typeName})`;
+            if (key === 'fly' && mon.speed.hover) part += ' (зависание)';
+            speedParts.push(part);
+        });
+    }
+    const speedStr = speedParts.length ? speedParts.join(', ') : '—';
+
+    // Чувства
+    const senses = mon.senses || {};
+    const passive = senses.passivePerception !== undefined ? senses.passivePerception : '—';
+    const specialSenses = [];
+    if (senses.darkvision) specialSenses.push(`тёмное зрение ${senses.darkvision} фт.`);
+    if (senses.truesight) specialSenses.push(`истинное зрение ${senses.truesight} фт.`);
+    if (senses.blindsight || senses['слепое зрение']) specialSenses.push(`слепое зрение ${senses.blindsight || senses['слепое зрение']} фт.`);
+    if (senses.tremorsense) specialSenses.push(`чувство вибрации ${senses.tremorsense} фт.`);
+    const sensesStr = `${passive} пассивная Внимательность` + (specialSenses.length ? ', ' + specialSenses.join(', ') : '');
+
+    // Языки
+    const languagesStr = (mon.languages && mon.languages.length) ? mon.languages.join(', ') : '—';
+
+    // КД и хиты
+    const ac = mon.armorClass ? `${mon.armorClass.value}` + (mon.armorClass.type ? ` (${mon.armorClass.type})` : '') : '—';
+    const hpStr = mon.hitPoints ? `${mon.hitPoints.value}` + (mon.hitPoints.formula ? ` (${mon.hitPoints.formula})` : '') : '—';
+
+    // Спасброски
+    let savesStr = '';
+    if (mon.savingThrows && Object.keys(mon.savingThrows).length > 0) {
+        const saveMap = { str: 'СИЛ', dex: 'ЛОВ', con: 'ТЕЛ', int: 'ИНТ', wis: 'МДР', cha: 'ХАР' };
+        savesStr = Object.entries(mon.savingThrows)
+            .map(([key, val]) => `${saveMap[key] || key} ${val >= 0 ? '+' + val : val}`)
+            .join(', ');
     }
 
-    const actionsStr = (mon.actions || []).map(a => `<strong>${a.name}</strong>: ${a.description}`).join('<br>');
-    const traitsStr = (mon.traits || []).map(t => `<strong>${t.name}</strong>: ${t.description}`).join('<br>');
+    // Навыки
+    let skillsStr = '';
+    if (mon.skills && Object.keys(mon.skills).length > 0) {
+        const skillNames = {
+            athletics: 'Атлетика', acrobatics: 'Акробатика', sleightOfHand: 'Ловкость рук',
+            stealth: 'Скрытность', arcana: 'Магия', history: 'История', investigation: 'Анализ',
+            nature: 'Природа', religion: 'Религия', animalHandling: 'Уход за животными',
+            insight: 'Проницательность', medicine: 'Медицина', perception: 'Внимательность',
+            survival: 'Выживание', deception: 'Обман', intimidation: 'Запугивание',
+            performance: 'Выступление', persuasion: 'Убеждение'
+        };
+        skillsStr = Object.entries(mon.skills)
+            .map(([key, val]) => `${skillNames[key] || key} ${val >= 0 ? '+' + val : val}`)
+            .join(', ');
+    }
 
-    const ac = mon.armorClass ? `${mon.armorClass.value} (${mon.armorClass.type})` : '—';
-    const hp = mon.hitPoints ? `${mon.hitPoints.value} (${mon.hitPoints.formula})` : '—';
+    // Уязвимости, сопротивления, иммунитеты
+    const formatList = (arr) => arr && arr.length > 0 ? arr.join(', ') : '—';
+    const dmgVuln = formatList(mon.damageVulnerabilities);
+    const dmgRes = formatList(mon.damageResistances);
+    const dmgImm = formatList(mon.damageImmunities);
+    const condImm = formatList(mon.conditionImmunities);
+
+    // Опасность
+    const cr = mon.challengeRating !== undefined ? mon.challengeRating : '—';
+    const xp = mon.xp !== undefined ? ` (${mon.xp} XP)` : '';
+
+    // Особенности и действия форматируем через отдельные функции
+    const formatTraits = (traits) => traits?.map(t => `<strong>${t.name}</strong>: ${t.description}`).join('<br>') || 'Нет';
+    const formatActions = (actions) => {
+        if (!actions || actions.length === 0) return 'Нет';
+        return actions.map(a => {
+            let details = [];
+            if (a.attackType) details.push(`Тип: ${a.attackType}`);
+            if (a.reach) details.push(`Дистанция: ${a.reach} фт.`);
+            if (a.targets) details.push(`Целей: ${a.targets}`);
+            if (a.attackBonus) details.push(`Бонус атаки: +${a.attackBonus}`);
+            if (a.saveDc) details.push(`Сл спасброска: ${a.saveDc}`);
+            if (a.saveType) details.push(`Характеристика спасброска: ${a.saveType}`);
+            if (a.damage) {
+                let dmgDesc = `Урон: ${a.damage.value}`;
+                if (a.damage.type) dmgDesc += ` (${a.damage.type})`;
+                details.push(dmgDesc);
+            }
+            let desc = a.description ? `<br><em>${a.description}</em>` : '';
+            return `<strong>${a.name}</strong>${details.length ? ' — ' + details.join(', ') : ''}${desc}`;
+        }).join('<br>');
+    };
+    const formatLegendary = (legendary) => {
+        if (!legendary) return null;
+        let text = `<br><strong>Действий/раунд:</strong> ${legendary.count}<br>${legendary.description || ''}`;
+        if (legendary.options) {
+            text += '<ul>';
+            legendary.options.forEach(opt => {
+                text += `<li><strong>${opt.name}</strong> (стоимость: ${opt.cost}): ${opt.description}</li>`;
+            });
+            text += '</ul>';
+        }
+        return text;
+    };
+    const formatLair = (lairActions) => {
+        if (!lairActions || lairActions.length === 0) return null;
+        return lairActions.map(a => `<strong>${a.name}</strong>: ${a.description}`).join('<br>');
+    };
+
+    let spellsBlock = '';
+    if (mon.spells) {
+        const s = mon.spells;
+        spellsBlock = `<br><strong>Базовая характеристика:</strong> ${s.spellcastingAbility || '—'}<br>`;
+        if (s.spellSaveDc) spellsBlock += `<strong>Сл спасброска:</strong> ${s.spellSaveDc}<br>`;
+        if (s.spellAttackBonus) spellsBlock += `<strong>Бонус атаки заклинанием:</strong> +${s.spellAttackBonus}<br>`;
+        if (s.slots) {
+            spellsBlock += '<strong>Ячейки заклинаний:</strong><br>';
+            Object.entries(s.slots).forEach(([level, count]) => {
+                spellsBlock += `${level}-й уровень: ${count} ячеек<br>`;
+            });
+        }
+        if (s.known && s.known.length) {
+            spellsBlock += '<strong>Известные заклинания:</strong> ' + s.known.join(', ');
+        }
+    }
 
     document.getElementById('modal-body').innerHTML = `
-      <div class="stat-name">${mon.name}</div>
-      <div class="stat-type">${mon.type || ''}${mon.size ? ', ' + mon.size : ''}${mon.alignment ? ', ' + mon.alignment : ''}</div>
-      <div class="stat-block">
-        <div class="stat-item"><span class="stat-label">КД</span><span class="stat-val">${ac}</span></div>
-        <div class="stat-item"><span class="stat-label">ОЗ</span><span class="stat-val">${hp}</span></div>
-        <div class="stat-item"><span class="stat-label">Скорость</span><span class="stat-val">${speedStr || '—'}</span></div>
-        <div class="stat-item"><span class="stat-label">СИЛ</span><span class="stat-val">${formatAb(ab.str)}</span></div>
-        <div class="stat-item"><span class="stat-label">ЛОВ</span><span class="stat-val">${formatAb(ab.dex)}</span></div>
-        <div class="stat-item"><span class="stat-label">ТЕЛ</span><span class="stat-val">${formatAb(ab.con)}</span></div>
-        <div class="stat-item"><span class="stat-label">ИНТ</span><span class="stat-val">${formatAb(ab.int)}</span></div>
-        <div class="stat-item"><span class="stat-label">МДР</span><span class="stat-val">${formatAb(ab.wis)}</span></div>
-        <div class="stat-item"><span class="stat-label">ХАР</span><span class="stat-val">${formatAb(ab.cha)}</span></div>
-      </div>
-      <div class="stat-section"><h4>⚔️ Действия</h4><p>${actionsStr || 'Нет'}</p></div>
-      <div class="stat-section"><h4>🛡️ Особенности</h4><p>${traitsStr || 'Нет'}</p></div>
-      ${mon.spells ? `<div class="stat-section"><h4>✨ Магия</h4><p>Сложность спасброска: ${mon.spells.spellSaveDc || '—'}</p></div>` : ''}
+        <div class="stat-name">${mon.name}${mon.nameEn ? ' (' + mon.nameEn + ')' : ''}</div>
+        <div class="stat-type">${mon.type || ''}${mon.size ? ', ' + mon.size : ''}${mon.alignment ? ', ' + mon.alignment : ''}${mon.source ? ' (Источник: ' + mon.source + ')' : ''}</div>
+        <div class="stat-block">
+            <div class="stat-item"><span class="stat-label">КД</span><span class="stat-val">${ac}</span></div>
+            <div class="stat-item"><span class="stat-label">Хиты</span><span class="stat-val">${hpStr}</span></div>
+            <div class="stat-item"><span class="stat-label">Скорость</span><span class="stat-val">${speedStr}</span></div>
+            <div class="stat-item"><span class="stat-label">СИЛ</span><span class="stat-val">${formatAb(ab.str)}</span></div>
+            <div class="stat-item"><span class="stat-label">ЛОВ</span><span class="stat-val">${formatAb(ab.dex)}</span></div>
+            <div class="stat-item"><span class="stat-label">ТЕЛ</span><span class="stat-val">${formatAb(ab.con)}</span></div>
+            <div class="stat-item"><span class="stat-label">ИНТ</span><span class="stat-val">${formatAb(ab.int)}</span></div>
+            <div class="stat-item"><span class="stat-label">МДР</span><span class="stat-val">${formatAb(ab.wis)}</span></div>
+            <div class="stat-item"><span class="stat-label">ХАР</span><span class="stat-val">${formatAb(ab.cha)}</span></div>
+        </div>
+
+        <div class="stat-section"><h4>🔍 Чувства</h4><p>${sensesStr}</p></div>
+        <div class="stat-section"><h4>🗣️ Языки</h4><p>${languagesStr}</p></div>
+        <div class="stat-section"><h4>🛡️ Защита</h4>
+            <p>${savesStr ? 'Спасброски: ' + savesStr + '<br>' : ''}
+            ${skillsStr ? 'Навыки: ' + skillsStr + '<br>' : ''}
+            Уязвимости к урону: ${dmgVuln}<br>
+            Сопротивления урону: ${dmgRes}<br>
+            Иммунитет к урону: ${dmgImm}<br>
+            Иммунитет к состояниям: ${condImm}</p>
+        </div>
+        <div class="stat-section"><h4>⚠️ Опасность</h4><p>${cr}${xp}</p></div>
+
+        <div class="stat-section"><h4>🦾 Особенности</h4><p>${formatTraits(mon.traits)}</p></div>
+
+        <div class="stat-section"><h4>⚔️ Действия</h4><p>${formatActions(mon.actions)}</p></div>
+        ${mon.bonusActions && mon.bonusActions.length ? '<div class="stat-section"><h4>🔷 Бонусные действия</h4><p>'+formatActions(mon.bonusActions)+'</p></div>' : ''}
+        ${mon.reactions && mon.reactions.length ? '<div class="stat-section"><h4>↩️ Реакции</h4><p>'+formatActions(mon.reactions)+'</p></div>' : ''}
+        ${mon.legendaryActions ? '<div class="stat-section"><h4>👑 Легендарные действия</h4><p>'+formatLegendary(mon.legendaryActions)+'</p></div>' : ''}
+        ${mon.lairActions ? '<div class="stat-section"><h4>🏠 Логово</h4><p>'+formatLair(mon.lairActions)+'</p></div>' : ''}
+        ${spellsBlock ? '<div class="stat-section"><h4>✨ Магия</h4><p>'+spellsBlock+'</p></div>' : ''}
     `;
     document.getElementById('stat-modal').style.display = 'flex';
-  }
+}
 };
 
 document.addEventListener('DOMContentLoaded', () => {
