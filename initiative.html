@@ -444,7 +444,22 @@ const app = {
         fetch('data/cover_position.json')
       ]);
       if (!creatureRes.ok || !condRes.ok || !coverRes.ok) throw new Error('Ошибка загрузки JSON');
-      this.data = await creatureRes.json();
+
+      const rawCreatures = await creatureRes.json();
+      // Адаптация под старую (массив) и новую (объект) структуру
+      if (Array.isArray(rawCreatures)) {
+        this.data = { categories: rawCreatures };
+      } else {
+        this.data = {
+          categories: Object.entries(rawCreatures).map(([name, creatures]) => ({
+            id: name,
+            name: name,
+            icon: name[0] || '?',
+            creatures: creatures
+          }))
+        };
+      }
+
       this.conditionsData = await condRes.json();
       this.coverData = await coverRes.json();
       this.renderSidebar();
@@ -561,19 +576,28 @@ const app = {
     return `${baseName} ${count+1}`;
   },
 
+  parseMaxHp(hpData) {
+    if (!hpData) return 0;
+    // Если объект {value, formula} — берём value
+    if (typeof hpData === 'object' && hpData.value !== undefined) {
+      return hpData.value;
+    }
+    // Старый строковый формат
+    const m = String(hpData).match(/(\d+)/);
+    return m ? parseInt(m[1], 10) : 0;
+  },
+
   spawnMonster(catId, monId) {
     if (this.combatActive) return;
     const cat = this.data.categories.find(c => c.id === catId);
     const mon = cat.creatures.find(m => m.id === monId);
     const uid = `uid-${this.uidCounter++}`;
-    const maxHp = this.parseMaxHp(mon.hp);
+    const maxHp = this.parseMaxHp(mon.hitPoints);
     const name = this.getIndexedName(monId, mon.name);
     this.combatants.push({ uid, id: monId, name, initiative: null, data: mon, maxHp, currentHp: maxHp, tempHp: 0, maxTempHp: 0, dead: false, priority: 0, conditions: [], exhaustionLevel: 0 });
     this.renderCombatants();
     document.getElementById('start-combat-btn').disabled = false;
   },
-
-  parseMaxHp(hpStr) { if (!hpStr) return 0; const m = hpStr.match(/(\d+)/); return m ? parseInt(m[1],10) : 0; },
 
   getConditionInfo(condId) {
     return this.conditionsData.find(c => c.id === condId) || { name: condId, icon: condId[0], hasLevels: false };
@@ -630,7 +654,7 @@ const app = {
         if (c.dead) {
           div.innerHTML = `
             <div class="card-name">${c.name} <span style="color:var(--accent);font-size:0.8rem">(${c.initiative})</span></div>
-            <div class="card-ac">КД: ${c.data.ac || '?'}</div>
+            <div class="card-ac">КД: ${c.data.armorClass?.value ?? '?'}</div>
             <button class="dead-revive-btn" onclick="app.revive('${c.uid}')">🪄 Поднять</button>
             <div class="status-badge">МЁРТВ</div>
           `;
@@ -644,7 +668,7 @@ const app = {
           div.innerHTML = `
             ${checkboxHtml}
             <div class="card-name">${c.name} <span style="color:var(--accent);font-size:0.8rem">(${c.initiative})</span></div>
-            <div class="card-ac">КД: ${c.data.ac || '?'}</div>
+            <div class="card-ac">КД: ${c.data.armorClass?.value ?? '?'}</div>
             <div class="hp-bar-container"><div class="hp-bar-fill ${hpCls}" style="width:${Math.min(hpPct,100)}%;"></div></div>
             ${tempBar}
             <div class="hp-text">${curHp} / ${maxHp}${status ? ' · '+status : ''}</div>
@@ -958,7 +982,7 @@ const app = {
       const mon = cat.creatures.find(m => m.id === monId);
       for (let i = 0; i < qty; i++) {
         const uid = `uid-${this.uidCounter++}`;
-        const maxHp = this.parseMaxHp(mon.hp);
+        const maxHp = this.parseMaxHp(mon.hitPoints);
         const name = this.getIndexedName(monId, mon.name);
         this.combatants.push({ uid, id: monId, name, initiative: initVal, data: mon, maxHp, currentHp: maxHp, tempHp: 0, maxTempHp: 0, dead: false, priority: 0, conditions: [], exhaustionLevel: 0 });
       }
@@ -1023,24 +1047,49 @@ const app = {
 
   showStatBlock(monId) {
     let mon = null;
-    for (const cat of this.data.categories) { mon = cat.creatures.find(m => m.id === monId); if (mon) break; }
+    for (const cat of this.data.categories) {
+      mon = cat.creatures.find(m => m.id === monId);
+      if (mon) break;
+    }
     if (!mon) return;
-    const s = mon.stats || {};
+
+    const ab = mon.abilities || {};
+    const formatAb = (abObj) => abObj ? `${abObj.value} (${abObj.mod >= 0 ? '+' : ''}${abObj.mod})` : '-';
+
+    let speedStr = '';
+    if (mon.speed) {
+      const parts = [];
+      Object.entries(mon.speed).forEach(([key, val]) => {
+        if (key === 'hover' && val === true) return;
+        parts.push(val + ' фт. ' + (key === 'walk' ? 'ходьба' : key === 'fly' ? 'полёт' : key === 'swim' ? 'плавание' : key === 'climb' ? 'лазание' : key));
+        if (key === 'fly' && mon.speed.hover) parts[parts.length-1] += ' (зависание)';
+      });
+      speedStr = parts.join(', ');
+    }
+
+    const actionsStr = (mon.actions || []).map(a => `<strong>${a.name}</strong>: ${a.description}`).join('<br>');
+    const traitsStr = (mon.traits || []).map(t => `<strong>${t.name}</strong>: ${t.description}`).join('<br>');
+
+    const ac = mon.armorClass ? `${mon.armorClass.value} (${mon.armorClass.type})` : '—';
+    const hp = mon.hitPoints ? `${mon.hitPoints.value} (${mon.hitPoints.formula})` : '—';
+
     document.getElementById('modal-body').innerHTML = `
-      <div class="stat-name">${mon.name}</div><div class="stat-type">${mon.type||''}</div>
+      <div class="stat-name">${mon.name}</div>
+      <div class="stat-type">${mon.type || ''}${mon.size ? ', ' + mon.size : ''}${mon.alignment ? ', ' + mon.alignment : ''}</div>
       <div class="stat-block">
-        <div class="stat-item"><span class="stat-label">КД</span><span class="stat-val">${mon.ac||'-'}</span></div>
-        <div class="stat-item"><span class="stat-label">ОЗ</span><span class="stat-val">${mon.hp||'-'}</span></div>
-        <div class="stat-item"><span class="stat-label">Скорость</span><span class="stat-val">${mon.speed||'-'}</span></div>
-        <div class="stat-item"><span class="stat-label">СИЛ</span><span class="stat-val">${s.str||'-'}</span></div>
-        <div class="stat-item"><span class="stat-label">ЛОВ</span><span class="stat-val">${s.dex||'-'}</span></div>
-        <div class="stat-item"><span class="stat-label">ТЕЛ</span><span class="stat-val">${s.con||'-'}</span></div>
-        <div class="stat-item"><span class="stat-label">ИНТ</span><span class="stat-val">${s.int||'-'}</span></div>
-        <div class="stat-item"><span class="stat-label">МДР</span><span class="stat-val">${s.wis||'-'}</span></div>
-        <div class="stat-item"><span class="stat-label">ХАР</span><span class="stat-val">${s.cha||'-'}</span></div>
+        <div class="stat-item"><span class="stat-label">КД</span><span class="stat-val">${ac}</span></div>
+        <div class="stat-item"><span class="stat-label">ОЗ</span><span class="stat-val">${hp}</span></div>
+        <div class="stat-item"><span class="stat-label">Скорость</span><span class="stat-val">${speedStr || '—'}</span></div>
+        <div class="stat-item"><span class="stat-label">СИЛ</span><span class="stat-val">${formatAb(ab.str)}</span></div>
+        <div class="stat-item"><span class="stat-label">ЛОВ</span><span class="stat-val">${formatAb(ab.dex)}</span></div>
+        <div class="stat-item"><span class="stat-label">ТЕЛ</span><span class="stat-val">${formatAb(ab.con)}</span></div>
+        <div class="stat-item"><span class="stat-label">ИНТ</span><span class="stat-val">${formatAb(ab.int)}</span></div>
+        <div class="stat-item"><span class="stat-label">МДР</span><span class="stat-val">${formatAb(ab.wis)}</span></div>
+        <div class="stat-item"><span class="stat-label">ХАР</span><span class="stat-val">${formatAb(ab.cha)}</span></div>
       </div>
-      <div class="stat-section"><h4>⚔️ Действия</h4><p>${(mon.actions||[]).join('\n')||'Нет'}</p></div>
-      <div class="stat-section"><h4>🛡️ Особенности</h4><p>${(mon.traits||[]).join('\n')||'Нет'}</p></div>
+      <div class="stat-section"><h4>⚔️ Действия</h4><p>${actionsStr || 'Нет'}</p></div>
+      <div class="stat-section"><h4>🛡️ Особенности</h4><p>${traitsStr || 'Нет'}</p></div>
+      ${mon.spells ? `<div class="stat-section"><h4>✨ Магия</h4><p>Сложность спасброска: ${mon.spells.spellSaveDc || '—'}</p></div>` : ''}
     `;
     document.getElementById('stat-modal').style.display = 'flex';
   }

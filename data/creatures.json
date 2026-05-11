@@ -1,85 +1,2459 @@
 {
-  "categories": [
+  "Герои": [
     {
-      "id": "undead",
-      "name": "Нежить",
-      "icon": "🧟",
-      "creatures": [
+      "id": "hero_001",
+      "name": "Аларик Светлый",
+      "nameEn": "Alaric the Bright",
+      "type": "hero",
+      "race": "Человек",
+      "class": "Паладин",
+      "level": 5,
+      "source": "HB",
+      "imageUrl": "assets/heroes/paladin_placeholder.png",
+      "armorClass": {
+        "value": 18,
+        "type": "Латные доспехи"
+      },
+      "hitPoints": {
+        "value": 45,
+        "formula": "5d10 + 10"
+      },
+      "speed": {
+        "walk": 30
+      },
+      "abilities": {
+        "str": { "value": 16, "mod": 3 },
+        "dex": { "value": 10, "mod": 0 },
+        "con": { "value": 14, "mod": 2 },
+        "int": { "value": 10, "mod": 0 },
+        "wis": { "value": 12, "mod": 1 },
+        "cha": { "value": 16, "mod": 3 }
+      },
+      "savingThrows": {
+        "wis": 3,
+        "cha": 5
+      },
+      "skills": {
+        "athletics": 5,
+        "insight": 3,
+        "persuasion": 5
+      },
+      "initiative": 0,
+      "passivePerception": 11,
+      "traits": [
         {
-          "id": "zombie",
-          "name": "Зомби",
-          "type": "Средний нежить",
-          "ac": 8,
-          "hp": "22 (5к8)",
-          "speed": "20 фт.",
-          "stats": {"str":13,"dex":6,"con":14,"int":3,"wis":6,"cha":5},
-          "actions": ["Мощный удар: +3, 1к6+1 дробящего урона."],
-          "traits": ["Невосприимчив к отравлению и очарованию."]
+          "name": "Божественное чувство",
+          "description": "Вы можете действием определить присутствие нежити или исчадий в пределах 60 футов, а также их местоположение."
         },
         {
-          "id": "skeleton",
-          "name": "Скелет",
-          "type": "Средний нежить",
-          "ac": 13,
-          "hp": "13 (2к8+2)",
-          "speed": "30 фт.",
-          "stats": {"str":10,"dex":14,"con":15,"int":6,"wis":8,"cha":5},
-          "actions": ["Короткий меч: +4, 1к6+2 руб.", "Длинный лук: +4, 1к8+2 кол."],
-          "traits": ["Уязвимость к дробящему урону."]
+          "name": "Непоколебимая аура",
+          "description": "Вы и дружественные существа в пределах 10 футов не могут быть испуганы, пока вы в сознании."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Длинный меч",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 5,
+          "damage": {
+            "value": "1d8 + 3",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Божественная кара",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 5,
+          "damage": {
+            "value": "1d8 + 3 + 2d8",
+            "type": "рубящий + излучение"
+          },
+          "description": "При попадании по нежити или исчадию наносится дополнительный урон излучением 2d8."
+        }
+      ],
+      "spells": {
+        "spellcastingAbility": "cha",
+        "spellSaveDc": 13,
+        "spellAttackBonus": 5,
+        "slots": {
+          "1": 4,
+          "2": 2
+        },
+        "known": [
+          "Благословение (Bless)",
+          "Лечащее слово (Cure Wounds)",
+          "Героизм (Heroism)"
+        ]
+      }
+    }
+  ],
+
+  "Абберация": [
+    {
+      "id": "aberr_001",
+      "name": "Пожиратель интеллекта",
+      "nameEn": "Intellect Devourer",
+      "type": "aberration",
+      "size": "Маленький",
+      "alignment": "Законно-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/intellect_devourer.png",
+      "armorClass": {
+        "value": 12,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 21,
+        "formula": "6d6"
+      },
+      "speed": {
+        "walk": 40
+      },
+      "abilities": {
+        "str": { "value": 6, "mod": -2 },
+        "dex": { "value": 12, "mod": 1 },
+        "con": { "value": 10, "mod": 0 },
+        "int": { "value": 12, "mod": 1 },
+        "wis": { "value": 11, "mod": 0 },
+        "cha": { "value": 12, "mod": 1 }
+      },
+      "savingThrows": {},
+      "damageImmunities": [""],
+      "conditionImmunities": [],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 10
+      },
+      "languages": ["Понимает глубокий речь, но не может говорить"],
+      "challengeRating": 2,
+      "proficiencyBonus": 2,
+      "xp": 450,
+      "traits": [
+        {
+          "name": "Амфибия",
+          "description": "Существо может дышать воздухом и водой."
+        },
+        {
+          "name": "Повреждение камуфляжа",
+          "description": "Пожиратель интеллекта имеет преимущество на проверки Ловкости (Скрытность)."
+        },
+        {
+          "name": "Невосприимчивость к магии",
+          "description": "Пожиратель интеллекта имеет преимущество на спасброски от заклинаний и других магических эффектов."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Когти",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 4,
+          "damage": {
+            "value": "2d4 + 2",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Пожирание интеллекта",
+          "attackType": "special",
+          "reach": 5,
+          "targets": 1,
+          "saveDc": 12,
+          "saveType": "int",
+          "description": "Пожиратель интеллекта пытается пожрать интеллект оглушённого гуманоида, которого он может достичь. Цель должна преуспеть в спасброске Интеллекта, иначе получит 3d6 психического урона, а её Интеллект станет 0. Цель умирает, если это не растение или нежить."
         }
       ]
     },
     {
-      "id": "monsters",
-      "name": "Монстры",
-      "icon": "👹",
-      "creatures": [
+      "id": "aberr_002",
+      "name": "Бехолдер",
+      "nameEn": "Beholder",
+      "type": "aberration",
+      "size": "Большой",
+      "alignment": "Законно-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/beholder.png",
+      "armorClass": {
+        "value": 18,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 180,
+        "formula": "19d10 + 76"
+      },
+      "speed": {
+        "walk": 0,
+        "fly": 20,
+        "hover": true
+      },
+      "abilities": {
+        "str": { "value": 10, "mod": 0 },
+        "dex": { "value": 14, "mod": 2 },
+        "con": { "value": 18, "mod": 4 },
+        "int": { "value": 17, "mod": 3 },
+        "wis": { "value": 15, "mod": 2 },
+        "cha": { "value": 17, "mod": 3 }
+      },
+      "savingThrows": {
+        "int": 7,
+        "wis": 6,
+        "cha": 7
+      },
+      "skills": {
+        "perception": 12,
+        "stealth": 7
+      },
+      "damageImmunities": [],
+      "conditionImmunities": ["очарован", "схватывание"],
+      "senses": {
+        "darkvision": 120,
+        "passivePerception": 22
+      },
+      "languages": ["Глубокая речь", "Подземный"],
+      "challengeRating": 13,
+      "proficiencyBonus": 5,
+      "xp": 10000,
+      "traits": [
         {
-          "id": "troll",
-          "name": "Тролль",
-          "type": "Большой великан",
-          "ac": 15,
-          "hp": "84 (8к10+40)",
-          "speed": "30 фт.",
-          "stats": {"str":18,"dex":13,"con":20,"int":7,"wis":9,"cha":7},
-          "actions": ["Мультиатака: 2 когтя и 1 укус.", "Коготь: +7, 2к6+4 руб.", "Укус: +7, 2к10+4 кол."],
-          "traits": ["Регенерация: 10 ОЗ в начале хода."]
+          "name": "Антимагическое зрение",
+          "description": "Глаз бехолдера в центре его тела создаёт конус антимантии радиусом 150 футов. В этой области заклинания не могут быть сотворены, эффекты заклинаний не могут быть созданы, магические предметы становятся обычными, а существа не могут телепортироваться."
+        },
+        {
+          "name": "Врождённое колдовство (псионика)",
+          "description": "Бехолдер может сотворить следующие заклинания, не требуя материальных компонентов, используя Интеллект как характеристику заклинаний (сложность спасброска 15): По команде (1/день): левитация, телекинез."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Укус",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 9,
+          "damage": {
+            "value": "2d8 + 4",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Лучи глаз",
+          "attackType": "ranged",
+          "reach": 150,
+          "targets": 3,
+          "description": "Бехолдер выпускает три магических луча из трёх своих маленьких глаз. Каждый луч — это одна из следующих опций (на выбор бехолдера): 1) Усыпление (спасбросок Мудрости Сл 16), 2) Телекинез, 3) Замедление (спасбросок Телосложения Сл 16), 4) Нанесение ран (атака заклинанием +9, 4d8 + 4 урона некротической энергией), 5) Окаменение (спасбросок Телосложения Сл 16), 6) Ослабление (спасбросок Силы Сл 16), 7) Смерть (спасбросок Телосложения Сл 16, 10d10 некротического урона)."
+        }
+      ],
+      "legendaryActions": {
+        "count": 3,
+        "description": "Бехолдер может совершить 3 легендарных действия, выбирая из вариантов ниже. Только один вариант легендарного действия может быть использован за раз и только в конце хода другого существа. Бехолдер восстанавливает потраченные легендарные действия в начале своего хода.",
+        "options": [
+          {
+            "name": "Атака укусом",
+            "cost": 1,
+            "description": "Бехолдер совершает одну атаку укусом."
+          },
+          {
+            "name": "Луч глаза (стоит 2 действия)",
+            "cost": 2,
+            "description": "Бехолдер выпускает один луч из своего центрального глаза."
+          }
+        ]
+      },
+      "lairActions": [
+        {
+          "name": "Инициатива 20 (счёт 20)",
+          "description": "Бехолдер создаёт зону антимантии радиусом 150 футов вокруг себя до начала своего следующего хода."
+        }
+      ]
+    }
+  ],
+
+  "Великаны": [
+    {
+      "id": "giant_001",
+      "name": "Холмовой великан",
+      "nameEn": "Hill Giant",
+      "type": "giant",
+      "size": "Огромный",
+      "alignment": "Хаотично-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/hill_giant.png",
+      "armorClass": {
+        "value": 13,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 105,
+        "formula": "10d12 + 40"
+      },
+      "speed": {
+        "walk": 40
+      },
+      "abilities": {
+        "str": { "value": 21, "mod": 5 },
+        "dex": { "value": 8, "mod": -1 },
+        "con": { "value": 19, "mod": 4 },
+        "int": { "value": 6, "mod": -2 },
+        "wis": { "value": 6, "mod": -2 },
+        "cha": { "value": 6, "mod": -2 }
+      },
+      "savingThrows": {},
+      "skills": {
+        "perception": 2
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 12
+      },
+      "languages": ["Гигантский"],
+      "challengeRating": 5,
+      "proficiencyBonus": 3,
+      "xp": 1800,
+      "traits": [],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Великан совершает две атаки дубиной."
+        },
+        {
+          "name": "Дубина",
+          "attackType": "melee",
+          "reach": 10,
+          "targets": 1,
+          "attackBonus": 8,
+          "damage": {
+            "value": "2d8 + 5",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Скала",
+          "attackType": "ranged",
+          "reach": 120,
+          "targets": 1,
+          "attackBonus": 8,
+          "damage": {
+            "value": "2d10 + 5",
+            "type": "дробящий"
+          },
+          "description": "Дальнобойная атака оружием."
         }
       ]
     },
     {
-      "id": "beasts",
-      "name": "Звери",
-      "icon": "🐅",
-      "creatures": [
+      "id": "giant_002",
+      "name": "Облачный великан",
+      "nameEn": "Cloud Giant",
+      "type": "giant",
+      "size": "Огромный",
+      "alignment": "Нейтрально-добрый (50%) или нейтрально-злой (50%)",
+      "source": "MM",
+      "imageUrl": "assets/monsters/cloud_giant.png",
+      "armorClass": {
+        "value": 14,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 200,
+        "formula": "16d12 + 96"
+      },
+      "speed": {
+        "walk": 50
+      },
+      "abilities": {
+        "str": { "value": 27, "mod": 8 },
+        "dex": { "value": 10, "mod": 0 },
+        "con": { "value": 22, "mod": 6 },
+        "int": { "value": 12, "mod": 1 },
+        "wis": { "value": 16, "mod": 3 },
+        "cha": { "value": 16, "mod": 3 }
+      },
+      "savingThrows": {
+        "con": 10,
+        "wis": 7,
+        "cha": 7
+      },
+      "skills": {
+        "insight": 7,
+        "perception": 7
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "darkvision": 120,
+        "passivePerception": 17
+      },
+      "languages": ["Гигантский", "Общий"],
+      "challengeRating": 9,
+      "proficiencyBonus": 4,
+      "xp": 5000,
+      "traits": [
         {
-          "id": "tiger",
-          "name": "Тигр",
-          "type": "Большой зверь",
-          "ac": 12,
-          "hp": "37 (5к10+10)",
-          "speed": "40 фт.",
-          "stats": {"str":17,"dex":15,"con":14,"int":3,"wis":12,"cha":8},
-          "actions": ["Мультиатака: укус и 2 когтя.", "Коготь: +5, 1к10+3 руб."],
-          "traits": ["Острое обоняние и зрение."]
+          "name": "Врождённое колдовство",
+          "description": "Великан может сотворить следующие заклинания, не требуя материальных компонентов, используя Харизму как характеристику заклинаний (сложность спасброска 15): По команде: очищение пищи и воды, обнаружение магии, туманный шаг. 3/день: порыв ветра, туманность. 1/день: контроль над погодой."
+        },
+        {
+          "name": "Невосприимчивость к падению",
+          "description": "Великан не получает урон от падения."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Великан совершает две атаки утренней звездой."
+        },
+        {
+          "name": "Утренняя звезда",
+          "attackType": "melee",
+          "reach": 15,
+          "targets": 1,
+          "attackBonus": 13,
+          "damage": {
+            "value": "3d8 + 8",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Скала",
+          "attackType": "ranged",
+          "reach": 240,
+          "targets": 1,
+          "attackBonus": 13,
+          "damage": {
+            "value": "3d10 + 8",
+            "type": "дробящий"
+          },
+          "description": "Дальнобойная атака оружием."
+        }
+      ],
+      "legendaryActions": {
+        "count": 3,
+        "description": "Великан может совершить 3 легендарных действия, выбирая из вариантов ниже.",
+        "options": [
+          {
+            "name": "Атака",
+            "cost": 1,
+            "description": "Великан совершает одну атаку оружием."
+          },
+          {
+            "name": "Бросок камня",
+            "cost": 1,
+            "description": "Великан бросает камень."
+          },
+          {
+            "name": "Топот (стоит 2 действия)",
+            "cost": 2,
+            "description": "Великан топает ногой. Все существа в радиусе 10 футов должны преуспеть в спасброске Ловкости Сл 18 или упасть ничком."
+          }
+        ]
+      }
+    }
+  ],
+
+  "Гуманоиды": [
+    {
+      "id": "humanoid_001",
+      "name": "Бандит",
+      "nameEn": "Bandit",
+      "type": "humanoid",
+      "subtypes": ["любая раса"],
+      "size": "Средний",
+      "alignment": "Любое нехорошее",
+      "source": "MM",
+      "imageUrl": "assets/monsters/bandit.png",
+      "armorClass": {
+        "value": 12,
+        "type": "кожаный доспех"
+      },
+      "hitPoints": {
+        "value": 11,
+        "formula": "2d8 + 2"
+      },
+      "speed": {
+        "walk": 30
+      },
+      "abilities": {
+        "str": { "value": 11, "mod": 0 },
+        "dex": { "value": 12, "mod": 1 },
+        "con": { "value": 12, "mod": 1 },
+        "int": { "value": 10, "mod": 0 },
+        "wis": { "value": 10, "mod": 0 },
+        "cha": { "value": 10, "mod": 0 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "passivePerception": 10
+      },
+      "languages": ["Любые один (обычно Общий)"],
+      "challengeRating": 0.125,
+      "proficiencyBonus": 2,
+      "xp": 25,
+      "traits": [],
+      "actions": [
+        {
+          "name": "Скимитар",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 3,
+          "damage": {
+            "value": "1d6 + 1",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Лёгкий арбалет",
+          "attackType": "ranged",
+          "reach": 80,
+          "targets": 1,
+          "attackBonus": 3,
+          "damage": {
+            "value": "1d8 + 1",
+            "type": "колющий"
+          },
+          "description": "Дальнобойная атака оружием."
         }
       ]
     },
     {
-      "id": "heroes",
-      "name": "Герои",
-      "icon": "🛡️",
-      "creatures": [
+      "id": "humanoid_002",
+      "name": "Рыцарь",
+      "nameEn": "Knight",
+      "type": "humanoid",
+      "subtypes": ["любая раса"],
+      "size": "Средний",
+      "alignment": "Любое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/knight.png",
+      "armorClass": {
+        "value": 18,
+        "type": "латный доспех"
+      },
+      "hitPoints": {
+        "value": 52,
+        "formula": "8d8 + 16"
+      },
+      "speed": {
+        "walk": 30
+      },
+      "abilities": {
+        "str": { "value": 16, "mod": 3 },
+        "dex": { "value": 11, "mod": 0 },
+        "con": { "value": 14, "mod": 2 },
+        "int": { "value": 11, "mod": 0 },
+        "wis": { "value": 11, "mod": 0 },
+        "cha": { "value": 15, "mod": 2 }
+      },
+      "savingThrows": {
+        "con": 4,
+        "wis": 2
+      },
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "passivePerception": 10
+      },
+      "languages": ["Общий"],
+      "challengeRating": 3,
+      "proficiencyBonus": 2,
+      "xp": 700,
+      "traits": [
         {
-          "id": "example-hero",
-          "name": "Рыцарь Латник",
-          "type": "Герой-человек",
-          "ac": 18,
-          "hp": "45 (6к10+12)",
-          "speed": "30 фт.",
-          "stats": {"str":16,"dex":10,"con":14,"int":10,"wis":12,"cha":14},
-          "actions": ["Длинный меч: +5, 1к8+3 руб.", "Тяжёлый арбалет: +2, 1к10 кол."],
-          "traits": ["Владение тяжёлой бронёй."]
+          "name": "Боевой дух",
+          "description": "Рыцарь имеет преимущество на спасброски от испуга."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Рыцарь совершает две атаки оружием ближнего боя."
+        },
+        {
+          "name": "Длинный меч",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 5,
+          "damage": {
+            "value": "1d8 + 3",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Удар щитом",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 5,
+          "damage": {
+            "value": "2d4 + 3",
+            "type": "дробящий"
+          },
+          "description": "Если цель — существо, оно должно преуспеть в спасброске Телосложения Сл 13 или быть оглушённым до конца следующего хода рыцаря."
+        }
+      ],
+      "reactions": [
+        {
+          "name": "Парирование",
+          "description": "Рыцарь добавляет 2 к своему КД против одной атаки, которая может попасть по нему. Для этого рыцарь должен видеть атакующего и владеть оружием ближнего боя."
+        }
+      ]
+    }
+  ],
+
+  "Демоны": [
+    {
+      "id": "demon_001",
+      "name": "Дретч",
+      "nameEn": "Dretch",
+      "type": "fiend",
+      "subtypes": ["демон"],
+      "size": "Маленький",
+      "alignment": "Хаотично-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/dretch.png",
+      "armorClass": {
+        "value": 11,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 18,
+        "formula": "4d6 + 4"
+      },
+      "speed": {
+        "walk": 20
+      },
+      "abilities": {
+        "str": { "value": 11, "mod": 0 },
+        "dex": { "value": 11, "mod": 0 },
+        "con": { "value": 12, "mod": 1 },
+        "int": { "value": 5, "mod": -3 },
+        "wis": { "value": 8, "mod": -1 },
+        "cha": { "value": 3, "mod": -4 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": ["яд"],
+      "conditionImmunities": ["отравлен"],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 9
+      },
+      "languages": ["Бездны", "Телепатия 60 футов"],
+      "challengeRating": 0.25,
+      "proficiencyBonus": 2,
+      "xp": 50,
+      "traits": [],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Дретч совершает две атаки: одну укусом и одну когтями."
+        },
+        {
+          "name": "Укус",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 2,
+          "damage": {
+            "value": "1d4",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Когти",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 2,
+          "damage": {
+            "value": "1d4",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Смердящее облако (1/день)",
+          "attackType": "special",
+          "reach": 10,
+          "targets": "все существа в конусе",
+          "saveDc": 10,
+          "saveType": "con",
+          "damage": {
+            "value": "1d4",
+            "type": "яд"
+          },
+          "description": "Дретч выпускает ядовитое облако. Каждое существо в конусе должно преуспеть в спасброске Телосложения или получить 1d4 урона ядом и стать отравленным до конца следующего хода дретча."
+        }
+      ]
+    },
+    {
+      "id": "demon_002",
+      "name": "Глабрезу",
+      "nameEn": "Glabrezu",
+      "type": "fiend",
+      "subtypes": ["демон"],
+      "size": "Большой",
+      "alignment": "Хаотично-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/glabrezu.png",
+      "armorClass": {
+        "value": 17,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 157,
+        "formula": "15d10 + 75"
+      },
+      "speed": {
+        "walk": 40
+      },
+      "abilities": {
+        "str": { "value": 23, "mod": 6 },
+        "dex": { "value": 15, "mod": 2 },
+        "con": { "value": 21, "mod": 5 },
+        "int": { "value": 19, "mod": 4 },
+        "wis": { "value": 17, "mod": 3 },
+        "cha": { "value": 16, "mod": 3 }
+      },
+      "savingThrows": {
+        "str": 10,
+        "con": 9,
+        "wis": 7,
+        "cha": 7
+      },
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": ["холод", "огонь", "молния"],
+      "damageImmunities": ["яд", "некротическая энергия"],
+      "conditionImmunities": ["отравлен"],
+      "senses": {
+        "darkvision": 120,
+        "passivePerception": 13
+      },
+      "languages": ["Бездны", "Телепатия 120 футов"],
+      "challengeRating": 9,
+      "proficiencyBonus": 4,
+      "xp": 5000,
+      "traits": [
+        {
+          "name": "Врождённое колдовство",
+          "description": "Глабрезу может сотворить следующие заклинания, не требуя материальных компонентов, используя Харизму как характеристику заклинаний (сложность спасброска 15): По команде: обнаружение магии. 3/день: зеркальное отражение, полёт. 1/день: замешательство, изменение формы, сила феи."
+        },
+        {
+          "name": "Магическое сопротивление",
+          "description": "Глабрезу имеет преимущество на спасброски от заклинаний и других магических эффектов."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Глабрезу совершает четыре атаки: две клешнями и двумя кулаками."
+        },
+        {
+          "name": "Клешня",
+          "attackType": "melee",
+          "reach": 10,
+          "targets": 1,
+          "attackBonus": 10,
+          "damage": {
+            "value": "2d10 + 6",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием. Если цель — существо, она должна преуспеть в спасброске Силы Сл 19 или быть схваченной (сбежать Сл 19)."
+        },
+        {
+          "name": "Кулак",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 10,
+          "damage": {
+            "value": "2d8 + 6",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием."
+        }
+      ],
+      "legendaryActions": {
+        "count": 3,
+        "description": "Глабрезу может совершить 3 легендарных действия, выбирая из вариантов ниже.",
+        "options": [
+          {
+            "name": "Атака",
+            "cost": 1,
+            "description": "Глабрезу совершает одну атаку клешнёй или кулаком."
+          },
+          {
+            "name": "Телепортация",
+            "cost": 2,
+            "description": "Глабрезу магически телепортируется вместе со всем, что несёт или носит, на расстояние до 120 футов в незанятое пространство, которое он может видеть."
+          }
+        ]
+      }
+    }
+  ],
+
+  "Дьяволы": [
+    {
+      "id": "devil_001",
+      "name": "Имп",
+      "nameEn": "Imp",
+      "type": "fiend",
+      "subtypes": ["дьявол"],
+      "size": "Маленький",
+      "alignment": "Законно-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/imp.png",
+      "armorClass": {
+        "value": 13,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 10,
+        "formula": "3d4 + 3"
+      },
+      "speed": {
+        "walk": 20,
+        "fly": 40
+      },
+      "abilities": {
+        "str": { "value": 6, "mod": -2 },
+        "dex": { "value": 17, "mod": 3 },
+        "con": { "value": 13, "mod": 1 },
+        "int": { "value": 11, "mod": 0 },
+        "wis": { "value": 12, "mod": 1 },
+        "cha": { "value": 14, "mod": 2 }
+      },
+      "savingThrows": {},
+      "skills": {
+        "deception": 4,
+        "insight": 3,
+        "persuasion": 4,
+        "stealth": 5
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": ["холод"],
+      "damageImmunities": ["огонь", "яд"],
+      "conditionImmunities": ["отравлен"],
+      "senses": {
+        "darkvision": 120,
+        "passivePerception": 11
+      },
+      "languages": ["Бездны", "Общий"],
+      "challengeRating": 1,
+      "proficiencyBonus": 2,
+      "xp": 200,
+      "traits": [
+        {
+          "name": "Форма оборотня",
+          "description": "Имп может использовать своё действие, чтобы превратиться в паука (скорость ходьбы 20, скорость лазания 20), крысу (скорость ходьбы 20) или ворона (скорость ходьбы 10, скорость полёта 50). Статистика остаётся той же, кроме скорости. В новой форме имп не может говорить или использовать руки."
+        },
+        {
+          "name": "Магическое сопротивление",
+          "description": "Имп имеет преимущество на спасброски от заклинаний и других магических эффектов."
+        },
+        {
+          "name": "Регенерация",
+          "description": "Имп восстанавливает 5 хитов в начале своего хода, если у него есть хотя бы 1 хит."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Жало",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 5,
+          "damage": {
+            "value": "1d4 + 3",
+            "type": "колющий + яд"
+          },
+          "description": "Рукопашная атака оружием. Цель должна преуспеть в спасброске Телосложения Сл 11 или получить дополнительный урон ядом 2d10 и стать отравленной на 1 минуту. Цель может повторять спасбросок в конце каждого своего хода."
+        },
+        {
+          "name": "Невидимость",
+          "description": "Имп магически становится невидимым до тех пор, пока не атакует или не сотворит заклинание, или пока его концентрация не прервётся (как если бы он концентрировался на заклинании). Любое снаряжение, которое имп несёт или носит, становится невидимым вместе с ним."
+        }
+      ]
+    },
+    {
+      "id": "devil_002",
+      "name": "Пит-фенд",
+      "nameEn": "Pit Fiend",
+      "type": "fiend",
+      "subtypes": ["дьявол"],
+      "size": "Большой",
+      "alignment": "Законно-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/pit_fiend.png",
+      "armorClass": {
+        "value": 19,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 300,
+        "formula": "24d10 + 168"
+      },
+      "speed": {
+        "walk": 30,
+        "fly": 60
+      },
+      "abilities": {
+        "str": { "value": 26, "mod": 8 },
+        "dex": { "value": 14, "mod": 2 },
+        "con": { "value": 24, "mod": 7 },
+        "int": { "value": 22, "mod": 6 },
+        "wis": { "value": 18, "mod": 4 },
+        "cha": { "value": 24, "mod": 7 }
+      },
+      "savingThrows": {
+        "str": 14,
+        "con": 13,
+        "wis": 10
+      },
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": ["холод"],
+      "damageImmunities": ["огонь", "яд"],
+      "conditionImmunities": ["отравлен"],
+      "senses": {
+        "darkvision": 120,
+        "passivePerception": 14
+      },
+      "languages": ["Все", "Телепатия 120 футов"],
+      "challengeRating": 20,
+      "proficiencyBonus": 6,
+      "xp": 25000,
+      "traits": [
+        {
+          "name": "Врождённое колдовство",
+          "description": "Пит-фенд может сотворить следующие заклинания, не требуя материальных компонентов, используя Харизму как характеристику заклинаний (сложность спасброска 21): По команде: обнаружение магии, огненный снаряд. 3/день: огненная стена, полёт. 1/день: огненный шторм, изменение формы, сила феи."
+        },
+        {
+          "name": "Магическое сопротивление",
+          "description": "Пит-фенд имеет преимущество на спасброски от заклинаний и других магических эффектов."
+        },
+        {
+          "name": "Ужасающее присутствие",
+          "description": "Каждое существо по выбору пит-фенда, находящееся в пределах 120 футов от него и знающее о нём, должно преуспеть в спасброске Мудрости Сл 21 или стать испуганным на 1 минуту. Существо может повторять спасбросок в конце каждого своего хода."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Пит-фенд совершает три атаки: одну укусом и две когтями."
+        },
+        {
+          "name": "Укус",
+          "attackType": "melee",
+          "reach": 10,
+          "targets": 1,
+          "attackBonus": 14,
+          "damage": {
+            "value": "4d10 + 8",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием. Если цель — существо, она должна преуспеть в спасброске Телосложения Сл 22 или получить дополнительный урон ядом 4d10 и стать отравленной. Отравленное существо повторяет спасбросок в конце каждого своего хода."
+        },
+        {
+          "name": "Когти",
+          "attackType": "melee",
+          "reach": 10,
+          "targets": 1,
+          "attackBonus": 14,
+          "damage": {
+            "value": "2d8 + 8",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Хвост",
+          "attackType": "melee",
+          "reach": 10,
+          "targets": 1,
+          "attackBonus": 14,
+          "damage": {
+            "value": "3d8 + 8",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием."
+        }
+      ],
+      "legendaryActions": {
+        "count": 3,
+        "description": "Пит-фенд может совершить 3 легендарных действия, выбирая из вариантов ниже.",
+        "options": [
+          {
+            "name": "Атака хвостом",
+            "cost": 1,
+            "description": "Пит-фенд совершает одну атаку хвостом."
+          },
+          {
+            "name": "Взрыв пламени (стоит 2 действия)",
+            "cost": 2,
+            "description": "Пит-фенд выдыхает огонь в 20-футовом конусе. Каждое существо в этой области должно совершить спасбросок Ловкости Сл 22, получая 6d6 урона огнём при провале или половину этого урона при успехе."
+          }
+        ]
+      }
+    }
+  ],
+
+  "Дракониды": [
+    {
+      "id": "dragonborn_001",
+      "name": "Кобольд",
+      "nameEn": "Kobold",
+      "type": "dragonoid",
+      "size": "Маленький",
+      "alignment": "Законно-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/kobold.png",
+      "armorClass": {
+        "value": 12,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 5,
+        "formula": "2d6 - 2"
+      },
+      "speed": {
+        "walk": 30
+      },
+      "abilities": {
+        "str": { "value": 7, "mod": -2 },
+        "dex": { "value": 15, "mod": 2 },
+        "con": { "value": 9, "mod": -1 },
+        "int": { "value": 8, "mod": -1 },
+        "wis": { "value": 7, "mod": -2 },
+        "cha": { "value": 8, "mod": -1 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 8
+      },
+      "languages": ["Драконий"],
+      "challengeRating": 0.125,
+      "proficiencyBonus": 2,
+      "xp": 25,
+      "traits": [
+        {
+          "name": "Солнечная чувствительность",
+          "description": "Кобольд совершает атаки с помехой, а также проверки Мудрости (Внимательность), которые полагаются на зрение, когда он, цель атаки или то, что он пытается разглядеть, находится на прямом солнечном свете."
+        },
+        {
+          "name": "Тактика стаи",
+          "description": "Кобольд совершает атаки с преимуществом, если хотя бы один из его союзников находится в пределах 5 футов от цели и союзник не недееспособен."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Кинжал",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 4,
+          "damage": {
+            "value": "1d4 - 2",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Праща",
+          "attackType": "ranged",
+          "reach": 30,
+          "targets": 1,
+          "attackBonus": 4,
+          "damage": {
+            "value": "1d4 - 2",
+            "type": "дробящий"
+          },
+          "description": "Дальнобойная атака оружием."
+        }
+      ]
+    },
+    {
+      "id": "dragonborn_002",
+      "name": "Драконорождённый",
+      "nameEn": "Dragonborn",
+      "type": "dragonoid",
+      "size": "Средний",
+      "alignment": "Любое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/dragonborn.png",
+      "armorClass": {
+        "value": 15,
+        "type": "чешуйчатый доспех"
+      },
+      "hitPoints": {
+        "value": 13,
+        "formula": "2d8 + 4"
+      },
+      "speed": {
+        "walk": 30
+      },
+      "abilities": {
+        "str": { "value": 13, "mod": 1 },
+        "dex": { "value": 10, "mod": 0 },
+        "con": { "value": 15, "mod": 2 },
+        "int": { "value": 8, "mod": -1 },
+        "wis": { "value": 10, "mod": 0 },
+        "cha": { "value": 10, "mod": 0 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "passivePerception": 10
+      },
+      "languages": ["Общий", "Драконий"],
+      "challengeRating": 0.5,
+      "proficiencyBonus": 2,
+      "xp": 100,
+      "traits": [],
+      "actions": [
+        {
+          "name": "Длинный меч",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 3,
+          "damage": {
+            "value": "1d8 + 1",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Дыхание дракона",
+          "attackType": "special",
+          "description": "Драконорождённый выдыхает разрушительную энергию в 15-футовом конусе. Каждое существо в этой области должно совершить спасбросок Ловкости Сл 12, получая 2d6 урона (тип зависит от предка драконорождённого) при провале или половину этого урона при успехе."
+        }
+      ]
+    }
+  ],
+
+  "Звери": [
+    {
+      "id": "beast_001",
+      "name": "Волк",
+      "nameEn": "Wolf",
+      "type": "beast",
+      "size": "Средний",
+      "alignment": "Без мировоззрения",
+      "source": "MM",
+      "imageUrl": "assets/monsters/wolf.png",
+      "armorClass": {
+        "value": 13,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 11,
+        "formula": "2d8 + 2"
+      },
+      "speed": {
+        "walk": 40
+      },
+      "abilities": {
+        "str": { "value": 12, "mod": 1 },
+        "dex": { "value": 15, "mod": 2 },
+        "con": { "value": 12, "mod": 1 },
+        "int": { "value": 3, "mod": -4 },
+        "wis": { "value": 12, "mod": 1 },
+        "cha": { "value": 6, "mod": -2 }
+      },
+      "savingThrows": {},
+      "skills": {
+        "perception": 3,
+        "stealth": 4
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "passivePerception": 13
+      },
+      "languages": [],
+      "challengeRating": 0.25,
+      "proficiencyBonus": 2,
+      "xp": 50,
+      "traits": [
+        {
+          "name": "Чуткий нюх",
+          "description": "Волк совершает проверки Мудрости (Внимательность) с преимуществом, если полагается на обоняние."
+        },
+        {
+          "name": "Тактика стаи",
+          "description": "Волк совершает атаки с преимуществом, если хотя бы один из его союзников находится в пределах 5 футов от цели и союзник не недееспособен."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Укус",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 4,
+          "damage": {
+            "value": "2d4 + 1",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием. Если цель — существо, она должна преуспеть в спасброске Силы Сл 11 или быть сбитой с ног."
+        }
+      ]
+    },
+    {
+      "id": "beast_002",
+      "name": "Мамонт",
+      "nameEn": "Mammoth",
+      "type": "beast",
+      "size": "Громадный",
+      "alignment": "Без мировоззрения",
+      "source": "MM",
+      "imageUrl": "assets/monsters/mammoth.png",
+      "armorClass": {
+        "value": 13,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 126,
+        "formula": "11d12 + 55"
+      },
+      "speed": {
+        "walk": 40
+      },
+      "abilities": {
+        "str": { "value": 24, "mod": 7 },
+        "dex": { "value": 9, "mod": -1 },
+        "con": { "value": 21, "mod": 5 },
+        "int": { "value": 3, "mod": -4 },
+        "wis": { "value": 11, "mod": 0 },
+        "cha": { "value": 6, "mod": -2 }
+      },
+      "savingThrows": {},
+      "skills": {
+        "perception": 4
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "passivePerception": 14
+      },
+      "languages": [],
+      "challengeRating": 6,
+      "proficiencyBonus": 3,
+      "xp": 2300,
+      "traits": [
+        {
+          "name": "Таран",
+          "description": "Если мамонт перемещается не менее чем на 20 футов прямо к существу, а затем попадает по нему атакой бивнями в тот же ход, цель должна преуспеть в спасброске Силы Сл 18 или быть сбитой с ног. Если цель лежит ничком, мамонт может совершить по ней одну атаку копытами бонусным действием."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Мамонт совершает две атаки: одну бивнями и одну копытами."
+        },
+        {
+          "name": "Бивни",
+          "attackType": "melee",
+          "reach": 10,
+          "targets": 1,
+          "attackBonus": 10,
+          "damage": {
+            "value": "4d6 + 7",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Копыта",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 10,
+          "damage": {
+            "value": "2d8 + 7",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием. Только против лежащего ничком существа."
+        }
+      ]
+    }
+  ],
+
+  "Конструкты": [
+    {
+      "id": "construct_001",
+      "name": "Оживлённые доспехи",
+      "nameEn": "Animated Armor",
+      "type": "construct",
+      "size": "Средний",
+      "alignment": "Без мировоззрения",
+      "source": "MM",
+      "imageUrl": "assets/monsters/animated_armor.png",
+      "armorClass": {
+        "value": 18,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 33,
+        "formula": "6d8 + 6"
+      },
+      "speed": {
+        "walk": 25
+      },
+      "abilities": {
+        "str": { "value": 14, "mod": 2 },
+        "dex": { "value": 11, "mod": 0 },
+        "con": { "value": 13, "mod": 1 },
+        "int": { "value": 1, "mod": -5 },
+        "wis": { "value": 3, "mod": -4 },
+        "cha": { "value": 1, "mod": -5 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": ["яд", "психическая энергия"],
+      "conditionImmunities": ["ослеплён", "очарован", "глухота", "истощение", "испуг", "паралич", "окаменение", "отравлен", "ничком", "схватывание", "сон"],
+      "senses": {
+        "слепое зрение": 60,
+        "passivePerception": 6
+      },
+      "languages": [],
+      "challengeRating": 1,
+      "proficiencyBonus": 2,
+      "xp": 200,
+      "traits": [
+        {
+          "name": "Антимагическое уязвимость",
+          "description": "Доспехи получают урон 5 от заклинания рассеивание магии. Пока доспехи находятся в области заклинания тишина, они недееспособны."
+        },
+        {
+          "name": "Ложная внешность",
+          "description": "Пока доспехи остаются неподвижными, их невозможно отличить от неживых доспехов."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Доспехи совершают две атаки мечом."
+        },
+        {
+          "name": "Меч",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 4,
+          "damage": {
+            "value": "1d8 + 2",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        }
+      ]
+    },
+    {
+      "id": "construct_002",
+      "name": "Плотский голем",
+      "nameEn": "Flesh Golem",
+      "type": "construct",
+      "size": "Средний",
+      "alignment": "Без мировоззрения",
+      "source": "MM",
+      "imageUrl": "assets/monsters/flesh_golem.png",
+      "armorClass": {
+        "value": 9,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 93,
+        "formula": "11d8 + 44"
+      },
+      "speed": {
+        "walk": 30
+      },
+      "abilities": {
+        "str": { "value": 19, "mod": 4 },
+        "dex": { "value": 9, "mod": -1 },
+        "con": { "value": 18, "mod": 4 },
+        "int": { "value": 6, "mod": -2 },
+        "wis": { "value": 10, "mod": 0 },
+        "cha": { "value": 5, "mod": -3 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": ["холод", "молния", "яд"],
+      "conditionImmunities": ["очарован", "истощение", "испуг", "паралич", "окаменение", "отравлен", "ничком"],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 10
+      },
+      "languages": ["Понимает языки своего создателя, но не может говорить"],
+      "challengeRating": 5,
+      "proficiencyBonus": 3,
+      "xp": 1800,
+      "traits": [
+        {
+          "name": "Берсерк",
+          "description": "Когда голем начинает свой ход с 40 хитами или меньше, он бросает k6. При результате 6 голем выходит из-под контроля. Существо, способное общаться с големом, должно совершить проверку Харизмы Сл 15, чтобы успокоить его. При провале голем атакует ближайшее существо. При успехе голем больше не выходит из-под контроля."
+        },
+        {
+          "name": "Невосприимчивость к магии",
+          "description": "Голем имеет иммунитет к заклинаниям и другим магическим эффектам, за исключением следующих: заклинание, сотворённое с использованием ячейки 5-го уровня или выше, накладывающее на голема эффект окаменение или замедление, даёт голему 5 временных хитов; заклинание молния или любой другой эффект, наносящий урон молнией, прерывает берсерк голема, если он активен, и лечит голема на количество хитов, равное нанесённому урону молнией."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Голем совершает две атаки кулаком."
+        },
+        {
+          "name": "Кулак",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 7,
+          "damage": {
+            "value": "2d8 + 4",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием."
+        }
+      ]
+    }
+  ],
+
+  "Монстры": [
+    {
+      "id": "monstrosity_001",
+      "name": "Совомедведь",
+      "nameEn": "Owlbear",
+      "type": "monstrosity",
+      "size": "Большой",
+      "alignment": "Без мировоззрения",
+      "source": "MM",
+      "imageUrl": "assets/monsters/owlbear.png",
+      "armorClass": {
+        "value": 13,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 59,
+        "formula": "7d10 + 21"
+      },
+      "speed": {
+        "walk": 40
+      },
+      "abilities": {
+        "str": { "value": 20, "mod": 5 },
+        "dex": { "value": 12, "mod": 1 },
+        "con": { "value": 17, "mod": 3 },
+        "int": { "value": 3, "mod": -4 },
+        "wis": { "value": 12, "mod": 1 },
+        "cha": { "value": 7, "mod": -2 }
+      },
+      "savingThrows": {},
+      "skills": {
+        "perception": 3
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 13
+      },
+      "languages": [],
+      "challengeRating": 3,
+      "proficiencyBonus": 2,
+      "xp": 700,
+      "traits": [
+        {
+          "name": "Чуткий нюх",
+          "description": "Совомедведь совершает проверки Мудрости (Внимательность) с преимуществом, если полагается на обоняние."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Совомедведь совершает две атаки: одну клювом и одну когтями."
+        },
+        {
+          "name": "Клюв",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 7,
+          "damage": {
+            "value": "1d10 + 5",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Когти",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 7,
+          "damage": {
+            "value": "2d8 + 5",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        }
+      ]
+    },
+    {
+      "id": "monstrosity_002",
+      "name": "Тарраск",
+      "nameEn": "Tarrasque",
+      "type": "monstrosity",
+      "size": "Громадный",
+      "alignment": "Без мировоззрения",
+      "source": "MM",
+      "imageUrl": "assets/monsters/tarrasque.png",
+      "armorClass": {
+        "value": 25,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 676,
+        "formula": "33d12 + 462"
+      },
+      "speed": {
+        "walk": 40
+      },
+      "abilities": {
+        "str": { "value": 30, "mod": 10 },
+        "dex": { "value": 11, "mod": 0 },
+        "con": { "value": 30, "mod": 10 },
+        "int": { "value": 3, "mod": -4 },
+        "wis": { "value": 11, "mod": 0 },
+        "cha": { "value": 11, "mod": 0 }
+      },
+      "savingThrows": {
+        "int": 6,
+        "wis": 6,
+        "cha": 6
+      },
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": ["огонь", "яд"],
+      "conditionImmunities": ["очарован", "испуг", "паралич", "отравлен", "ничком"],
+      "senses": {
+        "darkvision": 120,
+        "passivePerception": 10
+      },
+      "languages": [],
+      "challengeRating": 30,
+      "proficiencyBonus": 9,
+      "xp": 155000,
+      "traits": [
+        {
+          "name": "Отражение заклинаний",
+          "description": "Тарраск имеет преимущество на спасброски от заклинаний. Если тарраск преуспевает в спасброске от заклинания, которое нацелено только на него (не в области), заклинание отражается обратно на заклинателя, как если бы тарраск сотворил его."
+        },
+        {
+          "name": "Легендарное сопротивление (3/день)",
+          "description": "Если тарраск проваливает спасбросок, он может выбрать преуспеть вместо этого."
+        },
+        {
+          "name": "Магическое сопротивление",
+          "description": "Тарраск имеет преимущество на спасброски от заклинаний и других магических эффектов."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Тарраск совершает пять атак: одну укусом, две когтями, одну хвостом и одну топотом."
+        },
+        {
+          "name": "Укус",
+          "attackType": "melee",
+          "reach": 15,
+          "targets": 1,
+          "attackBonus": 19,
+          "damage": {
+            "value": "4d12 + 10",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием. Если цель — существо, она должна преуспеть в спасброске Телосложения Сл 20 или быть проглоченной. Проглоченное существо ослеплено и схвачено, имеет полное укрытие от атак и других эффектов вне тарраска и получает 8d6 урона кислотой в начале каждого хода тарраска. Если тарраск получает 60 урона или больше за один ход от существа внутри него, он должен преуспеть в спасброске Телосложения Сл 20 или исторгнуть всех проглоченных существ, которые падают ничком в пространстве, занимаемом тарраском. Если тарраск умирает, проглоченное существо больше не схвачено и может выбраться из трупа, использовав 30 футов движения, вылезая ничком."
+        },
+        {
+          "name": "Когти",
+          "attackType": "melee",
+          "reach": 10,
+          "targets": 1,
+          "attackBonus": 19,
+          "damage": {
+            "value": "4d8 + 10",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием. Если цель — существо, она должна преуспеть в спасброске Силы Сл 20 или быть сбитой с ног."
+        },
+        {
+          "name": "Хвост",
+          "attackType": "melee",
+          "reach": 20,
+          "targets": 1,
+          "attackBonus": 19,
+          "damage": {
+            "value": "4d10 + 10",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Топот",
+          "attackType": "melee",
+          "reach": 10,
+          "targets": 1,
+          "attackBonus": 19,
+          "damage": {
+            "value": "4d8 + 10",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием. Только против лежащего ничком существа. Если цель — существо, она должна преуспеть в спасброске Силы Сл 20 или быть оглушённой до конца следующего хода тарраска."
+        }
+      ],
+      "legendaryActions": {
+        "count": 3,
+        "description": "Тарраск может совершить 3 легендарных действия, выбирая из вариантов ниже. Только один вариант легендарного действия может быть использован за раз и только в конце хода другого существа. Тарраск восстанавливает потраченные легендарные действия в начале своего хода.",
+        "options": [
+          {
+            "name": "Атака когтями",
+            "cost": 1,
+            "description": "Тарраск совершает одну атаку когтями."
+          },
+          {
+            "name": "Атака хвостом (стоит 2 действия)",
+            "cost": 2,
+            "description": "Тарраск совершает одну атаку хвостом."
+          },
+          {
+            "name": "Рёв (стоит 3 действия)",
+            "cost": 3,
+            "description": "Тарраск издаёт особенный рёв. Каждое существо в радиусе 120 футов от тарраска, которое может его слышать, должно преуспеть в спасброске Мудрости Сл 20 или стать испуганным на 1 минуту. Существо может повторять спасбросок в конце каждого своего хода, оканчивая эффект на себе при успехе."
+          }
+        ]
+      }
+    }
+  ],
+
+  "Нежить": [
+    {
+      "id": "undead_001",
+      "name": "Скелет",
+      "nameEn": "Skeleton",
+      "type": "undead",
+      "size": "Средний",
+      "alignment": "Законно-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/skeleton.png",
+      "armorClass": {
+        "value": 13,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 13,
+        "formula": "2d8 + 4"
+      },
+      "speed": {
+        "walk": 30
+      },
+      "abilities": {
+        "str": { "value": 10, "mod": 0 },
+        "dex": { "value": 14, "mod": 2 },
+        "con": { "value": 15, "mod": 2 },
+        "int": { "value": 6, "mod": -2 },
+        "wis": { "value": 8, "mod": -1 },
+        "cha": { "value": 5, "mod": -3 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": ["дробящий"],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": ["отравлен", "истощение"],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 9
+      },
+      "languages": ["Понимает все языки, которыми владел при жизни, но не может говорить"],
+      "challengeRating": 0.25,
+      "proficiencyBonus": 2,
+      "xp": 50,
+      "traits": [],
+      "actions": [
+        {
+          "name": "Короткий меч",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 4,
+          "damage": {
+            "value": "1d6",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Короткий лук",
+          "attackType": "ranged",
+          "reach": 80,
+          "targets": 1,
+          "attackBonus": 4,
+          "damage": {
+            "value": "1d6",
+            "type": "колющий"
+          },
+          "description": "Дальнобойная атака оружием."
+        }
+      ]
+    },
+    {
+      "id": "undead_002",
+      "name": "Лич",
+      "nameEn": "Lich",
+      "type": "undead",
+      "size": "Средний",
+      "alignment": "Законно-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/lich.png",
+      "armorClass": {
+        "value": 17,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 135,
+        "formula": "18d8 + 54"
+      },
+      "speed": {
+        "walk": 30
+      },
+      "abilities": {
+        "str": { "value": 11, "mod": 0 },
+        "dex": { "value": 16, "mod": 3 },
+        "con": { "value": 16, "mod": 3 },
+        "int": { "value": 20, "mod": 5 },
+        "wis": { "value": 14, "mod": 2 },
+        "cha": { "value": 16, "mod": 3 }
+      },
+      "savingThrows": {
+        "con": 10,
+        "int": 12,
+        "wis": 9
+      },
+      "skills": {
+        "arcana": 18,
+        "history": 12,
+        "insight": 8,
+        "investigation": 12
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": ["холод", "молния", "некротическая энергия"],
+      "damageImmunities": ["яд", "урон дробящим, колющим и рубящим оружием от немагических атак"],
+      "conditionImmunities": ["очарован", "испуг", "паралич", "отравлен", "ничком", "схватывание", "оглушён"],
+      "senses": {
+        "truesight": 120,
+        "passivePerception": 12
+      },
+      "languages": ["Общий", "Драконий", "Бездны"],
+      "challengeRating": 21,
+      "proficiencyBonus": 7,
+      "xp": 33000,
+      "traits": [
+        {
+          "name": "Заклинатель",
+          "description": "Лич — заклинатель 18-го уровня. Его характеристика заклинаний — Интеллект (сложность спасброска заклинаний 20, +12 к попаданию атакой заклинанием). Лич имеет следующие заклинания чародея подготовленными: Заговоры (по желанию): леденящее прикосновение, магическая рука, посыльный, свет, фокусы. 1-й уровень (4 ячейки): обнаружение магии, волшебная стрела, ложная жизнь, луч болезни. 2-й уровень (3 ячейки): видение невидимого, облако кинжалов, туманный шаг. 3-й уровень (3 ячейки): анимація мёртвых, молния, полёт. 4-й уровень (3 ячейки): высшая невидимость, ледяная буря,stoneskin. 5-й уровень (3 ячейки): облако смерти, конус холода, оживление мёртвых. 6-й уровень (1 ячейка): истощение, круг смерти. 7-й уровень (1 ячейка): перст смерти, телепортация. 8-й уровень (1 ячейка): доминирование монстра, оцепенение. 9-й уровень (1 ячейка): остановка времени."
+        },
+        {
+          "name": "Врождённое колдовство",
+          "description": "Характеристика заклинаний лича — Интеллект (сложность спасброска 18). Лич может врождённо сотворить следующие заклинания, не требуя материальных компонентов: По команде: обнаружение магии."
+        },
+        {
+          "name": "Легендарное сопротивление (3/день)",
+          "description": "Если лич проваливает спасбросок, он может выбрать преуспеть вместо этого."
+        },
+        {
+          "name": "Восстановление",
+          "description": "Лич восстанавливает 20 хитов в начале своего хода. Если у лича 0 хитов, он не умирает, а вместо этого возвращается в свою филактерию. Лич не может быть окончательно уничтожен, пока его филактерия не будет найдена и уничтожена."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Парализующее прикосновение",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 12,
+          "damage": {
+            "value": "3d6 + 5",
+            "type": "некротическая энергия"
+          },
+          "description": "Рукопашная атака заклинанием. Цель должна преуспеть в спасброске Телосложения Сл 18 или стать парализованной на 1 минуту. Цель может повторять спасбросок в конце каждого своего хода."
+        }
+      ],
+      "legendaryActions": {
+        "count": 3,
+        "description": "Лич может совершить 3 легендарных действия, выбирая из вариантов ниже. Только один вариант легендарного действия может быть использован за раз и только в конце хода другого существа. Лич восстанавливает потраченные легендарные действия в начале своего хода.",
+        "options": [
+          {
+            "name": "Атака парализующим прикосновением",
+            "cost": 1,
+            "description": "Лич совершает одну атаку парализующим прикосновением."
+          },
+          {
+            "name": "Истощение жизненной силы (стоит 2 действия)",
+            "cost": 2,
+            "description": "Лич нацеливается на одно существо, которое он может видеть в пределах 10 футов от него. Цель должна преуспеть в спасброске Телосложения Сл 18 или получить 3d6 урона некротической энергией."
+          },
+          {
+            "name": "Фразы деспотизма (стоит 3 действия)",
+            "cost": 3,
+            "description": "Каждое существо по выбору лича, которое лич может видеть в пределах 120 футов от него, должно преуспеть в спасброске Мудрости Сл 18 или стать очарованным личем на 24 часа. Очарованное существо считает лича своим другом и подчиняется его командам."
+          }
+        ]
+      }
+    }
+  ],
+
+  "Растения": [
+    {
+      "id": "plant_001",
+      "name": "Веточка-мучитель",
+      "nameEn": "Twig Blight",
+      "type": "plant",
+      "size": "Маленький",
+      "alignment": "Нейтрально-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/twig_blight.png",
+      "armorClass": {
+        "value": 13,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 4,
+        "formula": "1d6 + 1"
+      },
+      "speed": {
+        "walk": 20
+      },
+      "abilities": {
+        "str": { "value": 6, "mod": -2 },
+        "dex": { "value": 13, "mod": 1 },
+        "con": { "value": 8, "mod": -1 },
+        "int": { "value": 4, "mod": -3 },
+        "wis": { "value": 8, "mod": -1 },
+        "cha": { "value": 3, "mod": -4 }
+      },
+      "savingThrows": {},
+      "skills": {
+        "stealth": 3
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 9
+      },
+      "languages": ["Понимает Сильван, но не может говорить"],
+      "challengeRating": 0.125,
+      "proficiencyBonus": 2,
+      "xp": 25,
+      "traits": [
+        {
+          "name": "Чувствительность к солнцу",
+          "description": "Веточка-мучитель совершает атаки с помехой, а также проверки Мудрости (Внимательность), которые полагаются на зрение, когда он, цель атаки или то, что он пытается разглядеть, находится на прямом солнечном свете."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Когти",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 3,
+          "damage": {
+            "value": "1d4 - 2",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        }
+      ]
+    },
+    {
+      "id": "plant_002",
+      "name": "Ходячий холм",
+      "nameEn": "Shambling Mound",
+      "type": "plant",
+      "size": "Большой",
+      "alignment": "Без мировоззрения",
+      "source": "MM",
+      "imageUrl": "assets/monsters/shambling_mound.png",
+      "armorClass": {
+        "value": 15,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 136,
+        "formula": "16d10 + 48"
+      },
+      "speed": {
+        "walk": 20,
+        "swim": 20
+      },
+      "abilities": {
+        "str": { "value": 18, "mod": 4 },
+        "dex": { "value": 8, "mod": -1 },
+        "con": { "value": 16, "mod": 3 },
+        "int": { "value": 5, "mod": -3 },
+        "wis": { "value": 10, "mod": 0 },
+        "cha": { "value": 5, "mod": -3 }
+      },
+      "savingThrows": {},
+      "skills": {
+        "stealth": 2
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": ["холод", "огонь"],
+      "damageImmunities": ["молния"],
+      "conditionImmunities": ["ослеплён", "глухота", "истощение"],
+      "senses": {
+        "слепое зрение": 60,
+        "passivePerception": 10
+      },
+      "languages": [],
+      "challengeRating": 5,
+      "proficiencyBonus": 3,
+      "xp": 1800,
+      "traits": [
+        {
+          "name": "Антимагическое уязвимость",
+          "description": "Холм получает урон 5 от заклинания рассеивание магия."
+        },
+        {
+          "name": "Невосприимчивость к молнии",
+          "description": "Холм невосприимчив к урону молнией и восстанавливает количество хитов, равное урону молнией, который он должен был бы получить."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Если холм схватил существо, он может совершить одну атаку псевдоподиями против этого существа."
+        },
+        {
+          "name": "Псевдоподии",
+          "attackType": "melee",
+          "reach": 10,
+          "targets": 2,
+          "attackBonus": 7,
+          "damage": {
+            "value": "2d6 + 4",
+            "type": "дробящий"
+          },
+          "description": "Рукопашная атака оружием. Если холм попадает по цели, он может попытаться схватить её (сбежать Сл 14). Холм может схватить до двух существ одновременно."
+        }
+      ]
+    }
+  ],
+
+  "Слизь": [
+    {
+      "id": "ooze_001",
+      "name": "Охристая желе",
+      "nameEn": "Ochre Jelly",
+      "type": "ooze",
+      "size": "Большой",
+      "alignment": "Без мировоззрения",
+      "source": "MM",
+      "imageUrl": "assets/monsters/ochre_jelly.png",
+      "armorClass": {
+        "value": 12,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 45,
+        "formula": "6d10 + 12"
+      },
+      "speed": {
+        "walk": 10,
+        "climb": 10
+      },
+      "abilities": {
+        "str": { "value": 15, "mod": 2 },
+        "dex": { "value": 6, "mod": -2 },
+        "con": { "value": 14, "mod": 2 },
+        "int": { "value": 2, "mod": -4 },
+        "wis": { "value": 6, "mod": -2 },
+        "cha": { "value": 1, "mod": -5 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": ["кислота"],
+      "damageImmunities": ["молния", "рубящий", "колющий"],
+      "conditionImmunities": ["ослеплён", "очарован", "глухота", "испуг", "ничком", "схватывание", "оглушён"],
+      "senses": {
+        "слепое зрение": 60,
+        "passivePerception": 8
+      },
+      "languages": [],
+      "challengeRating": 2,
+      "proficiencyBonus": 2,
+      "xp": 450,
+      "traits": [
+        {
+          "name": "Разделение",
+          "description": "Когда желе, имеющее не менее 10 хитов, получает урон рубящим или колющим оружием, оно делится на две идентичные желе, если в пределах 5 футов от него нет другого существа. Каждая новая желе имеет хиты, равные половине хитов оригинала (округляется в меньшую сторону), и размер на одну категорию меньше оригинала."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Псевдоподии",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 4,
+          "damage": {
+            "value": "3d6 + 2",
+            "type": "дробящий + кислота"
+          },
+          "description": "Рукопашная атака оружием. Если цель — существо, она должна преуспеть в спасброске Силы Сл 12 или быть сбитой с ног."
+        }
+      ]
+    },
+    {
+      "id": "ooze_002",
+      "name": "Чёрный пудинг",
+      "nameEn": "Black Pudding",
+      "type": "ooze",
+      "size": "Большой",
+      "alignment": "Без мировоззрения",
+      "source": "MM",
+      "imageUrl": "assets/monsters/black_pudding.png",
+      "armorClass": {
+        "value": 7,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 85,
+        "formula": "10d10 + 30"
+      },
+      "speed": {
+        "walk": 20,
+        "climb": 20
+      },
+      "abilities": {
+        "str": { "value": 16, "mod": 3 },
+        "dex": { "value": 5, "mod": -3 },
+        "con": { "value": 16, "mod": 3 },
+        "int": { "value": 1, "mod": -5 },
+        "wis": { "value": 6, "mod": -2 },
+        "cha": { "value": 1, "mod": -5 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": ["кислота", "рубящий", "колющий", "молния"],
+      "conditionImmunities": ["ослеплён", "очарован", "глухота", "испуг", "ничком", "схватывание", "оглушён"],
+      "senses": {
+        "слепое зрение": 60,
+        "passivePerception": 8
+      },
+      "languages": [],
+      "challengeRating": 4,
+      "proficiencyBonus": 2,
+      "xp": 1100,
+      "traits": [
+        {
+          "name": "Разделение",
+          "description": "Когда пудинг, имеющее не менее 10 хитов, получает урон рубящим или колющим оружием, он делится на два идентичных пудинга, если в пределах 5 футов от него нет другого существа. Каждый новый пудинг имеет хиты, равные половине хитов оригинала (округляется в меньшую сторону), и размер на одну категорию меньше оригинала."
+        },
+        {
+          "name": "Коррозия металла",
+          "description": "Любое немагическое оружие, попадающее по пудингу, corrodes. После попадания по пудингу оружие получает постоянный штраф -1 к урону. Если штраф достигает -5, оружие уничтожается. Любое немагическое снаряжение, которое попадает по пудингу или попадает в его объятия, corrodes таким же образом."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Псевдоподии",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 5,
+          "damage": {
+            "value": "3d6 + 3",
+            "type": "дробящий + кислота"
+          },
+          "description": "Рукопашная атака оружием. Если цель — существо, она должна преуспеть в спасброске Силы Сл 12 или быть сбитой с ног."
+        }
+      ]
+    }
+  ],
+
+  "Феи": [
+    {
+      "id": "fey_001",
+      "name": "Пикси",
+      "nameEn": "Pixie",
+      "type": "fey",
+      "size": "Крошечный",
+      "alignment": "Хаотично-добрый",
+      "source": "MM",
+      "imageUrl": "assets/monsters/pixie.png",
+      "armorClass": {
+        "value": 15,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 1,
+        "formula": "1d4 - 1"
+      },
+      "speed": {
+        "walk": 10,
+        "fly": 40
+      },
+      "abilities": {
+        "str": { "value": 2, "mod": -4 },
+        "dex": { "value": 20, "mod": 5 },
+        "con": { "value": 8, "mod": -1 },
+        "int": { "value": 10, "mod": 0 },
+        "wis": { "value": 13, "mod": 1 },
+        "cha": { "value": 14, "mod": 2 }
+      },
+      "savingThrows": {},
+      "skills": {
+        "perception": 3,
+        "stealth": 7
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "passivePerception": 13
+      },
+      "languages": ["Сильван"],
+      "challengeRating": 0.25,
+      "proficiencyBonus": 2,
+      "xp": 50,
+      "traits": [
+        {
+          "name": "Врождённое колдовство",
+          "description": "Характеристика заклинаний пикси — Харизма (сложность спасброска 12). Пикси может врождённо сотворить следующие заклинания, не требуя материальных компонентов: По команде: обнаружение магии. 1/день: танцующие огоньки, дружба, невидимость (только на себя), создание иллюзий."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Стрела",
+          "attackType": "ranged",
+          "reach": 60,
+          "targets": 1,
+          "attackBonus": 7,
+          "damage": {
+            "value": "1",
+            "type": "колющий"
+          },
+          "description": "Дальнобойная атака оружием. Если цель — существо, она должна преуспеть в спасброске Мудрости Сл 10 или стать очарованной пикси на 1 минуту. Очарованное существо считает пикси своим другом. Цель может повторять спасбросок в конце каждого своего хода, оканчивая эффект на себе при успехе."
+        },
+        {
+          "name": "Пыльца",
+          "attackType": "special",
+          "description": "Пикси рассыпает магическую пыльцу в радиусе 10 футов. Каждое существо в этой области должно преуспеть в спасброске Телосложения Сл 10 или стать отравленным на 1 минуту. Отравленное существо падает ничком и становится недееспособным. Существо может повторять спасбросок в конце каждого своего хода."
+        }
+      ]
+    },
+    {
+      "id": "fey_002",
+      "name": "Сатир",
+      "nameEn": "Satyr",
+      "type": "fey",
+      "size": "Средний",
+      "alignment": "Хаотично-нейтральный",
+      "source": "MM",
+      "imageUrl": "assets/monsters/satyr.png",
+      "armorClass": {
+        "value": 14,
+        "type": "кожаный доспех"
+      },
+      "hitPoints": {
+        "value": 31,
+        "formula": "7d8"
+      },
+      "speed": {
+        "walk": 40
+      },
+      "abilities": {
+        "str": { "value": 12, "mod": 1 },
+        "dex": { "value": 16, "mod": 3 },
+        "con": { "value": 11, "mod": 0 },
+        "int": { "value": 12, "mod": 1 },
+        "wis": { "value": 10, "mod": 0 },
+        "cha": { "value": 14, "mod": 2 }
+      },
+      "savingThrows": {},
+      "skills": {
+        "performance": 6,
+        "persuasion": 4,
+        "stealth": 5
+      },
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": [],
+      "conditionImmunities": [],
+      "senses": {
+        "passivePerception": 10
+      },
+      "languages": ["Общий", "Сильван"],
+      "challengeRating": 1,
+      "proficiencyBonus": 2,
+      "xp": 200,
+      "traits": [
+        {
+          "name": "Магическое сопротивление",
+          "description": "Сатир имеет преимущество на спасброски от заклинаний и других магических эффектов."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Короткий меч",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 5,
+          "damage": {
+            "value": "1d6 + 3",
+            "type": "колющий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Короткий лук",
+          "attackType": "ranged",
+          "reach": 80,
+          "targets": 1,
+          "attackBonus": 5,
+          "damage": {
+            "value": "1d6 + 3",
+            "type": "колющий"
+          },
+          "description": "Дальнобойная атака оружием."
+        },
+        {
+          "name": "Игра на флейте",
+          "attackType": "special",
+          "description": "Сатир играет на флейте. Каждое гуманоидное существо в радиусе 60 футов, которое может слышать музыку, должно преуспеть в спасброске Мудрости Сл 12 или быть очарованным на 1 минуту. Очарованное существо очаровано и не может предпринимать действий, кроме как танцевать. Существо может повторять спасбросок в конце каждого своего хода."
+        }
+      ]
+    }
+  ],
+
+  "Элементаль": [
+    {
+      "id": "elemental_001",
+      "name": "Магма мефит",
+      "nameEn": "Magma Mephit",
+      "type": "elemental",
+      "size": "Маленький",
+      "alignment": "Нейтрально-злое",
+      "source": "MM",
+      "imageUrl": "assets/monsters/magma_mephit.png",
+      "armorClass": {
+        "value": 11,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 9,
+        "formula": "2d6 + 2"
+      },
+      "speed": {
+        "walk": 30,
+        "fly": 30
+      },
+      "abilities": {
+        "str": { "value": 8, "mod": -1 },
+        "dex": { "value": 12, "mod": 1 },
+        "con": { "value": 12, "mod": 1 },
+        "int": { "value": 7, "mod": -2 },
+        "wis": { "value": 10, "mod": 0 },
+        "cha": { "value": 10, "mod": 0 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": ["холод"],
+      "damageResistances": [],
+      "damageImmunities": ["огонь", "яд"],
+      "conditionImmunities": ["отравлен"],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 10
+      },
+      "languages": ["Игнан", "Общий"],
+      "challengeRating": 0.5,
+      "proficiencyBonus": 2,
+      "xp": 100,
+      "traits": [
+        {
+          "name": "Смертный взрыв",
+          "description": "Когда мефит умирает, он взрывается огнём. Каждое существо в радиусе 5 футов должно совершить спасбросок Ловкости Сл 10, получая 4 (1d8) урона огнём при провале или половину этого урона при успехе."
+        },
+        {
+          "name": "Ложная внешность",
+          "description": "Пока мефит остаётся неподвижным, его невозможно отличить от обычного камня."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Когти",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 3,
+          "damage": {
+            "value": "1d4 + 1",
+            "type": "рубящий"
+          },
+          "description": "Рукопашная атака оружием."
+        },
+        {
+          "name": "Огненное дыхание (Перезарядка 6)",
+          "attackType": "special",
+          "description": "Мефит выдыхает огонь в 15-футовом конусе. Каждое существо в этой области должно совершить спасбросок Ловкости Сл 10, получая 7 (2d6) урона огнём при провале или половину этого урона при успехе."
+        }
+      ],
+      "bonusActions": [
+        {
+          "name": "Восстановление",
+          "description": "Мефит восстанавливает 7 хитов."
+        }
+      ]
+    },
+    {
+      "id": "elemental_002",
+      "name": "Элементаль огня",
+      "nameEn": "Fire Elemental",
+      "type": "elemental",
+      "size": "Большой",
+      "alignment": "Нейтральный",
+      "source": "MM",
+      "imageUrl": "assets/monsters/fire_elemental.png",
+      "armorClass": {
+        "value": 13,
+        "type": "природный доспех"
+      },
+      "hitPoints": {
+        "value": 102,
+        "formula": "12d10 + 36"
+      },
+      "speed": {
+        "walk": 50
+      },
+      "abilities": {
+        "str": { "value": 10, "mod": 0 },
+        "dex": { "value": 17, "mod": 3 },
+        "con": { "value": 16, "mod": 3 },
+        "int": { "value": 6, "mod": -2 },
+        "wis": { "value": 10, "mod": 0 },
+        "cha": { "value": 7, "mod": -2 }
+      },
+      "savingThrows": {},
+      "skills": {},
+      "damageVulnerabilities": [],
+      "damageResistances": [],
+      "damageImmunities": ["огонь", "яд"],
+      "conditionImmunities": ["отравлен", "схватывание", "ничком", "оглушён", "бессознателен"],
+      "senses": {
+        "darkvision": 60,
+        "passivePerception": 10
+      },
+      "languages": ["Игнан"],
+      "challengeRating": 5,
+      "proficiencyBonus": 3,
+      "xp": 1800,
+      "traits": [
+        {
+          "name": "Огненное тело",
+          "description": "Элементаль может перемещаться через пространство шириной в 1 дюйм без необходимости сжиматься. Существо, касающееся элементала или попадающее по нему рукопашной атакой в пределах 5 футов, получает 5 (1d10) урона огнём. Кроме того, элементаль может войти в пространство враждебного существа и остановиться там. Когда элементаль перемещается через пространство враждебного существа, это существо получает 5 (1d10) урона огнём."
+        },
+        {
+          "name": "Уязвимость к воде",
+          "description": "Каждые 5 футов перемещения элементала через воду или каждые 5 кубических футов воды, пролитой на него, наносят ему 1 урон холодом."
+        },
+        {
+          "name": "Освещение",
+          "description": "Элементаль излучает яркий свет в радиусе 30 футов и тусклый свет в дополнительных 30 футах."
+        }
+      ],
+      "actions": [
+        {
+          "name": "Мультиатака",
+          "description": "Элементаль совершает две атаки прикосновением."
+        },
+        {
+          "name": "Прикосновение",
+          "attackType": "melee",
+          "reach": 5,
+          "targets": 1,
+          "attackBonus": 6,
+          "damage": {
+            "value": "2d6 + 3",
+            "type": "огонь"
+          },
+          "description": "Рукопашная атака оружием. Если цель — существо или горючий объект, она загорается. Пока цель горит, существо получает 3 (1d6) урона огнём в начале каждого своего хода. Существо может прекратить горение, использовав действие для тушения пламени на себе."
         }
       ]
     }
