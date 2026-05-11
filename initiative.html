@@ -543,7 +543,7 @@ const app = {
   async init() {
     try {
       const [monsterRes, condRes] = await Promise.all([
-        fetch('data/initiative-data.json'),
+        fetch('data/creatures.json'),
         fetch('data/conditions.json')
       ]);
       if (!monsterRes.ok || !condRes.ok) throw new Error('Ошибка загрузки JSON');
